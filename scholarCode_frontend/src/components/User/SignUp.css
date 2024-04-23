@@ -1,0 +1,22 @@
+.signupButton{
+    background-color:#12A98E;
+    padding: 10px;
+    color: white;
+    font-size: 22px;
+    width: 350px;
+    height: 42px;
+    margin-left: 150px;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+.googleSignup{
+    background-color:white;
+    padding: 10px;
+    color: black;
+    font-size: 20px;
+    width: 350px;
+    height: 40px;
+    margin-left: 150px;
+    border-radius: 10px;
+}

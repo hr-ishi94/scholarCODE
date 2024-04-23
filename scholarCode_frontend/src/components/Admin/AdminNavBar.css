@@ -1,0 +1,24 @@
+.admin-navbar{
+    background-color: #12A98E;
+}
+
+.admin-nav-logo{
+    height: 50px;
+    margin-left: 60px;
+}
+
+.admin-drop{
+    background-color: #12A98E;
+    border-radius: 25px;
+    margin-top: 10px;
+    color: white;
+}
+
+.noti-admin{
+    border-radius: 25px;
+    background-color: #12A98E;
+    width: 40px;
+    border: 1px;
+    margin-top: 4px;
+    color: white;
+}

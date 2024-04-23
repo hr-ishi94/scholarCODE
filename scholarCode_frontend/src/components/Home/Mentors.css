@@ -1,0 +1,25 @@
+.mentor_img{
+   width: 300px;
+   height: 420px; 
+}
+
+.mentor-login{
+    background-color:#12A98E;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    width: 200px;
+    height: 40px;
+    margin-left: 10px;
+    border-radius: 10px;
+}
+.mentor-join{
+    background-color:#12A98E;
+    padding: 10px;
+    color: white;
+    font-size: 20px;
+    width: 200px;
+    height: 40px;
+    margin-left: 0px;
+    border-radius: 10px;
+}

@@ -1,0 +1,12 @@
+.aside-admin{
+    width: 250px;
+    margin: 50px;
+    background-color: #BCFFDB;
+    padding: 40px;
+    border-radius: 10px;
+}
+
+.aside-content{
+    margin: 40px;
+    margin-top: 30px;
+}
