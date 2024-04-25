@@ -1,21 +1,25 @@
 import React from 'react'
-import './AdminCategoryList.css'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
 
-const AdminCategoryList = () => {
+const AdminCategory = () => {
+    const style = {
+        position: "absolute",
+        left: "350px",
+        right: "100px",
+        top: "100px"
+    }
   return (
-    <div>
-        <div className='category-table'>
-        <h1>Category Management</h1>
+    <div style={style}>
+        <h1>Courses</h1>
         <br />
         <Table striped bordered hover>
       <thead>
         <tr>
           <th>id</th>
-          <th>Categories</th>
-          <th>No. of Courses</th>
-          <th>No. of Mentors</th>
+          <th>Name</th>
+          <th>No. of Users</th>
+          <th>No. of Modules</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -27,7 +31,7 @@ const AdminCategoryList = () => {
           <td>04</td>
           <td>05</td>
           <td>Active</td>
-          <td><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></td>
+          <td><Button className='p-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         <tr>
           <td>2</td>
@@ -35,7 +39,7 @@ const AdminCategoryList = () => {
           <td>04</td>
           <td>06</td>
           <td>Active</td>
-          <td><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
+          <td><Button className='p-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         <tr>
           <td>3</td>
@@ -43,7 +47,7 @@ const AdminCategoryList = () => {
           <td>04</td>
           <td>06</td>
           <td>Active</td>
-          <td><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
+          <td><Button className='p-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         <tr>
           <td>4</td>
@@ -51,14 +55,13 @@ const AdminCategoryList = () => {
           <td>04</td>
           <td>06</td>
           <td>Active</td>
-          <td><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
+          <td><Button className='p-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         
       </tbody>
     </Table>
     </div>
-    </div>
   )
 }
 
-export default AdminCategoryList
+export default AdminCategory

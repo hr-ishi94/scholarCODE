@@ -1,11 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import mentor_img from '../../assets/Mentors.jpg'
+import mentor_img from '../../assets/mentors.jpg'
 import './Mentors.css'
 import { Link } from 'react-router-dom'
 
+import axios from 'axios'
+
+const baseUrl = 'http://127.0.0.1:8000/'
+
 const Mentors = () => {
+    const [mentors, setMentors] = useState([])
+    useEffect(() => {
+      async function fetchMentors(){
+        const response = await axios.get(`${baseUrl}/main/mentors/active`)
+        setMentors(response.data)
+        console.log(response.data)
+        console.log(mentors);
+      }
+      fetchMentors()
+    }, [])
+    
   return (
     <>
         <div className="container">
@@ -18,58 +33,23 @@ const Mentors = () => {
                     <h2>Our Top Mentors</h2>
                 </Col>
                 <Col sm ={4}>
-                    <button className='mentor-join'><Link to={'/mentor/join/'}>Join our Team</Link></button>
-                    <button className='mentor-login'><Link to={'/mentor/login/'}>Mentor Login</Link></button>
+                    <button className='mentor-join'><Link to={'/mentor/join/'} className="react-router-link text-light">Join our Team</Link></button>
+                    <button className='mentor-login'><Link to={'/mentor/login/'} className="react-router-link text-light">Mentor Login</Link></button>
                 </Col>
             </Row>
-            <Row className='m-5'>
+
+            <Row className='m-5 text-center'>
+                {mentors.map((mentor)=>(
+
                 <Col sm={4}>
-                    <img className="mentor_img " src={mentor_img} alt="" />
-                    <div className='mx-5'>
-                        <h3 className='mx-5'>Arjun </h3>
-                        <h4>Full stack Developer</h4>
-                    </div>
+                    <img className="mentor_img " src={mentor.profile_img?mentor.profile_img:mentor_img} alt="" />
+                    <h3 className='mx-5'>{mentor.first_name} {mentor.last_name}</h3>
+                    <h4>{mentor.designation}</h4>
+                    
                 </Col>
-                <Col sm={4}>
-                    <img className="mentor_img " src={mentor_img} alt="" />
-                    <div className='mx-5'>
-                        <h3 className='mx-5'>Arjun </h3>
-                        <h4>Full stack Developer</h4>
-                    </div>
-                </Col>
-                <Col sm={4}>
-                    <img className="mentor_img " src={mentor_img} alt="" />
-                    <div className='mx-5'>
-                        <h3 className='mx-5'>Arjun </h3>
-                        <h4>Full stack Developer</h4>
-                    </div>
-                </Col>
-                
+                ))}
             </Row>
-            <Row className='m-5'>
-                <Col sm={4}>
-                    <img className="mentor_img " src={mentor_img} alt="" />
-                    <div className='mx-5'>
-                        <h3 className='mx-5'>Arjun </h3>
-                        <h4>Full stack Developer</h4>
-                    </div>
-                </Col>
-                <Col sm={4}>
-                    <img className="mentor_img " src={mentor_img} alt="" />
-                    <div className='mx-5'>
-                        <h3 className='mx-5'>Arjun </h3>
-                        <h4>Full stack Developer</h4>
-                    </div>
-                </Col>
-                <Col sm={4}>
-                    <img className="mentor_img " src={mentor_img} alt="" />
-                    <div className='mx-5'>
-                        <h3 className='mx-5'>Arjun </h3>
-                        <h4>Full stack Developer</h4>
-                    </div>
-                </Col>
-                
-            </Row>
+            
         </div>
     </>
   )

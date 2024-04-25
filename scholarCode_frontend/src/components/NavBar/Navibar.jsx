@@ -17,12 +17,12 @@ const Navibar = () => {
             <Nav className="me-auto">
             </Nav>
             <Nav>
-            <Link to={'/'}><Nav.Link href="#deets" className='options'>Home</Nav.Link></Link> 
+            <Link to={'/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Home</Nav.Link></Link> 
               <Nav.Link href="#deets" className='options'> Courses</Nav.Link>
-              <Link to={'/mentors/'}><Nav.Link href="#deets" className='options'>Mentors</Nav.Link></Link>
+              <Link to={'/mentors/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Mentors</Nav.Link></Link>
               <Nav.Link href="#deets" className='options'>Contact Us</Nav.Link>
-              <Link to={'/user/signup/'}><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link>
-              <Link to={'/user/login/'}><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>
+              <Link to={'/user/signup/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link>
+              <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>
               <NavDropdown title="User" className='options' id="collapsible-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1" className='options'>User Profile</NavDropdown.Item>
                 <NavDropdown.Divider />

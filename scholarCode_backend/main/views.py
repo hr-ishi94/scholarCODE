@@ -5,7 +5,9 @@ from .serializers import MentorSerializer, UserSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
+from django.db.models import Q
 
 # Mentor token generator 
 class MentorTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -53,10 +55,24 @@ class AdminTokenObtainPairView(TokenObtainPairView):
         return Response(serializer.validated_data)
 
 
-# GET, POST mentors
+# GET, POST mentors entire mentors
 class MentorList(generics.ListCreateAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
+
+# active mentors list
+@api_view(['GET'])
+def activeMentorList(request):
+    mentors = Mentor.objects.filter(is_staff = True)
+    serializer = MentorSerializer(mentors, many = True)
+    return Response(serializer.data)
+
+# mentors Request list
+@api_view(['GET'])
+def mentorRequests(request):
+    mentors = Mentor.objects.filter(is_staff = False)
+    serializer = MentorSerializer(mentors, many = True)
+    return Response(serializer.data)
     
 # GET, PUT, DELETE particular mentor
 class MentorDetail(generics.RetrieveUpdateDestroyAPIView):

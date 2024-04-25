@@ -1,10 +1,27 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './AdminUserList.css'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+
+const baseUrl = "http://127.0.0.1:8000/";
 
 const AdminUserList = () => {
+  const [users, setUsers] = useState([])
+
+  useEffect(()=>{
+    async function fetchUsers(){
+      
+      const response = await axios.get(`${baseUrl}/main/users/`) 
+      setUsers(response.data)
+    
+  }
+  fetchUsers()
+
+  },[])
   return (
+    
     <div className='user-table'>
         <h1>User Management</h1>
         <Table striped bordered hover>
@@ -19,38 +36,20 @@ const AdminUserList = () => {
         </tr>
       </thead>
       <tbody >
-        <tr >
-          <td>1</td>
-          <td>Mark</td>
+       { users.map((user)=>(
+        <tr key={user.id}  >
+          <td>{user.id}</td>
+          <td>{user.first_name}</td>
           <td>04</td>
-          <td>mark@mail.com</td>
-          <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
+          <td>{user.email}</td>
+          <td>{user.isactive?<span className='text-success'>Active</span>:<span className='text-danger'>InActive</span>}</td>
+          <td><Link to={`/admin/user/${user.id}`}><Button className="p-1 m-1"style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>Mark</td>
-          <td>04</td>
-          <td>mark@mail.com</td>
-          <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Mark</td>
-          <td>04</td>
-          <td>mark@mail.com</td>
-          <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Mark</td>
-          <td>04</td>
-          <td>mark@mail.com</td>
-          <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
-        </tr>
+
+       )
+
+       )}  
+        
         
       </tbody>
     </Table>

@@ -30,18 +30,34 @@ class CustomUserManager(BaseUserManager):
         return user
     
     def create_superuser(self, email, username, password = None, **extra_fields):
-        extra_fields.setdefault('is_staff',True)
-        extra_fields.setdefault('is_superuser',True)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
         return self.create_user(email, username, password, **extra_fields)
     
 class CustomUser(AbstractBaseUser):
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     objects = CustomUserManager()
+
+    def has_perm(self, perm, obj = None):
+        return True
+    
+    def has_module_perms(self,app_label):
+        return True
 
     def __str__(self):
         return self.email
@@ -52,10 +68,10 @@ class Mentor(CustomUser):
     course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
     linkedin_profile = models.CharField(max_length=300)
     profile_img = models.ImageField(upload_to='mentor/uploads/', null=True)
-    isActive = models.BooleanField(default=False)
+    isActive = models.BooleanField(default=True)
     
 class User(CustomUser):
     designation = models.CharField(max_length=100)
     profile_img = models.ImageField(upload_to='user/uploads/',null=True)
-    isActive = models.BooleanField(default=True)
+    isactive = models.BooleanField(default=True)
 
