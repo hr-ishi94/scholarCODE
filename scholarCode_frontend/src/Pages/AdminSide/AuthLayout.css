@@ -1,0 +1,19 @@
+
+
+.inner-container-mentor{
+    margin-left: 440px;
+    margin-top: 85px;
+    width: 400px;
+    background-color:#BCFFDB;
+    border:   #BCFFDB solid;
+    border-radius: 10px;
+
+}
+
+.mentor-login-button{
+    height: 40px;
+    width: 150px;
+    border-radius: 10px ;
+    color: white;
+    background-color: #12A98E;
+}

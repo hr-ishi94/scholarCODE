@@ -2,7 +2,7 @@ import React from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Image from 'react-bootstrap/Image'
-import courseThumbanail from '../../assets/courseThumbanail.png'
+// import courseThumbanail from '../../assets/courseThumbanail.png'
 
 const AdminCourse = () => {
     const style = {
@@ -16,7 +16,7 @@ const AdminCourse = () => {
     <Row>
         <Col sm={4} className='text-center'>
             
-            <Image src= {courseThumbanail} className='w-50 mx-3'roundedCircle />
+            <Image src= '' className='w-50 mx-3'roundedCircle />
             <br />
             <h4>Course Name</h4>
             <h6>Course Description</h6>
