@@ -155,7 +155,7 @@ WSGI_APPLICATION = 'scholarCode_backend.wsgi.application'
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.postgresql',
-       'NAME': 'scholarcode',
+       'NAME': 'scholarcodedatabase',
        'USER': 'postgres',
        'PASSWORD': 'hrishi',
        'HOST': 'localhost',

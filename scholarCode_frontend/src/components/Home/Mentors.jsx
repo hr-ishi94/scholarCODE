@@ -4,22 +4,21 @@ import Col from 'react-bootstrap/Col'
 import mentor_img from '../../assets/mentors.jpg'
 import './Mentors.css'
 import { Link } from 'react-router-dom'
-
-import axios from 'axios'
-
-const baseUrl = 'http://127.0.0.1:8000/'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
 
 const Mentors = () => {
-    const [mentors, setMentors] = useState([])
+    const [mentorsList, setMentorsList] = useState([])
+    const dispatch = useDispatch()
+    const {mentors,status, error} = useSelector((state)=>state.Mentors)
+    
     useEffect(() => {
-      async function fetchMentors(){
-        const response = await axios.get(`${baseUrl}/main/mentors/active`)
-        setMentors(response.data)
-        console.log(response.data)
-        console.log(mentors);
-      }
-      fetchMentors()
-    }, [])
+    dispatch(fetchMentors)
+    if(mentors?.length!==0){
+
+      setMentorsList(mentors)
+    }
+    }, [dispatch])
     
   return (
     <>
@@ -39,7 +38,7 @@ const Mentors = () => {
             </Row>
 
             <Row className='m-5 text-center'>
-                {mentors.map((mentor)=>(
+                {mentorsList.filter((mentor)=>mentor.is_staff==true).map((mentor)=>(
 
                 <Col sm={4}>
                     <img className="mentor_img " src={mentor.profile_img?mentor.profile_img:mentor_img} alt="" />

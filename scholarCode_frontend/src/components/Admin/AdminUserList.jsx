@@ -2,24 +2,32 @@ import React, { useEffect, useState } from 'react'
 import './AdminUserList.css'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
-import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from '../../Redux/Slices/UserListSlice';
+import { toast } from 'react-toastify';
 
-const baseUrl = "http://127.0.0.1:8000/";
 
 const AdminUserList = () => {
-  const [users, setUsers] = useState([])
+  const [userList, setUserList] = useState([])
 
-  useEffect(()=>{
-    async function fetchUsers(){
-      
-      const response = await axios.get(`${baseUrl}/main/users/`) 
-      setUsers(response.data)
-    
+
+  const dispatch = useDispatch()
+  const {users,status,error} = useSelector((state => state.userList)) 
+
+  if(error && error.trim().length > 0){
+    toast.error(error)
   }
-  fetchUsers()
+  
+  useEffect(()=>{
+    dispatch(fetchUsers())
+   
+    if(users?.length!==0){
 
-  },[])
+      setUserList(users)
+    }
+  },[dispatch])
+
   return (
     
     <div className='user-table'>
@@ -36,7 +44,7 @@ const AdminUserList = () => {
         </tr>
       </thead>
       <tbody >
-       { users.map((user)=>(
+       { userList.map((user)=>(
         <tr key={user.id}  >
           <td>{user.id}</td>
           <td>{user.first_name}</td>

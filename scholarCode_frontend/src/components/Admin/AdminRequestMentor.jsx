@@ -6,21 +6,30 @@ import Image from 'react-bootstrap/Image'
 import avatar from '../../assets/avatar.jpg'
 import {Button} from 'react-bootstrap'
 import {useParams} from 'react-router-dom'
-import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import MentorDetailSlice, { fetchMentor } from '../../Redux/Slices/MentorDetailSlice'
+import { toast } from 'react-toastify'
 
-const baseUrl = 'http://127.0.0.1:8000/'
 
 const AdminRequestMentor = () => {
   const params = useParams()
   const [mentorRequest, setMentorRequest] = useState([])
+
+  const dispatch = useDispatch()
+  const {mentor, status, error} = useSelector((state)=>state.Mentor)
+  
+  if (error && error.trim().length>0){
+    toast.error(error)
+  }
+  
   useEffect(()=>{
-    
-    async function mentorRequestFetch(){
-      const response = await axios.get(`${baseUrl}/main/mentor/${params.id}/`)
-      setMentorRequest(response.data)
-    }
-    mentorRequestFetch()
-  },[])
+
+  dispatch(fetchMentor(params.id))  
+  if(mentor?.length!==0){
+    setMentorRequest(mentor)
+  }
+
+   },[dispatch])
   return (
     <>
       <div className='mentor-section'>

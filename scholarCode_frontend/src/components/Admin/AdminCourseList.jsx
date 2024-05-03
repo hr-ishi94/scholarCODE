@@ -26,7 +26,7 @@ const AdminCourseList = () => {
           <td>04</td>
           <td>05</td>
           <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
+          <td><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         <tr>
           <td>2</td>
@@ -34,7 +34,7 @@ const AdminCourseList = () => {
           <td>04</td>
           <td>04</td>
           <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
+          <td><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         <tr>
           <td>3</td>
@@ -42,7 +42,7 @@ const AdminCourseList = () => {
           <td>04</td>
           <td>03</td>
           <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
+          <td><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         <tr>
           <td>4</td>
@@ -50,7 +50,7 @@ const AdminCourseList = () => {
           <td>04</td>
           <td>07</td>
           <td>Active</td>
-          <td><Button style={{backgroundColor:"#12A98E"}}>Block</Button></td>
+          <td><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></td>
         </tr>
         
       </tbody>

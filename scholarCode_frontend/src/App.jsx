@@ -19,7 +19,8 @@ import AdminCategory from './components/Admin/AdminCategory';
 import AuthLayout from './Pages/AdminSide/AuthLayout';
 import AdminLogin from './components/Admin/AdminLogin';
 import LoginMentor from './components/Mentor/LoginMentor';
-
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 
 function App() {
@@ -59,6 +60,18 @@ function App() {
 
           
         </Routes>
+        <ToastContainer
+        position="bottom-right"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       </BrowserRouter>
     </>
   )

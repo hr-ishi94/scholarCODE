@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react'
 import './AdminMentorList.css'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
-import axios from 'axios'
 import { Link } from 'react-router-dom';
+import { fetchMentors } from '../../Redux/Slices/MentorsSlice.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-const baseUrl = 'http://127.0.0.1:8000/'
+ 
 
-const MentorTableData=({props})=>{
+const MentorTableData=({props,index})=>{
   const mentor = props
  return (
  <>
-    <td>{mentor.id}</td>
+    <td>{index+1}</td>
     <td>{mentor.first_name } {mentor.last_name} </td>
     <td>04</td>
     <td>{mentor.email}</td>
@@ -24,26 +26,30 @@ const MentorTableData=({props})=>{
 
 
 const AdminMentorList = () => {
-  const [activeMentors, setActiveMentors] = useState([])
-  const [requestMentors, setRequestMentors] = useState([])
-  
+  const [MentorsList, setMentorsList] = useState([])
+
+  const dispatch = useDispatch()
+  const {mentors, status, error} = useSelector((state)=>state.Mentors)
+  if (error && error.trim().length > 0){
+    toast.error(error)
+  }
   useEffect(() => {
-    async function fetchMentors(){
+    dispatch(fetchMentors())
+    if (mentors?.length !==0){
 
-      const response_active = await axios.get(`${baseUrl}/main/mentors/active/`)
-      setActiveMentors(response_active.data)
-
-      const response_request = await axios.get(`${baseUrl}/main/mentors/request/`)
-      setRequestMentors(response_request.data)
+      setMentorsList(mentors)
     }
-
-    fetchMentors()
-  }, [])
+    
+  }, [dispatch])
   
   return (
     <>
       <div className='mentor-table'>
         <h2>Mentors</h2>
+           
+    <div>
+
+</div>
         <Table striped bordered hover>
       <thead>
         <tr>
@@ -56,12 +62,12 @@ const AdminMentorList = () => {
         </tr>
       </thead>
       <tbody >
-        {activeMentors.map((mentor)=>(
+        {MentorsList.filter((mentor)=>mentor.is_staff===true).map((activeMentor,index)=>(
 
 
-        <tr >
-          <MentorTableData props = {mentor} key={mentor.id}/>
-          <td><Link to={`/admin/mentor/active/${mentor.id}/`}><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
+        <tr key={activeMentor.id}>
+          <MentorTableData props = {activeMentor} index ={index} />
+          <td><Link to={`/admin/mentor/active/${activeMentor.id}/`}><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>
         ))}
         
@@ -78,21 +84,27 @@ const AdminMentorList = () => {
             <tr>
               <th>id</th>
               <th>Name</th>
-              <th>No. of Courses</th>
+              <th>Designation</th>
               <th>Email</th>
-              <th>Status</th>
+              <th>Linkedin Id</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody >
-            {requestMentors.map((mentor)=>(
+            {MentorsList.filter((mentor)=>mentor.is_staff===false).map((mentorRequest,index)=>(
 
 
-            <tr >
+            <tr  key={mentorRequest.id}>
               
-              <MentorTableData props= {mentor} key={mentor.id}/>
+              {/* <MentorTableData props= {mentorRequest}/> */}
+              <td>{index+1}</td>
+              <td>{mentorRequest.first_name } {mentorRequest.last_name} </td>
+              <td>{mentorRequest.designation}</td>
+              <td>{mentorRequest.email}</td>
+              <td>{mentorRequest.linkedin_profile}</td>
+              
               <td>
-                  <Link to={`/admin/mentor/request/${mentor.id}/`}>
+                  <Link to={`/admin/mentor/request/${mentorRequest.id}/`}>
                   <Button className="p-1 m-1" style={{ backgroundColor: "#12A98E" }}>View</Button>
                   </Link>
               </td>

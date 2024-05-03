@@ -8,7 +8,6 @@ const AdminCategoryList = () => {
     <div>
         <div className='category-table'>
         <h1>Category Management</h1>
-        <br />
         <Table striped bordered hover>
       <thead>
         <tr>

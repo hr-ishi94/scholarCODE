@@ -5,14 +5,17 @@ import Image from 'react-bootstrap/Image'
 import {Button} from 'react-bootstrap'
 import avatar from '../../assets/avatar.jpg'
 import {useParams} from 'react-router-dom';
-import axios from 'axios'
-
-const baseUrl = 'http://127.0.0.1:8000/'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
+import { toast } from 'react-toastify'
 
 const AdminUser = () => {
 
     const params = useParams()
+    const [userDetail, setUserDetail] = useState([])
+
+    const dispatch = useDispatch()
+    const {user, status, error} =  useSelector((state)=>state.User)
     
     const userStyle ={
         position: "absolute",
@@ -20,58 +23,51 @@ const AdminUser = () => {
         right: "100px",
         top: "100px"
     }
-
-    const [user, setUser] = useState([])
+    if (error &&error.trim().length >0){
+      toast.error(error)
+    }
     useEffect(()=>{
-      async function userFetch(){
-        const response = await axios.get(`${baseUrl}/main/user/${params.id}/`)
-        setUser(response.data)
+     
+      dispatch(fetchUser(params.id))
+      if (user?.length !== 0){
+        setUserDetail(user)
       }
-      userFetch()
-    },[])
+    },[dispatch])
 
   return (
-
     <div style={userStyle}>
         <Row>
         <Col sm={4} className='text-center'>
           
-          <Image src={user.profile_img?user.profile_img:avatar} className='w-50 mx-3'roundedCircle />
+          <Image src={userDetail.profile_img?userDetail.profile_img:avatar} className='w-50 mx-3'roundedCircle />
           <br />
-          <h4>{user.username}</h4>
-          <h6>{user.email}</h6>
-          <h6>{user.designation}</h6>
+          <h4>{userDetail.username}</h4>
+          <h6>{userDetail.email}</h6>
+          <h6>{userDetail.designation}</h6>
         </Col>
         <Col sm={8} >
           <h3>User Details</h3>
           <br />
           <Row>
             <Col sm={4}>
-            <label htmlFor="input1" className='m-2'>First name:</label>
+            <h6 className='m-2'>First name: {userDetail.first_name}</h6>
             <br />
-            <label htmlFor="input2" className='m-2'>Last name:</label>
+            <h6 className='m-2'>Last name: {userDetail.last_name}</h6>
             <br />
-            <label htmlFor="input3" className='m-2'>Email:</label>
+            <h6 className='m-2'>Email: {userDetail.email}</h6>
             <br />
-            <label htmlFor="input4" className='m-2'>Designation:</label>
-            
+            <h6 className='m-2'>Designation: {userDetail.designation}</h6>
+            <br />
+            <h6 className='m-2'>Status: {userDetail.isactive?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
+            <br />
+            {userDetail.isactive?<Button className='p-2 bg-danger mx-2 p-2'>Block User</Button>:<Button className='p-2 bg-success mx-2 p-2'>Unblock User</Button>}
             </Col>
-            <Col sm={8}>
-          <input type="text" name='input1'  className='m-2 text-center' placeholder= {user.first_name}/>
-          <br />
-          <input type="text" name='input2' className='m-2 text-center' placeholder={user.last_name}/>
-          <br />
-          <input type="text" name='input3' className='m-2 text-center'placeholder={user.email}/>
-          <br />
-          <input type="text" name='input4' className='m-2 text-center' placeholder={user.designation}/> 
-          <br />
-          <br />
-          <Button className='p-2'style={{backgroundColor:"#12A98E"}}>Update changes</Button>
-          <Button className='p-2 bg-danger mx-2 p-2'>Block User</Button>
+           
             
-           </Col>
+           
             
           </Row>
+          <br />
           <h4>Courses Enrolled</h4>
           <br />
           <h5>course 1</h5>

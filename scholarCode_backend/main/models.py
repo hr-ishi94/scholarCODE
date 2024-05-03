@@ -3,21 +3,40 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser,PermissionsMixin,AbstractBaseUser,BaseUserManager
 
 # Create your models here.
-class Task(models.Model):
-    task = models.CharField(max_length=500)
+class Category(models.Model):
+    name = models.CharField(max_length=250)
 
-class Module(models.Model):
-    module = models.CharField(max_length=100)
-    task_id = models.ForeignKey(Task, on_delete=models.CASCADE)
+    def __str__(self):
+        return self.name
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
-    module_id = models.ForeignKey(Module, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='courses')
     price = models.IntegerField()
     published_on = models.DateField(default=datetime.now , blank = True)
     thumbnail = models.ImageField(upload_to='course/uploads/')
     status = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
+
+    
+class Module(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+    
+
+class Task(models.Model):
+    name = models.CharField(max_length=500)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE,related_name='tasks')
+    module = models.ForeignKey(Module,on_delete=models.CASCADE,related_name='tasks')
+
+    def __str__(self):
+        return self.name
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password = None, **extra_fields):

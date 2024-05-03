@@ -6,52 +6,56 @@ import Image from 'react-bootstrap/Image'
 import avatar from '../../assets/avatar.jpg'
 import './AdminActiveMentor.css'
 import {Button} from 'react-bootstrap'
-import axios from 'axios'
-
-const baseUrl = 'http://127.0.0.1:8000/'
+import { useDispatch, useSelector } from 'react-redux'
+import { fetchMentor } from '../../Redux/Slices/MentorDetailSlice'
+import { toast } from 'react-toastify'
 
 const AdminActiveMentor = () => {
   const params = useParams()
-  const [mentor, setMentor] = useState([])
+  const [mentorDetail, setMentorDetail] = useState([])
+
+  const dispatch = useDispatch()
+  const {mentor,status, error} = useSelector((state)=>state.Mentor)
+  if(error && error.trim().length>0){
+    toast.error(error)
+  }
   
   useEffect(()=>{
-    
-    async function mentorFetch(){
-      const response = await axios.get(`${baseUrl}/main/mentor/${params.id}`)
-      setMentor(response.data)
+    dispatch(fetchMentor(params.id))
+    if (mentor?.length!==0){
+      setMentorDetail(mentor)
     }
-    mentorFetch()
-  },[])
+  },[dispatch])
   return (
       <div className='mentor-section'>
         <Row>
         <Col sm={4} className='text-center'>
           <Image src={avatar} className='w-50 mx-3'roundedCircle />
           <br />
-          <h4>{mentor.username}</h4>
-          <h6>{mentor.email}</h6>
-          <h6>{mentor.designation}</h6>
+          <h4>{mentorDetail.username}</h4>
+          <h6>{mentorDetail.email}</h6>
+          <h6>{mentorDetail.designation}</h6>
         </Col>
         <Col sm={8} >
           <h3>Mentor Details</h3>
           <br />
           
             
-            <label className='m-2'>First name: {mentor.first_name}</label>
+            <label className='m-2'>First name: {mentorDetail.first_name}</label>
             <br />
             <label className='m-2'>Last name: {mentor.last_name}</label>
             <br />
-            <label className='m-2'>Email: {mentor.email}</label>
+            <label className='m-2'>Email: {mentorDetail.email}</label>
             <br />
-            <label className='m-2'>Designation: {mentor.designation}</label>
+            <label className='m-2'>Designation: {mentorDetail.designation}</label>
             <br />
-            <label className='m-2'>LinkedIn ID: {mentor.linkedin_profile}</label>
+            <label className='m-2'>LinkedIn ID: {mentorDetail.linkedin_profile}</label>
             <br />
             <label className='m-2'>No. of courses assigned: </label>
             <br />
-            <label className='m-2'>Status:{mentor.isActive?<span className='bg-success'> Active</span>:<span className='bg-danger'> Blocked</span>}</label>
+            <label className='m-2'>Status:{mentorDetail.isActive?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</label>
             <br />
-            {mentor.isActive? <Button className='p-2 bg-danger ' > Block </Button>:<Button className='p-2 bg-success ' >Unblock</Button>}
+            {mentorDetail.isActive? <Button className='p-2 bg-danger ' > Block </Button>:<Button className='p-2 bg-success ' >Unblock</Button>}
           <br />
           <br />
           <h4>Courses Assigned</h4>

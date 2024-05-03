@@ -1,6 +1,6 @@
 from rest_framework import generics
-from .models import Mentor, User
-from .serializers import MentorSerializer, UserSerializer
+from .models import Mentor, User, Category, Course, Module, Task
+from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, ModuleSerializer, TaskSerializer
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -59,27 +59,13 @@ class AdminTokenObtainPairView(TokenObtainPairView):
 class MentorList(generics.ListCreateAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
-
-# active mentors list
-@api_view(['GET'])
-def activeMentorList(request):
-    mentors = Mentor.objects.filter(is_staff = True)
-    serializer = MentorSerializer(mentors, many = True)
-    return Response(serializer.data)
-
-# mentors Request list
-@api_view(['GET'])
-def mentorRequests(request):
-    mentors = Mentor.objects.filter(is_staff = False)
-    serializer = MentorSerializer(mentors, many = True)
-    return Response(serializer.data)
     
 # GET, PUT, DELETE particular mentor
 class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
 
-# GET, USER users
+# GET, POST users
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -88,4 +74,27 @@ class UserList(generics.ListCreateAPIView):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer 
-    
+
+# GET,POST Category
+class Categories(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+#GET, PUT, DELETE particular categories
+class CategoryList(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+
+# GET,POST Course List
+class CoursesList(generics.ListCreateAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer
+
+#GET, PUT, DELETE particular Course
+class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Course.objects.all()
+    serializer_class = CourseSerializer 
+
+class TaskList(generics.ListCreateAPIView):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
