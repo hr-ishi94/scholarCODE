@@ -37,6 +37,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CourseSerializer(serializers.ModelSerializer):
+    category= CategorySerializer()
     class Meta:
         model = Course
         fields = '__all__'
@@ -47,6 +48,8 @@ class ModuleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TaskSerializer(serializers.ModelSerializer):
+    course = CourseSerializer()
+    module = ModuleSerializer()
     class Meta:
         model = Task
         fields = '__all__'

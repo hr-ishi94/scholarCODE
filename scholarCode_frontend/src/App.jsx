@@ -21,6 +21,7 @@ import AdminLogin from './components/Admin/AdminLogin';
 import LoginMentor from './components/Mentor/LoginMentor';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import Loader from './components/Utils/Loader';
 
 
 function App() {
@@ -35,10 +36,10 @@ function App() {
           <Route element={<AdminRootLayoot/>}>
             <Route path='/admin/courses/' element={<AdminCourseList/>}></Route>
             <Route path='/admin/category/' element={<AdminCategoryList/>}></Route>
-            <Route path='/admin/category/id/' element={<AdminCategory/>}></Route>
+            <Route path='/admin/category/:id/' element={<AdminCategory/>}></Route>
             <Route path='/admin/users/' element={<AdminUserList/>}></Route>
             <Route path='/admin/user/:id/' element={<AdminUser/>}></Route>
-            <Route path='/admin/course/id/' element={<AdminCourse/>}></Route>
+            <Route path='/admin/course/:id/' element={<AdminCourse/>}></Route>
             <Route path='/admin/mentors/' element={<AdminMentorList/>}></Route>
             <Route path='/admin/mentor/active/:id/' element={<AdminActiveMentor/>}></Route>
             <Route path='/admin/mentor/request/:id/' element={<AdminRequestMentor/>}></Route>

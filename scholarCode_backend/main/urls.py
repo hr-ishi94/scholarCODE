@@ -19,5 +19,6 @@ urlpatterns = [
     path('courses/',views.CoursesList.as_view(), name= 'coursesList'),
     path('course/<int:pk>/', views.CourseDetail.as_view(),name='courseDetails'),
     # tasks
-    path('tasks/',views.TaskList.as_view(), name= 'TaskList'),
+    path('tasks/<int:course_id>/',views.TaskList, name= 'TaskList'),
+    path('task/edit/<int:pk>/',views.TaskUpdate.as_view(), name= 'Task-Edit'),
 ]

@@ -9,6 +9,8 @@ import {Button} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMentor } from '../../Redux/Slices/MentorDetailSlice'
 import { toast } from 'react-toastify'
+import Loader from '../Utils/Loader'
+
 
 const AdminActiveMentor = () => {
   const params = useParams()
@@ -26,6 +28,11 @@ const AdminActiveMentor = () => {
       setMentorDetail(mentor)
     }
   },[dispatch])
+  
+  if (status === "loading") {
+    return <Loader/>;
+  }
+
   return (
       <div className='mentor-section'>
         <Row>

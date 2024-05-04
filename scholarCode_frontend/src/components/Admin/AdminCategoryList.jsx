@@ -1,9 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './AdminCategoryList.css'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategoryList } from '../../Redux/Slices/CategoryListSlice';
+import { Link } from 'react-router-dom';
+import Loader from '../Utils/Loader';
+
 
 const AdminCategoryList = () => {
+  const dispatch = useDispatch()
+  const {categories,status,error} = useSelector((state)=>state.Categories)
+  const [categoryList,setCategoryList] =useState([])
+  
+  console.log(status)
+
+  
+  useEffect(()=>{
+    dispatch(fetchCategoryList())
+    if(categories?.length!==0){
+      setCategoryList(categories)
+    }
+    
+  },[dispatch])
+  
+  if (status === "loading") {
+    return <Loader />;
+  }
   return (
     <div>
         <div className='category-table'>
@@ -14,45 +37,24 @@ const AdminCategoryList = () => {
           <th>id</th>
           <th>Categories</th>
           <th>No. of Courses</th>
-          <th>No. of Mentors</th>
-          <th>Status</th>
+          {/* <th>No. of Mentors</th>
+          <th>Status</th> */}
           <th>Action</th>
         </tr>
       </thead>
       <tbody >
-        <tr >
-          <td>1</td>
-          <td>Python</td>
+        {
+        categories.map((category,index)=>(
+        <tr key={index}>
+          <td>{index+1}</td>
+          <td>{category.name}</td>
           <td>04</td>
-          <td>05</td>
-          <td>Active</td>
-          <td><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></td>
+          {/* <td>05</td>
+          <td>Active</td> */}
+          <td><Link to={`/admin/category/${category.id}/`}><Button className='p-1 m-1 ' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>Javascript</td>
-          <td>04</td>
-          <td>06</td>
-          <td>Active</td>
-          <td><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>SQL</td>
-          <td>04</td>
-          <td>06</td>
-          <td>Active</td>
-          <td><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>C#</td>
-          <td>04</td>
-          <td>06</td>
-          <td>Active</td>
-          <td><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></td>
-        </tr>
-        
+
+        ))}
       </tbody>
     </Table>
     </div>

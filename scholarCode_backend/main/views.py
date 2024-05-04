@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics,status
 from .models import Mentor, User, Category, Course, Module, Task
 from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, ModuleSerializer, TaskSerializer
 
@@ -95,6 +95,36 @@ class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer 
 
-class TaskList(generics.ListCreateAPIView):
-    queryset = Task.objects.all()
+# # GET , POST tasks 
+
+# class TaskList(generics.ListCreateAPIView):
+#     queryset = Task.objects.all()
+#     serializer_class = TaskSerializer
+
+# UPDATE, DELETE Tasks
+class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
+    queryset= Task.objects.all()
     serializer_class = TaskSerializer
+
+
+@api_view(['GET','POST'])
+def TaskList(request, course_id):
+    if request.method == 'GET':
+        try:
+            tasks = Task.objects.filter(course=course_id)
+            if not tasks:
+                return Response({"message": "No tasks found for this course."}, status=status.HTTP_404_NOT_FOUND)
+            
+            serializer = TaskSerializer(tasks, many=True)
+            return Response(serializer.data)
+        except Course.DoesNotExist:
+            return Response({"message": "Course does not exist."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    elif request.method == 'POST':
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(course_id=course_id)  # Assign the course ID to the new task
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
