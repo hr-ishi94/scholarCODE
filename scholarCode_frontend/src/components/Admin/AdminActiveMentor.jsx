@@ -18,16 +18,16 @@ const AdminActiveMentor = () => {
 
   const dispatch = useDispatch()
   const {mentor,status, error} = useSelector((state)=>state.Mentor)
-  if(error && error.trim().length>0){
-    toast.error(error)
-  }
-  
   useEffect(()=>{
     dispatch(fetchMentor(params.id))
     if (mentor?.length!==0){
       setMentorDetail(mentor)
     }
   },[dispatch])
+  
+  if(error && error.trim().length>0){
+    toast.error(error)
+  }
   
   if (status === "loading") {
     return <Loader/>;

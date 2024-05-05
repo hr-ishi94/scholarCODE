@@ -86,11 +86,11 @@ class Mentor(CustomUser):
     designation = models.CharField(max_length=100)
     course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
     linkedin_profile = models.CharField(max_length=300)
-    profile_img = models.ImageField(upload_to='mentor/uploads/', null=True)
+    profile_img = models.ImageField(upload_to='mentor/uploads/',blank=True)
     isActive = models.BooleanField(default=True)
     
 class User(CustomUser):
-    designation = models.CharField(max_length=100)
-    profile_img = models.ImageField(upload_to='user/uploads/',null=True)
+    designation = models.CharField(max_length=100,blank=True)
+    profile_img = models.ImageField(upload_to='user/uploads/',blank=True)
     isactive = models.BooleanField(default=True)
 
