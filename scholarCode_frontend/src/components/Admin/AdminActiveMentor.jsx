@@ -1,21 +1,27 @@
 import React,{useEffect, useState} from 'react'
-import {useParams} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Image from 'react-bootstrap/Image'
 import avatar from '../../assets/avatar.jpg'
 import './AdminActiveMentor.css'
-import {Button} from 'react-bootstrap'
+// import {Button} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchMentor } from '../../Redux/Slices/MentorDetailSlice'
+import { fetchMentor, mentorReject, mentorStatus } from '../../Redux/Slices/MentorDetailSlice'
 import { toast } from 'react-toastify'
 import Loader from '../Utils/Loader'
+import { mentorDeleteInstance, mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 
 const AdminActiveMentor = () => {
   const params = useParams()
   const [mentorDetail, setMentorDetail] = useState([])
 
+  const [modalShow, setModalShow] = useState(false);
+  const [deleteModal,setDeleteModal] = useState(false)
+  
   const dispatch = useDispatch()
   const {mentor,status, error} = useSelector((state)=>state.Mentor)
   useEffect(()=>{
@@ -33,6 +39,8 @@ const AdminActiveMentor = () => {
     return <Loader/>;
   }
 
+  
+
   return (
       <div className='mentor-section'>
         <Row>
@@ -43,7 +51,7 @@ const AdminActiveMentor = () => {
           <h6>{mentorDetail.email}</h6>
           <h6>{mentorDetail.designation}</h6>
         </Col>
-        <Col sm={8} >
+        <Col sm={6} >
           <h3>Mentor Details</h3>
           <br />
           
@@ -60,12 +68,12 @@ const AdminActiveMentor = () => {
             <br />
             <label className='m-2'>No. of courses assigned: </label>
             <br />
-            <label className='m-2'>Status:{mentorDetail.isActive?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</label>
+            <label className='m-2'>Status:{mentor.isActive?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</label>
             <br />
-            {mentorDetail.isActive? <Button className='p-2 bg-danger ' > Block </Button>:<Button className='p-2 bg-success ' >Unblock</Button>}
+            <Button className='p-2' variant={mentor.isActive?"danger":"success"} onClick={() => setModalShow(true)}>{mentor.isActive?"Block":"UnBlock"}</Button>
           <br />
           <br />
-          <h4>Courses Assigned</h4>
+          {/* <h4>Courses Assigned</h4>
           <br />
           <ul>
             <li>course1 <Button className='p-1 bg-danger'>X</Button></li>
@@ -73,15 +81,122 @@ const AdminActiveMentor = () => {
             <li>course1 <Button className='p-1 bg-danger'>X</Button></li>
           </ul>
 
-          {/* 
-          <br />
           */}
           
         </Col>
+        <Col sm={2}>
+        <Button className='p-2'variant='outline-danger' onClick={()=>setDeleteModal(true)}>Delete Mentor</Button></Col>
 
         </Row>
+        
+
+      <MentorStatusModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+        mentor = {mentor}
+        id = {params.id}
+      />
+
+      <MentorDeleteModal
+        show = {deleteModal}
+        onHide= {() => setDeleteModal(false)}
+        mentor = {mentor}
+        id = {params.id}
+
+      />
       </div>
+
   )
 }
 
 export default AdminActiveMentor
+
+
+const MentorDeleteModal = (props)=>{
+  
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const deleteMentor = async ()=>{
+    try{
+      const id = props.id
+      const res = await mentorDeleteInstance(id)
+      console.log("mentor deleted successfully")
+      dispatch(mentorReject())
+      navigate('/admin/mentors/')
+      toast.success(`${props.mentor.first_name} have been deleted successfully` )
+   
+    }catch(error){
+      toast.error('Failed to delete the mentor')
+    }
+  }
+  
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton className='p-3'>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Mentor status
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body className='p-3'>
+        <p>
+          Are you sure you want to delete {props.mentor.first_name}?
+        </p>
+      </Modal.Body>
+      <Modal.Footer className='p-2'>
+        <Button className='p-2' variant='warning' onClick={deleteMentor}>Confirm</Button>
+      </Modal.Footer>
+    </Modal>
+
+  )
+}
+
+
+function MentorStatusModal(props) {
+  const id = props.id
+  const status = props.mentor.isActive?"block":"unblock"
+  const dispatch = useDispatch()
+  const changeStatus = async()=>{
+    try{
+      const statusUpdate = {isActive:!props.mentor.isActive}
+      const response = await mentorStatusInstance(id,statusUpdate)
+      console.log("mentorupdate response",response.data)
+      dispatch(mentorStatus())
+      console.log(props.mentor.isActive)
+      props.onHide()
+    }
+    catch(error){
+      console.log("error is updating user status",error)
+    }
+    
+  }
+
+  return (
+    <Modal
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
+    >
+      <Modal.Header closeButton className='p-3'>
+        <Modal.Title id="contained-modal-title-vcenter">
+          Mentor status
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body className='p-3'>
+        <p>
+          Are you sure you want to {status} {props.mentor.first_name}?
+        </p>
+      </Modal.Body>
+      <Modal.Footer className='p-2'>
+        <Button className='p-2' variant='warning' onClick={changeStatus}>Confirm</Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+

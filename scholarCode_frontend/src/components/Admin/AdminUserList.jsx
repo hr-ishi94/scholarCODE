@@ -14,20 +14,22 @@ const AdminUserList = () => {
 
   const dispatch = useDispatch()
   const {users,status,error} = useSelector((state => state.userList)) 
-
-  if(error && error.trim().length > 0){
-    toast.error(error)
-  }
   
   useEffect(()=>{
     dispatch(fetchUsers())
-   
+    
     if(users?.length!==0){
-
+      
       setUserList(users)
     }
-  },[dispatch])
 
+    if(error && error.trim().length > 0){
+      toast.error(error)
+    }
+
+  },[dispatch])
+  
+  
   return (
     
     <div className='user-table'>
@@ -51,7 +53,7 @@ const AdminUserList = () => {
           <td>04</td>
           <td>{user.email}</td>
           <td>{user.isactive?<span className='text-success'>Active</span>:<span className='text-danger'>InActive</span>}</td>
-          <td><Link to={`/admin/user/${user.id}`}><Button className="p-1 m-1"style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
+          <td><Link to={`/admin/user/${user.id}/`}><Button className="p-1 m-1"style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>
 
        )

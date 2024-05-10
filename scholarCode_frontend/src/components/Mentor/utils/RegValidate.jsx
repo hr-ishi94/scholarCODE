@@ -1,13 +1,13 @@
 import * as Yup from 'yup';
 
-const MAX_FILE_SIZE = 10240000; //100KB
-const validFileExtensions = { image: ['jpg', 'gif', 'png', 'jpeg', 'svg', 'webp'] };
+// const MAX_FILE_SIZE = 10240000; //100KB
+// const validFileExtensions = { image: ['jpg', 'gif', 'png', 'jpeg', 'svg', 'webp'] };
 
-function isValidFileType(fileName, fileType) {
-  return fileName && validFileExtensions[fileType].indexOf(fileName.split('.').pop()) > -1;
-}
+// function isValidFileType(fileName, fileType) {
+//   return fileName && validFileExtensions[fileType].indexOf(fileName.split('.').pop()) > -1;
+// }
 
-export const userSchema = Yup.object({
+export const mentorSchema = Yup.object({
 
     first_name :Yup.string().required(),
     last_name :Yup.string().required(),
@@ -20,7 +20,7 @@ export const userSchema = Yup.object({
     .required('Confirm Password is required')
     .oneOf([Yup.ref('password')], 'Passwords must match'),
     
-    
+
 //     profile_img: Yup.mixed()
 //   .required("Required")
 // //   .test("is-valid-type", "Not a valid image type", value => isValidFileType(value && value.name.toLowerCase(), "image"))

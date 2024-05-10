@@ -21,7 +21,7 @@ const Navibar = () => {
               <Nav.Link href="#deets" className='options'> Courses</Nav.Link>
               <Link to={'/mentors/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Mentors</Nav.Link></Link>
               <Nav.Link href="#deets" className='options'>Contact Us</Nav.Link>
-              <Link to={'/user/signup/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link>
+              {/* <Link to={'/user/signup/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link> */}
               <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>
               <NavDropdown title="User" className='options' id="collapsible-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1" className='options'>User Profile</NavDropdown.Item>

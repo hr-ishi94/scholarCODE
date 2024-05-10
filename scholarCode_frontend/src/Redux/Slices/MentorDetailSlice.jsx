@@ -17,6 +17,19 @@ const MentorDetailsSlice = createSlice({
     name:'Mentor',
     initialState:initialstate.mentorDetails,
     reducers:{
+        mentorStatus:(state)=>
+            {
+                state.mentor = {...state.mentor,isActive: !state.mentor.isActive}
+                
+            },
+        mentorApproval:(state)=>{
+            state.mentor = {...state.mentor,is_staff : true}
+        },
+        mentorReject:(state)=>{
+            state.mentor = initialstate.mentorDetails.mentor
+            
+
+        }
 
     },
     extraReducers:(builder)=>{
@@ -38,5 +51,5 @@ const MentorDetailsSlice = createSlice({
 
 })
 
-
+export const {mentorStatus,mentorApproval,mentorReject} = MentorDetailsSlice.actions
 export default MentorDetailsSlice.reducer

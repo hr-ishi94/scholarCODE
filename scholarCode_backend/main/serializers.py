@@ -1,5 +1,39 @@
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from rest_framework.exceptions import AuthenticationFailed
 from .models import *
+
+
+# Admin login serializer
+class AdminLoginSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=255)
+    password = serializers.CharField(max_length = 128, write_only = True)
+    access_token = serializers.CharField(max_length = 255, read_only = True)
+    refresh_token = serializers.CharField(max_length=255, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ['email', 'password', 'access_token', 'refresh_token']
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        request = self.context.get('request')
+        user = authenticate(request, email = email, password = password)
+        
+        if not user :
+            raise AuthenticationFailed("Invalid Credentials")
+        
+        if not user.is_superuser:
+            raise AuthenticationFailed("You are not authorized to login as admin")
+
+        user_token = user.tokens()
+
+        return {
+            'email':user.email,
+            'access_token':str(user_token.get('access')),
+            'refresh_token':str(user_token.get('refresh')),
+        }
 
 
 # mentor model serializer
@@ -30,6 +64,17 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+    
+
+class UserSerializerWithToken(UserSerializer):
+    token =serializers.SerializerMethodField(read_only = True)
+    class Meta:
+        model = User
+        fields = ['id','email','username','password','token']
+
+    def get_token(self,obj):
+        token = RefreshToken.for_user(obj)
+        return str(token.access_token)
     
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:

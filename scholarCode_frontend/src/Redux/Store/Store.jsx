@@ -10,6 +10,7 @@ import CategoryListSlice from "../Slices/CategoryListSlice";
 import CourseDetailsSlice from "../Slices/CourseDetailsSlice";
 import TasksListSlice from "../Slices/TasksListSlice";
 import TaskEditSlice from "../Slices/TaskEditSlice";
+import AdminAuthSlice from "../Slices/AdminAuthSlice";
 
 
 const rootReducer = combineReducers({
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     Categories:CategoryListSlice,
     Tasks:TasksListSlice,
     Task:TaskEditSlice,
+    AdminToken:AdminAuthSlice
 
 })
 

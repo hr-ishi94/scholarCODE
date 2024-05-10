@@ -30,9 +30,9 @@ const Login = () => {
                     
                     <button className='signupButton' type='submit'>Login</button>
                     <br />
-                    <h3 className='text-center p-5 '>or</h3>
+                    {/* <h3 className='text-center p-5 '>or</h3> */}
                 </Form>
-                    <button className='googleSignup'><i class="fa-brands fa-google"></i>  Login with GOOGLE</button>
+                    {/* <button className='googleSignup'><i class="fa-brands fa-google"></i>  Login with GOOGLE</button> */}
                 </div>
 
             </Col>

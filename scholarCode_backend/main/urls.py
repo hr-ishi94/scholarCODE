@@ -6,6 +6,8 @@ urlpatterns = [
     path('api/token/user/',views.UserTokenObtainPairView.as_view(), name='user_token_obtain_pair'),
     path('api/token/mentor/',views.MentorTokenObtainPairView.as_view(), name = 'mentor_token_obtain_pair'),
     path('api/token/admin/',views.AdminTokenObtainPairView.as_view(),name='admin_token_obtain_pair'),
+    # admin login
+    path('admin/login/',views.AdminLogin.as_view(),name="admin_login"),
     # mentors
     path('mentors/', views.MentorList.as_view(),name='mentor_list'),
     path('mentor/<int:pk>/', views.MentorDetail.as_view(),name='mentor_details'),
@@ -21,4 +23,7 @@ urlpatterns = [
     # tasks
     path('tasks/<int:course_id>/',views.TaskList, name= 'TaskList'),
     path('task/edit/<int:pk>/',views.TaskUpdate.as_view(), name= 'Task-Edit'),
+    # activate
+    path('activate/<uidb64>/<token>/',views.ActivateAccountView.as_view(),name='activate')
+
 ]

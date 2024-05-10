@@ -18,6 +18,10 @@ const userDetailsSlice = createSlice({
     name:"user",
     initialState:initialstate.userDetails,
     reducers:{
+        blockUser:(state)=>{
+           state.user= {...state.user,isactive: !state.user.isactive
+           }
+        }
 
     },
     extraReducers:(builder)=>{
@@ -38,4 +42,5 @@ const userDetailsSlice = createSlice({
 
 })
 
+export const {blockUser} = userDetailsSlice.actions
 export default userDetailsSlice.reducer

@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col'
 import avatar from '../../assets/avatar.jpg'
 import Form from 'react-bootstrap/Form';
 import './JoinMentor.css'
-import { userSchema } from './utils/RegValidate';
+import { mentorSchema } from './utils/RegValidate';
 import { Button } from 'react-bootstrap';
 import { MentorRegister } from '../../Axios/MentorServer/MentorServer';
 
@@ -19,7 +19,7 @@ const JoinMentor = () => {
         // profile_img:"",
         password:"",
         confirm_password:"",
-        is_staff:true
+        is_staff:false
         
     })
 
@@ -47,8 +47,8 @@ const JoinMentor = () => {
         
         if(isFormValid){
             try{
-                // setLoading(true)
-                await userSchema.validate(formData,{ abortEarly: false })
+                setLoading(true)
+                await mentorSchema.validate(formData,{ abortEarly: false })
                 const registrationResponse = await MentorRegister(
                     formData
                 )
@@ -61,7 +61,7 @@ const JoinMentor = () => {
             console.log("form data is not validated")
             
         }
-    })
+    },[formData])
 
   return (
     <div className='container text-center p-5'>
@@ -69,11 +69,13 @@ const JoinMentor = () => {
         <h1>Join Mentor Team</h1>
         <Form onSubmit={(e)=> handleSubmit(e) }>
             <Row>   
-                <Col sm = {4}>
-                    <img src={avatar} className='avatar-mentor' alt="" />
-                    <input type="file" id="myFile" value={formData.profile_img} onChange={handleChange} name="profile_img"></input>
+                <Col sm = {3}>
+                    {/* <img src={avatar} className='avatar-mentor' alt="" />
+                    <input type="file" id="myFile" value={formData.profile_img} onChange={handleChange} name="profile_img"></input> */}
                 </Col>
-                <Col sm={8}>
+
+                {(!loading)?
+                    <Col sm={6}>
                     <br />
                     <Form.Group className="mb-3" controlId="formGroupfirst_name">
                         <Form.Control name='first_name' type="first_name" placeholder="Enter First name" size='lg'  value={formData.first_name} onChange={handleChange}/>
@@ -104,6 +106,19 @@ const JoinMentor = () => {
                     
                     
                 </Col>
+                :
+                <Col sm={6}>
+                    <br />
+                    <br />
+                    <br />
+                <h4 className='text-success'>Your Form have been submitted !</h4>
+                <h6>Your profile will be verified by the our Admin and you will recieve an email regarding your confirmation.</h6>                     <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                </Col>}
             </Row>
         </Form>
     </div>

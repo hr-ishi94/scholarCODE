@@ -1,6 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import AbstractUser,PermissionsMixin,AbstractBaseUser,BaseUserManager
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
 class Category(models.Model):
@@ -60,8 +61,8 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, username, password, **extra_fields)
     
 class CustomUser(AbstractBaseUser):
-    first_name = models.CharField(max_length=150)
-    last_name = models.CharField(max_length=150)
+    first_name = models.CharField(max_length=150,blank=True)
+    last_name = models.CharField(max_length=150,blank=True)
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
     is_staff = models.BooleanField(default=False)
@@ -80,6 +81,13 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.email
+    
+    def tokens(self):
+        refresh = RefreshToken.for_user(self)
+        return {
+            'refresh' : str(refresh),
+            'access' : str(refresh.access_token)
+        }
 
 
 class Mentor(CustomUser):

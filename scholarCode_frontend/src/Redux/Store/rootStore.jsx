@@ -58,5 +58,13 @@ export const initialstate = {
         task:[],
         status:'idle',
         error:''
-    }
+    },
+    AdminToken:{
+        access: null,
+        refresh: null,
+        is_authenticated: false,
+        is_superuser: false,
+        type: null,
+        registerSuccess: null,
+    },
 }
