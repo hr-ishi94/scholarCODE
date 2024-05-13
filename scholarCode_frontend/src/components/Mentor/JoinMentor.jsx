@@ -7,6 +7,8 @@ import './JoinMentor.css'
 import { mentorSchema } from './utils/RegValidate';
 import { Button } from 'react-bootstrap';
 import { MentorRegister } from '../../Axios/MentorServer/MentorServer';
+import { toast } from 'react-toastify';
+import { ValidationError } from 'yup';
 
 const JoinMentor = () => {
     const [formData, setFormData] = useState({
@@ -19,11 +21,18 @@ const JoinMentor = () => {
         // profile_img:"",
         password:"",
         confirm_password:"",
-        is_staff:false
+        is_staff:false,
+        isActive:false
         
     })
 
+    const [signupError,setSignupError] = useState('')
     const [loading, setLoading] = useState(false)
+
+    if(signupError){
+        toast.error(signupError)
+        setSignupError("")
+    }
 
     const handleChange = useCallback((e) => {
         const { name, value } = e.target;
@@ -38,6 +47,7 @@ const JoinMentor = () => {
     const handleSubmit = useCallback(
         async (e)=>{
         e.preventDefault();
+        
         const isFormValid = Object.values(formData).every((value) => {
             if (typeof value === 'string') {
                 return value.trim() !== "";
@@ -47,18 +57,32 @@ const JoinMentor = () => {
         
         if(isFormValid){
             try{
-                setLoading(true)
                 await mentorSchema.validate(formData,{ abortEarly: false })
                 const registrationResponse = await MentorRegister(
                     formData
                 )
+                if(registrationResponse.id){
+                        setLoading(true)   
+                    }
+                    
+                if (registrationResponse.data.email){
+                    setSignupError(`Email error:${registrationResponse.data.email[0]}`)
+                    
+                }
+                if (registrationResponse.data.username){
+                    setSignupError(`Username error:${registrationResponse.data.username[0]}`)
+                    
+                }
                 console.log(registrationResponse,'api response')
-            }
+            }   
             catch(error){
-                console.log(error)
+                if (error instanceof ValidationError){
+                    setSignupError(error.message)
+                }
+                throw error
             }
         }else{
-            console.log("form data is not validated")
+            setSignupError("Fill all fields")
             
         }
     },[formData])

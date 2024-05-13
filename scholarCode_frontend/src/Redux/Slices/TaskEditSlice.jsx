@@ -3,9 +3,9 @@ import { initialstate } from "../Store/rootStore";
 import { tasksEditInstance } from "../../Axios/AdminServer/AdminServer";
 
 
-export const fetchTask = createAsyncThunk('admin/course/task',async()=>{
+export const fetchTask = createAsyncThunk('admin/course/task',async(id)=>{
     try{
-        const res = await tasksEditInstance()
+        const res = await tasksEditInstance(id)
         
         return res
     }
@@ -19,6 +19,9 @@ const TaskEditSlice = createSlice({
     name:'TaskEdit',
     initialState:initialstate.tasks,
     reducers:{
+        updateTask:(state,action)=>{
+            state.task = [action.payload]
+        }
 
     },
     extraReducers:(builder)=>{
@@ -41,5 +44,5 @@ const TaskEditSlice = createSlice({
     }
 })
 
-
+export const {updateTask} = TaskEditSlice.actions
 export default TaskEditSlice.reducer

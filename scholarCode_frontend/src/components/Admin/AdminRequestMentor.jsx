@@ -8,7 +8,7 @@ import {useNavigate, useParams} from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import MentorDetailSlice, { fetchMentor, mentorApproval, mentorReject } from '../../Redux/Slices/MentorDetailSlice'
 import { toast } from 'react-toastify'
-import { mentorDeleteInstance, mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
+import { mentorApprovalInstance, mentorDeleteInstance, mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
@@ -109,13 +109,13 @@ const ApprovalModal=(props)=> {
   const handleApproval= async ()=>{
     try{
       const id = props.id
-      const updateStaff = {is_staff:true}
-      const res = await mentorStatusInstance(id,updateStaff)
+      const updateStaff = {is_staff:true,isActive:false}
+      const res = await mentorApprovalInstance(id,updateStaff)
       console.log("new mentor selected")
       dispatch(mentorApproval())
-      console.log("new mentor selecteds")
+      console.log("new mentor selected")
       navigate('/admin/mentors/')
-      toast.success(`${props.mentor.first_name} have been approved`)
+      toast.success(`${props.mentor.first_name} have been approved. Verification mail has been sent to the mentor.`)
     }catch(error){
       toast.error("Failed to accept the mentor")
     }
@@ -141,7 +141,7 @@ const ApprovalModal=(props)=> {
         </p>
       </Modal.Body>
       <Modal.Footer className='p-2'>
-        <Button onClick={handleApproval}>Confirm</Button>
+        <Button onClick={handleApproval} className='p-1' variant='success'>Confirm</Button>
       </Modal.Footer>
     </Modal>
   );

@@ -1,6 +1,6 @@
 from rest_framework import generics,status
 from .models import Mentor, User, Category, Course, Module, Task
-from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, UserSerializerWithToken, TaskSerializer,AdminLoginSerializer
+from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, UserSerializerWithToken, TaskSerializer,AdminLoginSerializer,MentorSerializerWithToken
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -98,6 +98,8 @@ class MentorList(generics.ListCreateAPIView):
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
     
+
+    
 # GET, PUT, DELETE particular mentor
 class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Mentor.objects.all()
@@ -115,6 +117,51 @@ class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
 
+class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
+    queryset =Mentor.objects.all()
+    serializer_class = MentorSerializer
+    
+    def put (self,request, *args, **kwargs):
+        data = request.data
+        try:
+            Mentor.objects.filter(pk = kwargs['pk']).update(is_staff = data['is_staff'],isActive = data['isActive'])
+            mentor = Mentor.objects.get(pk=kwargs['pk'])
+            print(mentor.pk,"dsfsdfdskkkkk")
+            email_subject = 'Mentor Request Accepted'
+            message =render_to_string("mentor_activate.html",{
+                'mentor':mentor,
+                'domain':'127.0.0.1:8000',
+                'uid':urlsafe_base64_encode(force_bytes(mentor.pk)),
+                'token':generate_token.make_token(mentor)
+            })
+            # print(message)
+            email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER,[mentor.email] )
+            email_message.send()
+            serialize = MentorSerializerWithToken(mentor,many=False)
+            return Response(serialize.data)
+        
+        except Exception as e:
+            message = {'details':e}
+            print(e)
+            return Response(message,status=status.HTTP_400_BAD_REQUEST)
+
+class MentorActivateAccountView(View):
+    def get(self,request,uidb64,token):
+        try:
+            uid= force_text(urlsafe_base64_decode(uidb64))
+            mentor = Mentor.objects.get(pk = uid)
+        except (TypeError, ValueError, OverflowError, Mentor.DoesNotExist):
+            mentor = None
+
+        if mentor is not None and generate_token.check_token(mentor,token):
+            mentor.isActive = True
+            mentor.save()
+            message = {"details": "Account is activated..."}
+            return HttpResponse("Activation success.You can login to your account now")
+        else:
+            return HttpResponse("Activation Failed.")
+
+
 # GET, POST users
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -123,7 +170,9 @@ class UserList(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data
+        
         try:
+
             user = User.objects.create(username = data['username'],email=data['email'],password= make_password(data['password']),isactive=data['isactive'])
             email_subject = 'Activate Your Account'
             message = render_to_string("activate.html",{
@@ -138,13 +187,12 @@ class UserList(generics.ListCreateAPIView):
             serialize = UserSerializerWithToken(user,many = False)
             return Response(serialize.data)
         
-        except Exception as e:
-            message = {'details':e}
-            print(e)
+        except ValueError:
+            message = {'details':ValueError}
+            print(message)
             return Response(message,status=status.HTTP_400_BAD_REQUEST)
 
-        
-        
+
 class ActivateAccountView(View):
     def get(self, request, uidb64, token):
         try:
@@ -203,12 +251,25 @@ class CoursesList(generics.ListCreateAPIView):
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
+
 #GET, PUT, DELETE particular Course
 class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer 
     # authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    def put(self,request,*args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data = request.data, partial =True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            print(serializer.error)
+            return Response(serializer.error,status=status.HTTP_400_BAD_REQUEST)
+
+
+    
 
 
 
@@ -218,6 +279,15 @@ class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TaskSerializer
     # authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    def put(self,request,*args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data = request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            print(serializer.error)
+            return Response (serializer.error,status=status.HTTP_400_BAD_REQUEST)
 
 
 

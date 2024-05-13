@@ -67,6 +67,21 @@ export const mentorStatusInstance = async (id,updateMentor)=>{
 
 }
 
+export const mentorApprovalInstance = async(id,updateMentor)=>{
+    try{
+        const res = await axiosInstance.put(`admin/mentor/${id}`,updateMentor)
+        if (res.status === 200 || res.status ===201){
+            return res.data
+        }else{
+            console.log("error while approving mentor")
+        }
+    }catch(error){
+        console.log(error.message,"axios Instance error")
+        throw error
+    }
+
+}
+
 export const mentorDeleteInstance = async (id)=>{
     try{
         const res = await axiosInstance.delete(`mentor/${id}`)
@@ -87,6 +102,12 @@ export const coursesListInstance = async(id)=>{
         return res.data
     }
 }
+export const coursesAddInstance = async(newCourse)=>{
+    const res = await axiosInstance.post('courses/',newCourse)
+    if (res.status === 200 || res.status ==201){
+        return res.data
+    }
+}
 
 export const courseDetails= async (id)=>{
     const res = await axiosInstance.get(`course/${id}/`)
@@ -95,7 +116,18 @@ export const courseDetails= async (id)=>{
         return res.data;
 
     }
-}   
+}
+
+export const courseUpdateInstance  = async (id,courseData) =>{
+    try{
+        const res = await axiosInstance.put(`/course/${id}/`,courseData)
+        if (res.status == 200 || res.status == 201){
+            return res.data
+        }
+    }catch(error){
+        console.log("Error occured while updating data",error)
+    }
+}
 
 export const categoryListInstance = async(id)=>{
     const res = await axiosInstance.get('categories/')
@@ -106,7 +138,8 @@ export const categoryListInstance = async(id)=>{
 
 export const categoryAddInstance = async(newCategory)=>{
     const res = await axiosInstance.post('categories/',newCategory)
-    if (res.status === 200){
+    console.log(res)
+    if (res.status === 200 || res.status === 201){
         return res.data
     }
 }
@@ -127,6 +160,25 @@ export const tasksListInstance = async(courseId)=>{
         return res.data
     }
 }
+export const addTaskInstance = async(courseId,taskData)=>{
+
+    const res = await axiosInstance.post(`tasks/${courseId}/`,taskData)
+    if (res.status === 200 || res.status ==201){
+        return res.data
+    }
+}
+
+export const updateTaskInstance = async(taskId,taskData)=>{
+    try{
+
+        const res = await axiosInstance.put(`/task/edit/${taskId}/`,taskData)
+        if (res.status==200|| res.status==201){
+            return res.data    
+        }
+    }catch(error){
+        throw error
+    }
+}
 
 export const tasksEditInstance= async (id)=>{
     const res = await axiosInstance.get(`task/edit/${id}/`)
@@ -136,3 +188,18 @@ export const tasksEditInstance= async (id)=>{
 
     }
 }   
+
+export const taskDeleteInstance = async (id)=>{
+    try{
+        const res = await axiosInstance.delete(`task/edit/${id}`)
+        if (res.status === 204){
+            return true
+        }else{
+            throw new Error("Failed to delete mentor")
+        }
+        
+    }catch(error){
+        console.log("Failed to delete task-instance",error)
+    }
+
+}

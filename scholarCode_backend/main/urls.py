@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/token/admin/',views.AdminTokenObtainPairView.as_view(),name='admin_token_obtain_pair'),
     # admin login
     path('admin/login/',views.AdminLogin.as_view(),name="admin_login"),
+    path('admin/mentor/<int:pk>',views.AdminMentorApproval.as_view(),name="admin_mentor_approval"),
     # mentors
     path('mentors/', views.MentorList.as_view(),name='mentor_list'),
     path('mentor/<int:pk>/', views.MentorDetail.as_view(),name='mentor_details'),
@@ -24,6 +25,7 @@ urlpatterns = [
     path('tasks/<int:course_id>/',views.TaskList, name= 'TaskList'),
     path('task/edit/<int:pk>/',views.TaskUpdate.as_view(), name= 'Task-Edit'),
     # activate
-    path('activate/<uidb64>/<token>/',views.ActivateAccountView.as_view(),name='activate')
+    path('activate/<uidb64>/<token>/',views.ActivateAccountView.as_view(),name='activate'),
+    path('activate/mentor/<uidb64>/<token>/',views.MentorActivateAccountView.as_view(),name='activate_mentor')
 
 ]

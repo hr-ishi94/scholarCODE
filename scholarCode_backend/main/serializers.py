@@ -1,7 +1,10 @@
+import cloudinary.uploader
+from django.utils import timezone
 from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import AuthenticationFailed
 from .models import *
+import cloudinary
 
 
 # Admin login serializer
@@ -65,6 +68,16 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+class MentorSerializerWithToken(MentorSerializer):
+    token = serializers.SerializerMethodField(read_only = True)
+    class Meta:
+        model = Mentor
+        fields = ['id','is_staff','isActive','token']
+
+    def get_token(self,obj):
+        token = RefreshToken.for_user(obj)
+        return str(token.access_token)
+
 
 class UserSerializerWithToken(UserSerializer):
     token =serializers.SerializerMethodField(read_only = True)
@@ -81,11 +94,36 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+    
+
 class CourseSerializer(serializers.ModelSerializer):
-    category= CategorySerializer()
+    category= CategorySerializer(read_only = True)
+    published_on = serializers.DateTimeField(default=timezone.now, read_only=True)
+    thumbnail = serializers.ImageField(use_url=True, required=False)
+
     class Meta:
         model = Course
         fields = '__all__'
+
+    def create(self,validated_data):
+        thumbnail_file = validated_data.get('thumbnail',None)
+        if thumbnail_file:
+            upload_file = cloudinary.uploader.upload(thumbnail_file)
+            validated_data['thumbnail']= upload_file['secure_url']
+            print(upload_file)
+
+        category_data = validated_data.pop('category')
+        category_serializer = CategorySerializer(data=category_data)
+
+        if category_serializer.is_valid():
+            category_instance = category_serializer.save()
+        else:
+            raise serializers.ValidationError( category_serializer.errors)
+        
+        course_instance= Course.objects.create(category = category_instance,**validated_data)
+
+        return course_instance
+    
 
 class ModuleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -93,8 +131,6 @@ class ModuleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TaskSerializer(serializers.ModelSerializer):
-    course = CourseSerializer()
-    module = ModuleSerializer()
     class Meta:
         model = Task
         fields = '__all__'

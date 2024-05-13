@@ -1,7 +1,9 @@
 from datetime import datetime
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser,PermissionsMixin,AbstractBaseUser,BaseUserManager
 from rest_framework_simplejwt.tokens import RefreshToken
+
 
 # Create your models here.
 class Category(models.Model):
@@ -15,12 +17,17 @@ class Course(models.Model):
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE,related_name='courses')
     price = models.IntegerField()
-    published_on = models.DateField(default=datetime.now , blank = True)
-    thumbnail = models.ImageField(upload_to='course/uploads/')
+    published_on = models.DateTimeField(default=datetime.now, blank = True)
+    thumbnail = models.ImageField(upload_to='course/uploads/',blank=True)
     status = models.BooleanField(default=True)
 
     def __str__(self):
         return self.name
+    
+    def save(self, *args, **kwargs):
+        if not self.published_on:
+            self.published_on = timezone.now().date()  # Convert datetime to date
+        super().save(*args, **kwargs)
 
     
 class Module(models.Model):
@@ -33,7 +40,7 @@ class Module(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=500)
     course = models.ForeignKey(Course,on_delete=models.CASCADE,related_name='tasks')
-    module = models.ForeignKey(Module,on_delete=models.CASCADE,related_name='tasks')
+    module = models.CharField(max_length=150)
 
     def __str__(self):
         return self.name

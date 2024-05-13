@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 import { userSchema } from './utils/signUpValidate';
 import { UserRegister } from '../../Axios/UserServer/UserServer';
 import logo from '../../assets/logo.png'
+import { toast } from 'react-toastify';
+import { ValidationError } from 'yup';
 
 const SignUp = () => {
     const [formData, setformData] = useState({
@@ -19,6 +21,13 @@ const SignUp = () => {
         isactive:false
     })
     const [loading, setLoading] = useState(false)
+    const [signupError,setSignupError] = useState("")
+
+    if (signupError){
+        toast.error(signupError)
+        setSignupError("")
+    }
+
     const handleChange= useCallback((e)=>{
         const {name,value} = e.target
         setformData((prevData)=>({
@@ -39,19 +48,25 @@ const SignUp = () => {
             
             if(isFormValid){
                 try
-                {setLoading(true)
-                await userSchema.validate(formData,{abortEarly:false})
-                const registerationResponse = await UserRegister(
-                    formData
-                )
-                console.log("reg response: ",registerationResponse)
+                {
+                    await userSchema.validate(formData,{abortEarly:false})
+                    const registerationResponse = await UserRegister(
+                        formData
+                    )
+                    // console.log("reg response: ",registerationResponse)
+                    if (registerationResponse.id){
+
+                        setLoading(true)
+                    }
                 }catch(error){
-                    console.log(error)
+                    if (error instanceof ValidationError){
+                        setSignupError(error.message)
+                    }
                 }
                
             }
             else{
-                console.log("Form data is not validated")
+                setSignupError("All fields required!")
             }
             
         },[formData])

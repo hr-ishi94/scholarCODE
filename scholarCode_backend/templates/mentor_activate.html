@@ -1,0 +1,9 @@
+{% autoescape off %}
+Hi {{ mentor.name }},
+You have been successfully selected as mentor of scholarCODE
+
+Please click the link below to verify your account:
+
+http://{{ domain }}{% url 'activate_mentor' uidb64=uid token=token %}
+
+{% endautoescape %}

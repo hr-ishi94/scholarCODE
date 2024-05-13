@@ -14,11 +14,12 @@ export const MentorRegister = async({first_name,last_name, email, username, desi
     }
     try{
         const response = await axiosInstance.post('/mentors/',newMentor)
+        console.log(response)
         return response.data
     }
     catch(error){
-        if (error.response.data.error){
-            return error.response.data.error
+        if (error.response.data){
+            return error.response
         }else{
             return error
         }

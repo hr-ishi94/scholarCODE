@@ -19,6 +19,9 @@ const CoursesSlice = createSlice({
     name:'Courses',
     initialState:initialstate.coursesList,
     reducers:{
+        addCourse :(state,action)=>{
+            state.courses=[...state.courses,action.payload]
+        }
 
     },
     extraReducers:(builder)=>{
@@ -41,5 +44,5 @@ const CoursesSlice = createSlice({
     }
 })
 
-
+export const {addCourse} = CoursesSlice.actions
 export default CoursesSlice.reducer

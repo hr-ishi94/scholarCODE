@@ -12,9 +12,9 @@ export const UserRegister = async({username,email,password,isactive})=>{
         return response.data
     }
     catch(error){
-        if(error.response.data.error){
-            console.log()
-            return error.response.data.error
+        if(error){
+            console.log("error: ",error)
+            return error.response.data
         }else{
             return error
         }

@@ -3,7 +3,7 @@ import './AdminCategoryList.css'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button'
 import { useDispatch, useSelector } from 'react-redux';
-import { addNewCategory, fetchCategoryList } from '../../Redux/Slices/CategoryListSlice';
+import { addCategoryName, addNewCategory, fetchCategoryList } from '../../Redux/Slices/CategoryListSlice';
 import { Link } from 'react-router-dom';
 import Loader from '../Utils/Loader';
 import  Row  from 'react-bootstrap/Row';
@@ -22,15 +22,12 @@ const AdminCategoryList = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-
   
-  
-  // console.log(status)
+ 
 
   
   useEffect(()=>{
     try{
-
       dispatch(fetchCategoryList())
     }
     catch(error){
@@ -89,7 +86,7 @@ export default AdminCategoryList
 
 
 const AddCategoryModal = ({handleClose,show})=> {
-  const dispatch = useDispatch()
+
   const [newCategory, setNewCategory] = useState("")
   const handleChange = (e)=>{
     setNewCategory(e.target.value)
@@ -99,14 +96,27 @@ const AddCategoryModal = ({handleClose,show})=> {
   const addCategory = async (e)=>{
     e.preventDefault()
     try{
+      
       const data = {name:newCategory}
       const res = await categoryAddInstance(data)
-      console.log(newCategory,res)
-      toast.success(`${newCategory} successfully added`)
-      dispatch(addNewCategory(data))
-      handleClose()
+      console.log(res,'resfsf')
+      if (res){
+        dispatch(addCategoryName(res))
+        toast.success(`${res.name} have successfully added`)
+        handleClose()
+      
+      }
+      else{
+        
+        throw new Error('Empty response from server')
+        console.log(error)
+
+      }
+
     }catch(error){
+
       toast.error("Error in adding category",error)
+
     }
   }
  
