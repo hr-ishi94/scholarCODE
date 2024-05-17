@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { fetchMentors } from '../../Redux/Slices/MentorsSlice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import Loader from '../Utils/Loader.jsx';
 
  
 
@@ -41,6 +42,11 @@ const AdminMentorList = () => {
     }
     
   }, [dispatch])
+
+  if (status === "loading") {
+    return <Loader />;
+  }
+
   
   return (
     <>
@@ -62,7 +68,7 @@ const AdminMentorList = () => {
         </tr>
       </thead>
       <tbody >
-        {MentorsList.filter((mentor)=>mentor.is_staff===true).map((activeMentor,index)=>(
+        {mentors.filter((mentor)=>mentor.is_staff===true).sort((a,b)=>a.id-b.id).map((activeMentor,index)=>(
 
 
         <tr key={activeMentor.id}>
@@ -91,7 +97,7 @@ const AdminMentorList = () => {
             </tr>
           </thead>
           <tbody >
-            {MentorsList.filter((mentor)=>mentor.is_staff===false).map((mentorRequest,index)=>(
+            {mentors.filter((mentor)=>mentor.is_staff === false).sort((a,b)=>a.id - b.id).map((mentorRequest,index)=>(
 
 
             <tr  key={mentorRequest.id}>

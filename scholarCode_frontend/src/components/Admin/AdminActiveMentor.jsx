@@ -5,12 +5,11 @@ import Col from 'react-bootstrap/Col'
 import Image from 'react-bootstrap/Image'
 import avatar from '../../assets/avatar.jpg'
 import './AdminActiveMentor.css'
-// import {Button} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMentor, mentorReject, mentorStatus } from '../../Redux/Slices/MentorDetailSlice'
 import { toast } from 'react-toastify'
 import Loader from '../Utils/Loader'
-import { mentorDeleteInstance, mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
+import { mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
@@ -20,10 +19,10 @@ const AdminActiveMentor = () => {
   const [mentorDetail, setMentorDetail] = useState([])
 
   const [modalShow, setModalShow] = useState(false);
-  const [deleteModal,setDeleteModal] = useState(false)
   
   const dispatch = useDispatch()
-  const {mentor,status, error} = useSelector((state)=>state.Mentor)
+  const {mentor, status, error} = useSelector((state)=>state.Mentor)
+  
   useEffect(()=>{
     dispatch(fetchMentor(params.id))
     if (mentor?.length!==0){
@@ -31,9 +30,6 @@ const AdminActiveMentor = () => {
     }
   },[dispatch])
   
-  if(error && error.trim().length>0){
-    toast.error(error)
-  }
   
   if (status === "loading") {
     return <Loader/>;
@@ -47,24 +43,24 @@ const AdminActiveMentor = () => {
         <Col sm={4} className='text-center'>
           <Image src={avatar} className='w-50 mx-3'roundedCircle />
           <br />
-          <h4>{mentorDetail.username}</h4>
-          <h6>{mentorDetail.email}</h6>
-          <h6>{mentorDetail.designation}</h6>
+          <h4>{mentor.username}</h4>
+          <h6>{mentor.email}</h6>
+          <h6>{mentor.designation}</h6>
         </Col>
         <Col sm={6} >
           <h3>Mentor Details</h3>
           <br />
           
             
-            <label className='m-2'>First name: {mentorDetail.first_name}</label>
+            <label className='m-2'>First name: {mentor.first_name}</label>
             <br />
             <label className='m-2'>Last name: {mentor.last_name}</label>
             <br />
-            <label className='m-2'>Email: {mentorDetail.email}</label>
+            <label className='m-2'>Email: {mentor.email}</label>
             <br />
-            <label className='m-2'>Designation: {mentorDetail.designation}</label>
+            <label className='m-2'>Designation: {mentor.designation}</label>
             <br />
-            <label className='m-2'>LinkedIn ID: {mentorDetail.linkedin_profile}</label>
+            <label className='m-2'>LinkedIn ID: {mentor.linkedin_profile}</label>
             <br />
             <label className='m-2'>No. of courses assigned: </label>
             <br />
@@ -84,9 +80,7 @@ const AdminActiveMentor = () => {
           */}
           
         </Col>
-        <Col sm={2}>
-        <Button className='p-2'variant='outline-danger' onClick={()=>setDeleteModal(true)}>Delete Mentor</Button></Col>
-
+        
         </Row>
         
 
@@ -96,14 +90,6 @@ const AdminActiveMentor = () => {
         mentor = {mentor}
         id = {params.id}
       />
-
-      <MentorDeleteModal
-        show = {deleteModal}
-        onHide= {() => setDeleteModal(false)}
-        mentor = {mentor}
-        id = {params.id}
-
-      />
       </div>
 
   )
@@ -112,49 +98,6 @@ const AdminActiveMentor = () => {
 export default AdminActiveMentor
 
 
-const MentorDeleteModal = (props)=>{
-  
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
-  const deleteMentor = async ()=>{
-    try{
-      const id = props.id
-      const res = await mentorDeleteInstance(id)
-      console.log("mentor deleted successfully")
-      dispatch(mentorReject())
-      navigate('/admin/mentors/')
-      toast.success(`${props.mentor.first_name} have been deleted successfully` )
-   
-    }catch(error){
-      toast.error('Failed to delete the mentor')
-    }
-  }
-  
-  return (
-    <Modal
-      {...props}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
-    >
-      <Modal.Header closeButton className='p-3'>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Mentor status
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body className='p-3'>
-        <p>
-          Are you sure you want to delete {props.mentor.first_name}?
-        </p>
-      </Modal.Body>
-      <Modal.Footer className='p-2'>
-        <Button className='p-2' variant='warning' onClick={deleteMentor}>Confirm</Button>
-      </Modal.Footer>
-    </Modal>
-
-  )
-}
 
 
 function MentorStatusModal(props) {

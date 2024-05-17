@@ -10,6 +10,7 @@ import { toast } from 'react-toastify'
 import { userstatusInstance } from '../../Axios/AdminServer/AdminServer'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Loader from '../Utils/Loader'
 
 const AdminUser = () => {
 
@@ -33,23 +34,15 @@ const AdminUser = () => {
     useEffect(()=>{
      
       dispatch(fetchUser(params.id))
-      if (user?.length !== 0){
-        setUserDetail(user)
-      }
+      
     },[dispatch])
 
 
-
-    const handleBlock = async () => {
-      try {
-      const updateData = { isactive: !user.isactive }; 
-      const updatedUser = await userstatusInstance(params.id, updateData); // Pass update data to userstatusInstance
-      console.log("User status updated successfully:", updatedUser);
-        dispatch(blockUser(params.id)); // Dispatch the blockUser action to update Redux state
-      } catch (error) {
-        console.error("Error updating user status:", error); // Log any errors that occur during the update process
-      }
-    };
+    
+    if (status === "loading") {
+      return <Loader />;
+    }
+  
 
 
   return (

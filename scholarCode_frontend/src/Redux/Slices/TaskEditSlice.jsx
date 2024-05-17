@@ -19,10 +19,14 @@ const TaskEditSlice = createSlice({
     name:'TaskEdit',
     initialState:initialstate.tasks,
     reducers:{
-        updateTask:(state,action)=>{
-            state.task = [action.payload]
-        }
+        updateTask:(state, action)=>{
+            state.task = action.payload
+        },
 
+        editTask:(state, action)=>{
+            state.task = action.payload
+        }
+        
     },
     extraReducers:(builder)=>{
         builder
@@ -34,15 +38,15 @@ const TaskEditSlice = createSlice({
             state.status = 'succeeded'
             state.task = action.payload
             state.error=''
-
+            
         })
         .addCase(fetchTask.rejected,(state,action)=>{
             state.status = 'failed'
             state.error = action.error.message
-
+            
         })
     }
 })
 
-export const {updateTask} = TaskEditSlice.actions
+export const {updateTask, editTask} = TaskEditSlice.actions
 export default TaskEditSlice.reducer

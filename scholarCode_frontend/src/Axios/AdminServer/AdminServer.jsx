@@ -1,4 +1,4 @@
-import { axiosInstance } from "../Utils/AxiosInstances";
+import { axiosFormInstance, axiosInstance } from "../Utils/AxiosInstances";
 
 export const usersListInstance = async()=>{
     const res = await axiosInstance.get('users/')
@@ -103,9 +103,17 @@ export const coursesListInstance = async(id)=>{
     }
 }
 export const coursesAddInstance = async(newCourse)=>{
-    const res = await axiosInstance.post('courses/',newCourse)
-    if (res.status === 200 || res.status ==201){
-        return res.data
+    try{
+
+        const res = await axiosFormInstance.post('courses/',newCourse)
+        if (res.status === 200 || res.status ==201){
+            return res.data
+        }
+    }catch(error){
+        if (error.response){
+            console.log('error:',error.response.data)
+            return error
+        }
     }
 }
 
@@ -120,12 +128,13 @@ export const courseDetails= async (id)=>{
 
 export const courseUpdateInstance  = async (id,courseData) =>{
     try{
-        const res = await axiosInstance.put(`/course/${id}/`,courseData)
+        const res = await axiosFormInstance.put(`/course/${id}/`,courseData)
         if (res.status == 200 || res.status == 201){
             return res.data
         }
     }catch(error){
         console.log("Error occured while updating data",error)
+        return error
     }
 }
 
@@ -137,10 +146,16 @@ export const categoryListInstance = async(id)=>{
 }
 
 export const categoryAddInstance = async(newCategory)=>{
-    const res = await axiosInstance.post('categories/',newCategory)
-    console.log(res)
-    if (res.status === 200 || res.status === 201){
-        return res.data
+    try{
+        const res = await axiosInstance.post('categories/',newCategory)
+
+        if (res.status === 200 || res.status === 201){
+            return res.data
+        }
+    }catch(error){
+        if(error.response.data){
+            return error.response.data
+        }
     }
 }
 

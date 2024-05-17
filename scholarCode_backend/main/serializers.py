@@ -39,6 +39,36 @@ class AdminLoginSerializer(serializers.ModelSerializer):
         }
 
 
+class UserLoginSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length = 255)
+    password = serializers.CharField(max_length = 128, write_only = True)
+    access_token = serializers.CharField(max_length = 255, read_only = True)
+    refresh_token = serializers.CharField(max_length = 255, read_only = True)
+
+    class Meta :
+        model = User
+        fields = ['email','password', 'access_token','refresh_token']
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        request = attrs.get('request')
+        user = authenticate(request, email= email , password = password)
+
+        if not user:
+            raise AuthenticationFailed("invalid Credentials")
+        
+        if user.is_superuser:
+            raise AuthenticationFailed("You are not authorized to login as user")
+        
+        user_token = user.tokens()
+
+        return {
+            'email':user.email,
+            'access_token':str(user_token.get('access')),
+            'refresh_token':str(user_token.get('refresh'))
+        }
+
 # mentor model serializer
 class MentorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -61,6 +91,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     # user password encryption
     def create(self, validated_data):
+        email = validated_data['email']
         password = validated_data.pop('password',None)
         instance = self.Meta.model(**validated_data)
         if password:
@@ -97,7 +128,7 @@ class CategorySerializer(serializers.ModelSerializer):
     
 
 class CourseSerializer(serializers.ModelSerializer):
-    category= CategorySerializer(read_only = True)
+    # category= CategorySerializer(read_only = True)
     published_on = serializers.DateTimeField(default=timezone.now, read_only=True)
     thumbnail = serializers.ImageField(use_url=True, required=False)
 
@@ -105,24 +136,25 @@ class CourseSerializer(serializers.ModelSerializer):
         model = Course
         fields = '__all__'
 
-    def create(self,validated_data):
-        thumbnail_file = validated_data.get('thumbnail',None)
-        if thumbnail_file:
-            upload_file = cloudinary.uploader.upload(thumbnail_file)
-            validated_data['thumbnail']= upload_file['secure_url']
-            print(upload_file)
+    # def create(self,validated_data):
+    #     thumbnail_file = validated_data.get('thumbnail',None)
+    #     print(validated_data)
+    #     if thumbnail_file:
+    #         upload_file = cloudinary.uploader.upload(thumbnail_file)
+    #         validated_data['thumbnail']= upload_file['secure_url']
+    #         print(upload_file)
 
-        category_data = validated_data.pop('category')
-        category_serializer = CategorySerializer(data=category_data)
+    #     category_data = validated_data.pop('category')
+    #     category_serializer = CategorySerializer(data=category_data)
 
-        if category_serializer.is_valid():
-            category_instance = category_serializer.save()
-        else:
-            raise serializers.ValidationError( category_serializer.errors)
+    #     if category_serializer.is_valid():
+    #         category_instance = category_serializer.save()
+    #     else:
+    #         raise serializers.ValidationError( category_serializer.errors)
         
-        course_instance= Course.objects.create(category = category_instance,**validated_data)
+    #     course_instance= Course.objects.create(category = category_instance,**validated_data)
 
-        return course_instance
+    #     return course_instance
     
 
 class ModuleSerializer(serializers.ModelSerializer):

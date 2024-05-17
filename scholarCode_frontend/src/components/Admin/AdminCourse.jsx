@@ -7,13 +7,15 @@ import samplecourse from '../../assets/samplecourse.png'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { blockCourse, fetchCourseDetails, updateCourse } from '../../Redux/Slices/CourseDetailsSlice'
-import { addTask, fetchTasksList } from '../../Redux/Slices/TasksListSlice'
+import { addTask, deleteTask, fetchTasksList } from '../../Redux/Slices/TasksListSlice'
 import CategoryListSlice from '../../Redux/Slices/CategoryListSlice';
 import Modal  from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form'
 import { addTaskInstance, courseUpdateInstance, taskDeleteInstance, updateTaskInstance } from '../../Axios/AdminServer/AdminServer'
 import { fetchTask, updateTask } from '../../Redux/Slices/TaskEditSlice'
 import { toast } from 'react-toastify'
+import Loader from '../Utils/Loader'
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
 
 const AdminCourse = () => {
     const style = {
@@ -28,9 +30,7 @@ const AdminCourse = () => {
     const dispatch = useDispatch()
     const courseSelector= useSelector((state)=>state.Course)
     const taskSelector = useSelector((state)=>state.Tasks)
-    
-    const [course, setCourse] = useState([])
-    const [tasksList,setTasksList] =useState([])
+
 
     const [coursePutShow,setCoursePutShow] = useState(false)
     const [taskPutShow,setTaskPutShow] = useState(false)
@@ -64,19 +64,15 @@ const AdminCourse = () => {
 
     useEffect(()=>{ 
         dispatch(fetchCourseDetails(params.id))
-        if(courseSelector.course?.length!==0){
-            setCourse(courseSelector.course)
-        }
+        
         dispatch(fetchTasksList(params.id))
-        if(taskSelector.tasks?.length!==0){
-            setTasksList(taskSelector.tasks)
-        }
+        
     },[dispatch])
 
 
     const distinctModulesSet = new Set()
 
-    tasksList.filter((task)=>{
+    taskSelector.tasks.filter((task)=>{
             if(!distinctModulesSet.has(task.module)){
             distinctModulesSet.add(task.module)
             return true
@@ -88,31 +84,37 @@ const AdminCourse = () => {
     // array with all distinct modules
     const modulesArray = [...distinctModulesSet]
     modulesArray.sort();
+
+    if (courseSelector.status === "loading" || taskSelector.status === 'loading') {
+      return <Loader  />;
+    }
+  
+
   return (
     <div style={style}>
     <Row>
         <Col sm={3} className='text-center'>
             
-            <Image src={course.thumbnail?course.thumbnail:samplecourse} className='w-50 mx-3 rounded' />
+            <Image src={courseSelector.course.thumbnail?courseSelector.course.thumbnail:samplecourse} className='w-50 mx-3 rounded' />
             <br />
             <br />
-            <h4>{course.name}</h4>
+            <h4>{courseSelector.course.name}</h4>
             {/* <h6>Published on: {course.published_on} </h6> */}
             
         </Col>
         <Col sm={7} >
             <h3>Course Details</h3>
             <br />
-                <h5 className='m-2'>{course.name} </h5>
-                <h6 className='m-2'>{course.description}</h6>
+                <h5 className='m-2'>{courseSelector.course.name} </h5>
+                <h6 className='m-2'>{courseSelector.course.description}</h6>
                 <br />
                 <h6 className='m-2'>Total Modules: {modulesArray.length}</h6>
-                <h6 className='m-2'>Price: ₹{course.price}* only</h6>
-                <h6 className='m-2'>Course status: {course.status?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
+                <h6 className='m-2'>Price: ₹{courseSelector.course.price}* only</h6>
+                <h6 className='m-2'>Course status: {courseSelector.course.status?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
                 <br />
-                <Button className="p-2" variant={course.status?"danger":"success"} onClick={handleStatusShow}>{course.status?"Block Course":"Unblock Course"}</Button>
+                <Button className="p-2" variant={courseSelector.course.status?"danger":"success"} onClick={handleStatusShow}>{courseSelector.course.status?"Block Course":"Unblock Course"}</Button>
                 <br />
-                <CourseStatusModal handleStatusClose={handleStatusClose} statusShow={statusShow} course={course} id ={params.id} />
+                <CourseStatusModal handleStatusClose={handleStatusClose} statusShow={statusShow} course={courseSelector.course} id ={params.id} />
                 <br />
                 <Row>
                     <Col>
@@ -120,7 +122,7 @@ const AdminCourse = () => {
                     </Col>
                     <Col>
                         <Button className='p-1' variant='warning' onClick={handleNewTaskShow}>Add Task</Button>
-                        <NewTaskModal handleNewTaskClose={handleNewTaskClose} addTaskShow={addTaskShow} course={course} id = {params.id} />
+                        <NewTaskModal handleNewTaskClose={handleNewTaskClose} addTaskShow={addTaskShow} course={courseSelector.course} id = {params.id} />
                     </Col>
 
                 </Row>
@@ -132,7 +134,7 @@ const AdminCourse = () => {
                             {taskSelector.tasks.filter((task)=>task.module==module).sort((a, b) => a.id - b.id).map((task)=>(
                                 
                                 <ul key={task.id}>
-                                <li >{task.name}  <i key={task.id} className="mx-2 fa-regular text-success fa-pen-to-square" onClick={()=>handleTaskEditShow(task)}></i><i className="text-secondary fa-solid fa-trash" onClick={()=>handleTaskDeleteshow(task)}></i></li>
+                                <li >{task.name}  <i className="mx-2 fa-regular text-success fa-pen-to-square" onClick={()=>handleTaskEditShow(task)}></i><i className="text-secondary fa-solid fa-trash" onClick={()=>handleTaskDeleteshow(task)}></i></li>
                                 </ul>
                             
                         ))} 
@@ -140,7 +142,7 @@ const AdminCourse = () => {
                     </div>
                     
                 ))}
-                <TaskUpdateModal handleTaskEditClose={handleTaskEditClose} taskPutShow={taskPutShow} task={currTask} />
+                <TaskUpdateModal handleTaskEditClose={handleTaskEditClose} taskPutShow={taskPutShow} task={currTask} id = {params.id}/>
                 <TaskDeleteModal handleTaskDeleteClose={handleTaskDeleteClose} taskDeleteShow={taskDeleteShow} task={currTask}/>                       
                 <br />
                 {/* <h5 className='m-2'>Mentors assigned:</h5>
@@ -155,7 +157,7 @@ const AdminCourse = () => {
         <Col sm={2}>
                 
         <Button className='p-1 m-1' variant='warning' onClick={handleCourseShow}>Update course</Button>
-        <CourseUpdateModal coursePutShow={coursePutShow} handleCourseClose={handleCourseClose} course={course} id= {params.id}/>
+        <CourseUpdateModal coursePutShow={coursePutShow} handleCourseClose={handleCourseClose} course={courseSelector.course} id= {params.id}/>
         </Col>
     </Row>
     </div>
@@ -174,7 +176,6 @@ const CourseUpdateModal = ({coursePutShow,handleCourseClose,id})=>{
         description: course ? course.description : '',
         category: course ? course.category : {},
         price: course ? course.price : '',
-        // thumbnail:course.thumbnail
       });
      
       const handleChange = (e)=>{
@@ -194,44 +195,54 @@ const CourseUpdateModal = ({coursePutShow,handleCourseClose,id})=>{
         }
         
       }
+
+      const handleFileChange = (e)=>{
+        
+        setNewCourse((prevData)=>({
+          ...prevData,
+          thumbnail:e.target.files[0]
+        }))
+    
+      }
+
+      
       const categoriesSelector = useSelector((state)=>state.Categories)
-   
       const dispatch = useDispatch()
       const categoryName = course.category && course.category.name ? course.category.name : 'Default Category Name';
     
-      useEffect(()=>{
-        dispatch(CategoryListSlice)
-    
-      },[dispatch])
     
       const handleSubmit = async(e)=>{
         e.preventDefault()
-        try{
+        const isFormValid = Object.values(newCourse).every((value)=>{
+          if(typeof value === 'string'){
+            return value.trim () !==""
+          }
+          return true
+        })
+        if (isFormValid){
 
-            const res = await courseUpdateInstance(id,newCourse)
-            console.log("course updated successfully")
-            dispatch(updateCourse)
-            handleCourseClose()
-        }
-        catch(error){
-            console.log("Course updation failed",error)
 
+          try{
+  
+              const res = await courseUpdateInstance(id,newCourse)
+              toast.success("Course updated successfully!")
+              dispatch(updateCourse(res))
+              console.log("course updated successfully",res)
+              handleCourseClose()
+          }
+          catch(error){
+              console.log("Course updation failed",error)
+  
+          }
+        }else{
+          toast.error("All fields are required!")
         }
 
     
       }
     
-    //   const [file,setFile] = useState({})
-    //   const handleFileChange = (e)=>{
-    //     setFile({
-    //       image:e.target.files[0]
-    //     })
-    //     SetNewCourse((prevData)=>({
-    //       ...prevData,
-    //       thumbnail:e.target.files[0]
-    //     }))
-    
-    //   }
+      
+      
     
       return (
         <>
@@ -290,10 +301,10 @@ const CourseUpdateModal = ({coursePutShow,handleCourseClose,id})=>{
                     />
                   </Form.Group>
 
-                  {/* <Form.Group className="mb-3 p-3">
+                  <Form.Group className="mb-3 p-3">
                     <Form.Label >Course Thumbnail</Form.Label>
                     <Form.Control accept='image/png, image/jpeg' id='image' type="file" name='thumbnail' onChange={(e)=>handleFileChange(e)} />
-                  </Form.Group> */}
+                  </Form.Group>
                   
               </Modal.Body>
               <Modal.Footer className='p-3'>
@@ -313,8 +324,12 @@ const CourseUpdateModal = ({coursePutShow,handleCourseClose,id})=>{
 
 
 // modal for updating particular task
-const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task})=>{
-    const [newTask,setNewTask]=useState({})
+const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task,id})=>{
+    const [newTask,setNewTask]=useState({
+      course:id,
+      module:"",
+      task:""
+    })
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -336,7 +351,7 @@ const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task})=>{
             const res = await updateTaskInstance(newTask.id,newTask)
             console.log('new task added ',res)
             handleTaskEditClose()
-            dispatch(updateTask())
+            dispatch(updateTask(newTask))
         }catch(error){
             console.log("failed to add new Task",error)
         }
@@ -414,8 +429,11 @@ const NewTaskModal =({handleNewTaskClose,addTaskShow,course,id})=>{
         try{
             const res = await addTaskInstance(id,newTask)
             console.log('new task added ',res)
+            dispatch(addTask(res))
             handleNewTaskClose()
-            dispatch(addTask(id))
+            setNewTask({course:id,
+              name:"",
+              module:""})
         }catch(error){
             console.log("failed to add new Task",error)
         }
@@ -525,7 +543,7 @@ const TaskDeleteModal  =({handleTaskDeleteClose, taskDeleteShow, task})=>{
             console.log("Successfully deleted task")
             handleTaskDeleteClose()
             toast.success('Task deleted successfully')
-            // dispatch(fetchTask())
+            dispatch(deleteTask(taskId))
         }catch(error){
             console.log("error while updating!")
             toast.error("Failed to update course",error)

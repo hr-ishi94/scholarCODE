@@ -3,7 +3,6 @@ import logo from '../../assets/logo.png'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import {Outlet,Link, Navigate, useNavigate} from 'react-router-dom'
 import './AdminRootLayout.css'
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,13 +13,13 @@ const AdminRootLayout = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
-    console.log('authenti',selector.is_superuser)
-    console.log('authenti',selector.is_authenticated)
 
     const logOut = ()=>{
         dispatch(AdminLogout())
         navigate('/admin/login/')
+        console.log(selector)
         }
+        
   return (
    <div>
 
@@ -35,7 +34,7 @@ const AdminRootLayout = () => {
                     
                     </Col>
                     <Col sm = {2} className='d-flex'>
-                        <button className='noti-admin text-center '><i class="fa-regular fa-bell admin-drop"></i></button>
+                        <button className='noti-admin text-center '><i className="fa-regular fa-bell admin-drop"></i></button>
                         <Dropdown className='mt-3' >
                             <Dropdown.Toggle variant="success" style={{backgroundColor:'#12A98E',border:'none'}} id="dropdown-basic">
                                 Admin

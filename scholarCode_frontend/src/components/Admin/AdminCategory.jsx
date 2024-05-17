@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { Link } from 'react-router-dom';
+import Loader from '../Utils/Loader';
 
 
 const AdminCategory = () => {
@@ -12,6 +13,10 @@ const AdminCategory = () => {
   const dispatch = useDispatch()
   const {courses,status,error}= useSelector((state)=>state.Courses)
   const [courseList, setcourseList] = useState([]) 
+  const categorySelector = useSelector((state)=>state.Categories)
+  
+  const categoryName = categorySelector.categories[params.id-1].name
+
   const style = {
         position: "absolute",
         left: "350px",
@@ -21,10 +26,14 @@ const AdminCategory = () => {
 
   useEffect(()=>{
     dispatch(fetchCoursesList())
-    if(courses?.length!==0){
-      setcourseList(courses)
-    }
+   
   },[dispatch])
+
+  if (status === "loading") {
+    return <Loader />;
+  }
+
+
   return (
     <div style={style}>
         <h1>Courses</h1>
@@ -40,12 +49,12 @@ const AdminCategory = () => {
         </tr>
       </thead>
       <tbody >
-        {courseList.filter((course)=>course.category.id ==params.id).map((course,index)=>(
+        {courses.filter((course)=>course.category == params.id).sort((a,b)=>a.id-b.id).map((course,index)=>(
 
         <tr >
           <td>{index+1}</td>
           <td>{course.name}</td>
-          <td>{course.category.name}</td>
+          <td>{categoryName}</td>
           <td>{course.status?<span className='text-success'>Active</span>:<span className='text-danger'>Inactive</span>}</td>
           <td><Link to={`/admin/course/${course.id}`}><Button className='p-1' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>

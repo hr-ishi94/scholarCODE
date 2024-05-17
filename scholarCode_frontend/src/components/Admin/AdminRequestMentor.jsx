@@ -11,15 +11,14 @@ import { toast } from 'react-toastify'
 import { mentorApprovalInstance, mentorDeleteInstance, mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import Loader from '../Utils/Loader'
 
 const AdminRequestMentor = () => {
 
-  const [approvalModalShow, setApprovalModalShow] = React.useState(false);
-  const [rejectModalShow, setRejectModalShow] = React.useState(false);
+  const [approvalModalShow, setApprovalModalShow] = useState(false);
+  const [rejectModalShow, setRejectModalShow] = useState(false);
 
   const params = useParams()
-  const [mentorRequest, setMentorRequest] = useState([])
-
   const dispatch = useDispatch()
   const {mentor, status, error} = useSelector((state) => state.Mentor)
   const navigate = useNavigate()
@@ -30,18 +29,15 @@ const AdminRequestMentor = () => {
   
   useEffect(()=>{
   dispatch(fetchMentor(params.id))  
-  if(mentor?.length!==0){
-    setMentorRequest(mentor)
-  }
+  
 
    },[dispatch])
-  
-   
-  
 
+   if (status === "loading") {
+    return <Loader />;
+  }
 
   
-
 
   return (
     <>
@@ -50,24 +46,24 @@ const AdminRequestMentor = () => {
         <Col sm={4} className='text-center'>
           <Image src={avatar} className='w-50 mx-3' roundedCircle />
           <br />
-          <h4>{mentorRequest.username}</h4>
-          <h6>{mentorRequest.email}</h6>
-          <h6>{mentorRequest.designation}</h6>
+          <h4>{mentor.username}</h4>
+          <h6>{mentor.email}</h6>
+          <h6>{mentor.designation}</h6>
         </Col>
         <Col sm={8} >
           <h3>Mentor Details</h3>
           <br />
           
             
-            <label className='m-2'>First name: {mentorRequest.first_name}</label>
+            <label className='m-2'>First name: {mentor.first_name}</label>
             <br />
-            <label className='m-2'>Last name: {mentorRequest.last_name}</label>
+            <label className='m-2'>Last name: {mentor.last_name}</label>
             <br />
-            <label className='m-2'>Email: {mentorRequest.email}</label>
+            <label className='m-2'>Email: {mentor.email}</label>
             <br />
-            <label className='m-2'>Designation: {mentorRequest.designation}</label>
+            <label className='m-2'>Designation: {mentor.designation}</label>
             <br />
-            <label className='m-2'>LinkedIn ID: {mentorRequest.linkedin_profile}</label>
+            <label className='m-2'>LinkedIn ID: {mentor.linkedin_profile}</label>
             <br />
             <br />
             
@@ -78,9 +74,7 @@ const AdminRequestMentor = () => {
 
         </Row>
       </div>
-      {/* <Button variant="primary" onClick=>
-        Launch vertically centered modal
-      </Button> */}
+      
 
       <ApprovalModal
         show={approvalModalShow}
@@ -187,7 +181,7 @@ const RejectModal=(props)=> {
         </p>
       </Modal.Body>
       <Modal.Footer className='p-2'>
-        <Button onClick={handleRejection} variant='warning'>Confirm</Button>
+        <Button onClick={handleRejection} className='p-1' variant='warning'>Confirm</Button>
       </Modal.Footer>
     </Modal>
   );

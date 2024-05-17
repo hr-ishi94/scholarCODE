@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUsers } from '../../Redux/Slices/UserListSlice';
 import { toast } from 'react-toastify';
+import Loader from '../Utils/Loader';
 
 
 const AdminUserList = () => {
@@ -13,7 +14,7 @@ const AdminUserList = () => {
 
 
   const dispatch = useDispatch()
-  const {users,status,error} = useSelector((state => state.userList)) 
+  const {users,status,error} = useSelector((state)=> state.userList) 
   
   useEffect(()=>{
     dispatch(fetchUsers())
@@ -23,13 +24,17 @@ const AdminUserList = () => {
       setUserList(users)
     }
 
-    if(error && error.trim().length > 0){
-      toast.error(error)
-    }
-
+    
   },[dispatch])
   
-  
+  if(error && error.trim().length > 0){
+    toast.error(error)
+  }
+  if (status === "loading") {
+    return <Loader />;
+  }
+  const sortedUsers = [...users].sort((a,b)=>a.id-b.id)
+
   return (
     
     <div className='user-table'>
@@ -46,14 +51,14 @@ const AdminUserList = () => {
         </tr>
       </thead>
       <tbody >
-       { userList.map((user)=>(
+       { sortedUsers.map((user,index)=>(
         <tr key={user.id}  >
-          <td>{user.id}</td>
+          <td>{index+1}</td>
           <td>{user.first_name}</td>
           <td>04</td>
           <td>{user.email}</td>
           <td>{user.isactive?<span className='text-success'>Active</span>:<span className='text-danger'>InActive</span>}</td>
-          <td><Link to={`/admin/user/${user.id}/`}><Button className="p-1 m-1"style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
+          <td><Link to={`/admin/user/${user.id}/`}><Button className="p-1 m-1 text-light"style={{backgroundColor:"#12A98E"}} variant=''>View</Button></Link></td>
         </tr>
 
        )

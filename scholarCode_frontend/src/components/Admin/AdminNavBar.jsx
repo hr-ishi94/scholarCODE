@@ -16,7 +16,7 @@ const AdminNavBar = () => {
             
             </Col>
             <Col sm = {2}>
-            <button className='noti-admin text-center'><i class="fa-regular fa-bell admin-drop"></i></button>
+            <button className='noti-admin text-center'><i className="fa-regular fa-bell admin-drop"></i></button>
             <Dropdown as={ButtonGroup} >
                 <Button variant="" className='admin-drop'>Admin</Button>
 

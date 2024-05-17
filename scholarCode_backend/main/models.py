@@ -7,7 +7,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your models here.
 class Category(models.Model):
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250,unique=True)
 
     def __str__(self):
         return self.name

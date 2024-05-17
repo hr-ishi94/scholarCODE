@@ -18,12 +18,14 @@ const CategoriesSlice=createSlice({
     initialState:initialstate.categoriesList,
     reducers:{
         addCategoryName:(state,action)=>{
-            // console.log(action.payload)
-            state.categories = [...state.categories, action.payload]
+            return {
+                ...state,
+                categories: [...state.categories, action.payload]
+            }
         },
         
         addNewCategory: (state, action) => {
-            console.log(action.payload, 'action payload');
+            // console.log(action.payload, 'action payload');
             state.categories = [...state.categories, action.payload]
           }
           

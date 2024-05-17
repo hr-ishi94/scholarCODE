@@ -18,7 +18,7 @@ const Navibar = () => {
             </Nav>
             <Nav>
             <Link to={'/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Home</Nav.Link></Link> 
-              <Nav.Link href="#deets" className='options'> Courses</Nav.Link>
+              <Link to={'/courses/'} className='react-router-link'><Nav.Link href="#deets"  className='options'> Courses</Nav.Link></Link>
               <Link to={'/mentors/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Mentors</Nav.Link></Link>
               <Nav.Link href="#deets" className='options'>Contact Us</Nav.Link>
               {/* <Link to={'/user/signup/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link> */}

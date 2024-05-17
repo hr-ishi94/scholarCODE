@@ -21,7 +21,9 @@ const CoursesSlice = createSlice({
     reducers:{
         addCourse :(state,action)=>{
             state.courses=[...state.courses,action.payload]
-        }
+        },
+        resetState: () => initialstate.coursesList
+        
 
     },
     extraReducers:(builder)=>{
@@ -39,10 +41,9 @@ const CoursesSlice = createSlice({
         .addCase(fetchCoursesList.rejected,(state,action)=>{
             state.status = 'failed'
             state.error = action.error.message
-
         })
     }
 })
 
-export const {addCourse} = CoursesSlice.actions
+export const {addCourse ,resetState} = CoursesSlice.actions
 export default CoursesSlice.reducer

@@ -29,6 +29,7 @@ const usersListSlice = createSlice({
         .addCase(fetchUsers.fulfilled, (state, action) => {
             state.status = 'succeeded';
             state.users = action.payload;
+            state.error =""
         })
         .addCase(fetchUsers.rejected, (state, action) => {
             state.status = 'failed';

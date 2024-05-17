@@ -11,18 +11,19 @@ from rest_framework.permissions import IsAuthenticated,BasePermission
 
 from django.contrib.auth.hashers import make_password
 from django.http import HttpResponse
-from django.shortcuts import render
 from django.core.mail import EmailMessage
+from django.core.exceptions import ValidationError
 
 # email verification
-from django.template import TemplateSyntaxError
+from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_decode,urlsafe_base64_encode
-from .utils import generate_token,TokenGenerator
-from django.utils.encoding import force_bytes,force_text,DjangoUnicodeDecodeError
-from django.core.mail import EmailMessage
+from .utils import generate_token
+from django.utils.encoding import force_bytes,force_text
 from django.conf import settings
 from django.views.generic import View
+from django.db import transaction
+from django.db.utils import IntegrityError
 
 # Mentor token generator 
 class MentorTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -76,6 +77,8 @@ class AdminOnlyPermission(BasePermission):
 
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.is_superuser
+    
+# class UserLogin(generics.CreateAPIView):
 
 
 class AdminLogin(generics.CreateAPIView):
@@ -94,8 +97,8 @@ class AdminLogin(generics.CreateAPIView):
 class MentorList(generics.ListCreateAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
     
 
@@ -162,36 +165,54 @@ class MentorActivateAccountView(View):
             return HttpResponse("Activation Failed.")
 
 
-# GET, POST users
+
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-        
+    # authentication_classes =[JWTAuthentication]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+
 
     def post(self, request, *args, **kwargs):
         data = request.data
+        serializer = UserSerializer(data=data)
         
-        try:
+        if serializer.is_valid():
+            email = data.get('email')
+            username = data.get('username')
+            
+            if User.objects.filter(email=email).exists():
+                return Response({'error': 'Email already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            if User.objects.filter(username=username).exists():
+                return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                with transaction.atomic():
+                    user = User.objects.create(
+                        username=username,
+                        email=email,
+                        password=make_password(data['password']),
+                        isactive=data['isactive']
+                    )
+                    email_subject = 'Activate Your Account'
+                    message = render_to_string("activate.html", {
+                        'user': user,
+                        'domain': '127.0.0.1:8000',
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': generate_token.make_token(user)
+                    })
+                    email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [email])
+                    email_message.send()
 
-            user = User.objects.create(username = data['username'],email=data['email'],password= make_password(data['password']),isactive=data['isactive'])
-            email_subject = 'Activate Your Account'
-            message = render_to_string("activate.html",{
-                'user':user,
-                'domain':'127.0.0.1:8000',
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-                'token':generate_token.make_token(user)
-            })
-            # print(message)
-            email_message = EmailMessage(email_subject,message,settings.EMAIL_HOST_USER,[data['email']])
-            email_message.send()
-            serialize = UserSerializerWithToken(user,many = False)
-            return Response(serialize.data)
+                    serialize = UserSerializerWithToken(user, many=False)
+                    return Response(serialize.data, status=status.HTTP_201_CREATED)
+
+            except IntegrityError:
+                return Response({'error': 'Integrity error occurred, possibly due to duplicate entry'}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-        except ValueError:
-            message = {'details':ValueError}
-            print(message)
-            return Response(message,status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ActivateAccountView(View):
     def get(self, request, uidb64, token):
@@ -231,24 +252,24 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class Categories(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
 #GET, PUT, DELETE particular categories
 class CategoryList(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
 # GET,POST Course List
 class CoursesList(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
 
@@ -256,8 +277,8 @@ class CoursesList(generics.ListCreateAPIView):
 class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer 
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data = request.data, partial =True)
@@ -277,8 +298,8 @@ class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
 class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
     queryset= Task.objects.all()
     serializer_class = TaskSerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data = request.data, partial = True)
@@ -292,8 +313,8 @@ class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(['GET','POST'])
-# @authentication_classes([JWTAuthentication])
-# @permission_classes([AdminOnlyPermission,IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+@permission_classes([AdminOnlyPermission,IsAuthenticated])
 def TaskList(request, course_id):
     
     if request.method == 'GET':

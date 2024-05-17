@@ -28,16 +28,15 @@ const SignUp = () => {
         setSignupError("")
     }
 
-    const handleChange= useCallback((e)=>{
+    const handleChange= (e)=>{
         const {name,value} = e.target
         setformData((prevData)=>({
             ...prevData,
             [name]:value
         }))
-    },[])
+    }
 
-    const handleSubmit = useCallback(
-        async (e)=>{
+    const handleSubmit =  async (e)=>{
             e.preventDefault();
             const isFormValid = Object.values(formData).every((value) => {
                 if (typeof value === 'string') {
@@ -50,17 +49,26 @@ const SignUp = () => {
                 try
                 {
                     await userSchema.validate(formData,{abortEarly:false})
-                    const registerationResponse = await UserRegister(
+                    const registrationResponse = await UserRegister(
                         formData
                     )
                     // console.log("reg response: ",registerationResponse)
-                    if (registerationResponse.id){
+                    if (registrationResponse.id){
 
                         setLoading(true)
                     }
+                    else{
+                       if (registrationResponse.email){
+                        toast.error(registrationResponse.email[0])
+                       }
+
+                       if (registrationResponse.username){
+                        toast.error(registrationResponse.username[0])
+                       }
+                    }
                 }catch(error){
                     if (error instanceof ValidationError){
-                        setSignupError(error.message)
+                        toast.error(error.message)
                     }
                 }
                
@@ -69,7 +77,7 @@ const SignUp = () => {
                 setSignupError("All fields required!")
             }
             
-        },[formData])
+        }
         
 
   return (

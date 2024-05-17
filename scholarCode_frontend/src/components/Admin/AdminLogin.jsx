@@ -6,6 +6,7 @@ import { loginSchema } from './utils/SigninVal';
 import { LoginAdmin } from '../../Redux/Slices/AdminAuthSlice';
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { ValidationError } from 'yup';
 
 const AdminLogin = () => {
   const selector = useSelector((state)=>state.AdminToken)
@@ -18,40 +19,35 @@ const AdminLogin = () => {
     email:'',
     password:''
   })
+
   const handleChange = (e)=>{
     const {name,value} = e.target
     setFormData({...formData,
     [name]:value
   })
   } 
+
   if (errorr){
     toast.error(errorr)
-    // setErrorr('')
   }
+
   const handleSubmit = useCallback( async (e)=>{
     e.preventDefault();
     const isFormValid = Object.values(formData).every((value) => {
       if (typeof value === 'string') {
           return value.trim() !== "";
       }
-      else{
-        console.log("Please enter any values")
-      }
+     
       return true; // Skip non-string values in the validation
   });
     if(isFormValid){
       try {
         await loginSchema.validate(formData,{abortEarly:false})
-        const Response = await dispatch(LoginAdmin(formData))
-        console.log(Response)
-        console.log(selector,"selector")
-        
-        console.log(isAuthenticated)
-
-        if (Response.payload.error ==='Authentication Failed'){
-          setErrorr('Invalid Credentials')
+        const res = await dispatch(LoginAdmin(formData))
+        console.log("res",res)
+        if (res.payload.error ==='Authentication Failed'){
+          toast.error('Invalid Credentials')
         }else{
-          setErrorr('')
           navigate('/admin/users/')
           toast.success('Successfully logged in')
 
@@ -59,12 +55,12 @@ const AdminLogin = () => {
         
       }
       catch(error){
-        console.log("validation error")
+        console.log('validation error')
 
       }
 
     }else{
-      console.log('All fields are required')
+      toast.error('All fields are required')
     }
 
   },[formData])
@@ -73,7 +69,7 @@ const AdminLogin = () => {
     <div>
       {isAuthenticated?<Navigate to={'/admin/users/'}/>:
     <>
-        
+      {}  
         <h1>Admin Login</h1>
         <br />
         <br />

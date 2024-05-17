@@ -20,16 +20,12 @@ const CourseDetailsSlice = createSlice({
     initialState:initialstate.courseDetails,
     reducers:{
         updateCourse:(state,action)=>{
-            const existingCourseIndex = state.course.findIndex(course => course.id === action.payload.id);
-            if (existingCourseIndex === -1) {
-                state.course = [...state.course, action.payload];
-            } else {
-                state.course[existingCourseIndex] = action.payload; // Update existing course
-            }
+            state.course = action.payload;
+            
         },
         blockCourse:(state)=>{
-            state.course = [{...state.course,status :!state.course.status
-            }]
+            state.course = {...state.course,status :!state.course.status
+            }
         }
 
     },

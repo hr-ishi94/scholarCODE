@@ -14,7 +14,6 @@ import { toast } from 'react-toastify';
 import { categoryAddInstance } from '../../Axios/AdminServer/AdminServer';
 
 
-
 const AdminCategoryList = () => {
   const dispatch = useDispatch()
   const {categories,status,error} = useSelector((state)=>state.Categories)
@@ -39,6 +38,8 @@ const AdminCategoryList = () => {
   if (status === "loading") {
     return <Loader />;
   }
+
+  const sortedCategories = [...categories].sort((a,b)=>a.id- b.id)
   return (
     <div>
         <div className='category-table'>
@@ -64,7 +65,7 @@ const AdminCategoryList = () => {
       </thead>
       <tbody >
         {
-        categories.map((category,index)=>(
+        sortedCategories.map((category,index)=>(
         <tr key={index}>
           <td>{index+1}</td>
           <td>{category.name}</td>
@@ -92,6 +93,7 @@ const AddCategoryModal = ({handleClose,show})=> {
     setNewCategory(e.target.value)
     
   }
+  const dispatch = useDispatch()
 
   const addCategory = async (e)=>{
     e.preventDefault()
@@ -99,17 +101,16 @@ const AddCategoryModal = ({handleClose,show})=> {
       
       const data = {name:newCategory}
       const res = await categoryAddInstance(data)
-      console.log(res,'resfsf')
-      if (res){
-        dispatch(addCategoryName(res))
+      console.log(res.name[0])
+      
+      if (res.id){
         toast.success(`${res.name} have successfully added`)
         handleClose()
+        dispatch(addCategoryName(res))
       
       }
       else{
-        
-        throw new Error('Empty response from server')
-        console.log(error)
+        toast.error(res.name[0])
 
       }
 

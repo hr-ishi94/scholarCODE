@@ -1,11 +1,6 @@
 import './App.css'
 import { BrowserRouter,Routes,Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import HomePage from './Pages/HomePage/HomePage';
-import UserSignUp from './Pages/HomePage/UserSignUp';
-import UserLogin from './Pages/HomePage/UserLogin';
-import MentorsList from './Pages/HomePage/MentorsList';
-import MentorJoinPage from './Pages/HomePage/MentorJoinPage';
 import AdminUserList from './components/Admin/AdminUserList';
 import AdminRootLayoot from './Pages/AdminSide/AdminRootLayout';
 import AdminCourseList from './components/Admin/AdminCourseList';
@@ -21,7 +16,22 @@ import AdminLogin from './components/Admin/AdminLogin';
 import LoginMentor from './components/Mentor/LoginMentor';
 import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import Loader from './components/Utils/Loader';
+import Courses from './components/Home/Courses';
+import Homelayout from './Pages/HomePage/Homelayout';
+import Home from './components/Home/Home';
+import Mentors from './components/Home/Mentors';
+import SignUp from './components/User/SignUp';
+import Login from './components/User/Login';
+import JoinMentor from './components/Mentor/JoinMentor';
+import MentorRootLayout from './Pages/MentorSide/MentorRootLayout';
+import MentorReviewList from './components/Mentor/MentorReviewList';
+import MentorUserList from './components/Mentor/MentorUserList';
+import MentorCoursesList from './components/Mentor/MentorCoursesList';
+import MentorCourseDetails from './components/Mentor/MentorCourseDetails';
+import MentorProfile from './components/Mentor/MentorProfile';
+import MentorReviewDetails from './components/Mentor/MentorReviewDetails';
+import SingleCourse from './components/Home/SingleCourse';
+import UserProfile from './components/Home/UserProfile';
 
 
 function App() {
@@ -29,34 +39,49 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
          <Routes>
 
-          {/* Admin Root Layout */}
-          <Route element={<AdminRootLayoot/>}>
-            <Route path='/admin/courses/' element={<AdminCourseList/>}></Route>
-            <Route path='/admin/category/' element={<AdminCategoryList/>}></Route>
-            <Route path='/admin/category/:id/' element={<AdminCategory/>}></Route>
-            <Route path='/admin/users/' element={<AdminUserList/>}></Route>
-            <Route path='/admin/user/:id/' element={<AdminUser/>}></Route>
-            <Route path='/admin/course/:id/' element={<AdminCourse/>}></Route>
-            <Route path='/admin/mentors/' element={<AdminMentorList/>}></Route>
-            <Route path='/admin/mentor/active/:id/' element={<AdminActiveMentor/>}></Route>
-            <Route path='/admin/mentor/request/:id/' element={<AdminRequestMentor/>}></Route>
-          </Route>
-          
           {/* AuthLayout  */}
           <Route element={<AuthLayout/>}>
             <Route path='admin/login/' element={<AdminLogin/>}></Route>
             <Route path='mentor/login/' element={<LoginMentor/>}></Route>
           </Route>
           
+          {/* Admin Root Layout */}
+          <Route element={<AdminRootLayoot/>}>
+            <Route path='/admin/users/' element={<AdminUserList/>}></Route>
+            <Route path='/admin/user/:id/' element={<AdminUser/>}></Route>
+            <Route path='/admin/mentors/' element={<AdminMentorList/>}></Route>
+            <Route path='/admin/mentor/active/:id/' element={<AdminActiveMentor/>}></Route>
+            <Route path='/admin/mentor/request/:id/' element={<AdminRequestMentor/>}></Route>
+            <Route path='/admin/courses/' element={<AdminCourseList/>}></Route>
+            <Route path='/admin/course/:id/' element={<AdminCourse/>}></Route>
+            <Route path='/admin/category/' element={<AdminCategoryList/>}></Route>
+            <Route path='/admin/category/:id/' element={<AdminCategory/>}></Route>
+          </Route>
+
+          {/* Mentor side layout */}
+          <Route element={<MentorRootLayout/>}>
+            <Route path='/mentor/reviews/' element={<MentorReviewList/>}></Route>
+            <Route path='/mentor/review/id/' element={<MentorReviewDetails/>}></Route>
+            <Route path='/mentor/users/' element={<MentorUserList/>}></Route>
+            <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
+            <Route path='/mentor/course/id/' element={<MentorCourseDetails/>}></Route>
+            <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
+          </Route>
+
+          {/* Home page layout */}
+          <Route element={<Homelayout/>}>
+            <Route path='/' element={<Home/>}></Route>
+            <Route path='/mentors/' element={<Mentors/>}></Route>
+            <Route path='/courses/' element={<Courses/>}></Route>
+            <Route path='/course/id/' element={<SingleCourse/>}></Route>
+            <Route path='/user/signup/' element={<SignUp/>}></Route>
+            <Route path='/user/login/' element={<Login/>}></Route>
+            <Route path='/user/profile/' element={<UserProfile/>}></Route>
+            <Route path='/mentor/join/' element={<JoinMentor/>}></Route>
+          </Route>
           
-          <Route path='/' element={<HomePage/>}></Route>
-          <Route path='/mentors/' element={<MentorsList/>}></Route>
-          <Route path='/user/signup/' element={<UserSignUp/>}></Route>
-          <Route path='/user/login/' element={<UserLogin/>}></Route>
-          <Route path='/mentor/join/' element={<MentorJoinPage/>}></Route>
 
 
           
@@ -73,7 +98,6 @@ function App() {
         pauseOnHover
         theme="light"
       />
-      </BrowserRouter>
     </>
   )
 }
