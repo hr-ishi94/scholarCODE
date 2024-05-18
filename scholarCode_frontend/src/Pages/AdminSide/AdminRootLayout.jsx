@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import logo from '../../assets/logo.png'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -14,18 +14,19 @@ const AdminRootLayout = () => {
     const navigate = useNavigate()
 
 
-    const logOut = ()=>{
+    const logOut =useCallback( ()=>{
         dispatch(AdminLogout())
         navigate('/admin/login/')
-        console.log(selector)
-        }
+        localStorage.removeItem('access')
+        localStorage.removeItem('refresh')
+        },[dispatch])
         
   return (
    <div>
 
    
    
-   {(!selector.is_authenticated && !selector.is_superuser)?<Navigate to={'/admin/login/'}/> :    <>
+   {(!selector.is_authenticated | !selector.is_superuser)?<Navigate to={'/admin/login/'}/> :    <>
             
             <div className='admin-navbar'>
                 <Row>

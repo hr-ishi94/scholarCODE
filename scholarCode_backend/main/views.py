@@ -1,9 +1,7 @@
 from rest_framework import generics,status
 from .models import Mentor, User, Category, Course, Module, Task
-from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, UserSerializerWithToken, TaskSerializer,AdminLoginSerializer,MentorSerializerWithToken
+from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, UserSerializerWithToken, TaskSerializer,AdminLoginSerializer,MentorSerializerWithToken,UserLoginSerializer,MentorLoginSerializer
 
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -25,50 +23,7 @@ from django.views.generic import View
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-# Mentor token generator 
-class MentorTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls,user):
-        token = super().get_token(user)
-        token['is_mentor'] = True
-        return token
-    
-# Mentor token request validator 
-class MentorTokenObtainPairView(TokenObtainPairView):
-    def post(self,request,*args, **kwargs):
-        serializer = MentorTokenObtainPairSerializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data)
 
-# User token generator 
-class UserTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['is_mentor'] = False
-        return token
-
-# User token request validator
-class UserTokenObtainPairView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
-        serializer = UserTokenObtainPairSerializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data)
-
-# Admin token generator
-class AdminTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['is_superuser'] = user.is_superuser
-        return token
-
-# Admin token request validator
-class AdminTokenObtainPairView(TokenObtainPairView):
-    def post(self, request, *args, **kwargs):
-        serializer = AdminTokenObtainPairSerializer(data = request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data)
 
 class AdminOnlyPermission(BasePermission):
     """
@@ -78,7 +33,6 @@ class AdminOnlyPermission(BasePermission):
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated and request.user.is_superuser
     
-# class UserLogin(generics.CreateAPIView):
 
 
 class AdminLogin(generics.CreateAPIView):
@@ -90,25 +44,42 @@ class AdminLogin(generics.CreateAPIView):
         
         serializer.is_valid(raise_exception = True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+# user login 
+class UserLogin(generics.CreateAPIView):
+    serializer_class = UserLoginSerializer
 
+    def create(self,request,*args, **kwargs):
+        serializer = self.get_serializer(
+            data = request.data,context = {'request':request}
+        )
+        serializer.is_valid(raise_exception = True)
+        return Response(serializer.data,status = status.HTTP_200_OK)
 
+# mentor login
+class MentorLogin(generics.CreateAPIView):
+    serializer_class = MentorLoginSerializer
+
+    def create(self,request,*args, **kwargs):
+        serializer = self.get_serializer(
+            data = request.data,context = {'request':request}
+        )
+        serializer.is_valid(raise_exception = True)
+        return Response(serializer.data,status= status.HTTP_200_OK)
+    
 
 # GET, POST mentors entire mentors
 class MentorList(generics.ListCreateAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
     authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
-
-    
 
     
 # GET, PUT, DELETE particular mentor
 class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    authentication_classes =[JWTAuthentication]
+
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance,data = request.data,partial = True)
@@ -123,6 +94,8 @@ class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
 class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
     queryset =Mentor.objects.all()
     serializer_class = MentorSerializer
+    authentication_classes =[JWTAuthentication]
+    permission_classes = [AdminOnlyPermission,IsAuthenticated]
     
     def put (self,request, *args, **kwargs):
         data = request.data
@@ -169,7 +142,7 @@ class MentorActivateAccountView(View):
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # authentication_classes =[JWTAuthentication]
+    authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
@@ -235,7 +208,7 @@ class ActivateAccountView(View):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # authentication_classes =[JWTAuthentication]
+    authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self, request, *args, **kwargs):
         instance = self.get_object()

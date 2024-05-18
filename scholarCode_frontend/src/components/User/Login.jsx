@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import signupImage from '../../assets/signupImage.jpg'
@@ -8,6 +8,8 @@ import { Link } from 'react-router-dom';
 
 
 const Login = () => {
+
+    const [, set] = useState(second)
   return (
     <>
         <Row className='p-5 mx-5'>

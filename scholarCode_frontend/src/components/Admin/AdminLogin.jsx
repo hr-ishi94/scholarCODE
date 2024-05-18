@@ -19,7 +19,6 @@ const AdminLogin = () => {
     email:'',
     password:''
   })
-
   const handleChange = (e)=>{
     const {name,value} = e.target
     setFormData({...formData,
@@ -44,13 +43,16 @@ const AdminLogin = () => {
       try {
         await loginSchema.validate(formData,{abortEarly:false})
         const res = await dispatch(LoginAdmin(formData))
-        console.log("res",res)
+        
         if (res.payload.error ==='Authentication Failed'){
           toast.error('Invalid Credentials')
         }else{
           navigate('/admin/users/')
           toast.success('Successfully logged in')
-
+          localStorage.setItem('access',res.payload.access)
+          localStorage.setItem('refresh',res.payload.refresh)
+          
+          
         }
         
       }
@@ -69,7 +71,7 @@ const AdminLogin = () => {
     <div>
       {isAuthenticated?<Navigate to={'/admin/users/'}/>:
     <>
-      {}  
+       
         <h1>Admin Login</h1>
         <br />
         <br />

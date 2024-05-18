@@ -1,8 +1,7 @@
 import axios from 'axios'
 import { main } from '../Urls/EndPoints'
-// import {store} from '../../Redux/Store/Store.jsx'
 import { jwtDecode } from 'jwt-decode'
-import dayjs from 'dayjs'
+import dayjs from 'dayjs'  
 
 
 
@@ -16,33 +15,33 @@ export const axiosInstance = axios.create({
 
 })
 
-// axiosInstance.interceptors.request.use(
-//     async function (config){
-//         const state = store.getState()
-//         const accessToken = state.AdminToken.access
-//         const refreshToken = state.AdminToken.refresh
-//         if (accessToken){
-//             config.headers.Authorization = `Bearer ${accessToken}`
-//             const user = jwtDecode(accessToken)
-//             const isExp = dayjs.unix(user.exp).diff(dayjs())<1
-//             if(isExp){
-//                 const res = await axios.post(`${main}api/token/refresh/`,{refresh:refreshToken})
-//                 if (res.status === 200 || res.status === 201){
-//                     config.headers.Authorization = `Bearer ${res.data.access}`
-//                 }else{
-//                     console.log(res)
-//                 }
-//             }
-//         }else{
-//             console.log("error in store")
-//         }
-//         return config
+
+axiosInstance.interceptors.request.use(
+    async function (config){
+        const accessToken = localStorage.getItem('access')
+        const refreshToken = localStorage.getItem('refresh')
+        if (accessToken){
+            config.headers.Authorization = `Bearer ${accessToken}`
+            const user = jwtDecode(accessToken)
+            const isExp = dayjs.unix(user.exp).diff(dayjs())<1
+            if(isExp){
+                const res = await axios.post(`${main}api/token/refresh/`,{refresh:refreshToken})
+                if (res.status === 200 || res.status === 201){
+                    config.headers.Authorization = `Bearer ${res.data.access}`
+                }else{
+                    console.log(res)
+                }
+            }
+        }else{
+            console.log("error in store")
+        }
+        return config
         
         
-//     },function(error){
-//         return Promise.reject(error)
-//     }
-// )
+    },function(error){
+        return Promise.reject(error)
+    }
+)
 
 
 // axios instance for form submission

@@ -36,14 +36,16 @@ class AdminLoginSerializer(serializers.ModelSerializer):
             'email':user.email,
             'access_token':str(user_token.get('access')),
             'refresh_token':str(user_token.get('refresh')),
+            
         }
 
-
+# user Login serializer
 class UserLoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length = 255)
     password = serializers.CharField(max_length = 128, write_only = True)
     access_token = serializers.CharField(max_length = 255, read_only = True)
     refresh_token = serializers.CharField(max_length = 255, read_only = True)
+
 
     class Meta :
         model = User
@@ -61,6 +63,9 @@ class UserLoginSerializer(serializers.ModelSerializer):
         if user.is_superuser:
             raise AuthenticationFailed("You are not authorized to login as user")
         
+        if not user.is_active:
+            raise AuthenticationFailed("Either check your mail for activation link or kindly contact the admin")
+        
         user_token = user.tokens()
 
         return {
@@ -68,7 +73,40 @@ class UserLoginSerializer(serializers.ModelSerializer):
             'access_token':str(user_token.get('access')),
             'refresh_token':str(user_token.get('refresh'))
         }
+    
+class MentorLoginSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length = 150)
+    password = serializers.CharField(max_length = 150,write_only = True)
+    access_token = serializers.CharField(max_length = 300,read_only = True)
+    refresh_token = serializers.CharField(max_length = 300,read_only = True)
 
+    class Meta:
+        model = Mentor
+        fields = ['email','password','access_token','refresh_token']
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        request = attrs.get('request')
+        mentor = authenticate(request, email = email, password = password)
+    
+        if not mentor:
+            raise AuthenticationFailed("Invalid credentials")
+        
+        if not mentor.is_active:
+            raise AuthenticationFailed("You are not allowed to login Please contact the admin")
+
+        if not mentor.is_staff:
+            raise AuthenticationFailed("Please check your mail for activation link and then login")
+        
+        mentor_token = mentor.tokens()
+        return {
+            'email':mentor.email,
+            'access_token':str(mentor_token.get('access')),
+            'refresh_token':str(mentor_token.get('refresh')),
+
+        }
+        
 # mentor model serializer
 class MentorSerializer(serializers.ModelSerializer):
     class Meta:

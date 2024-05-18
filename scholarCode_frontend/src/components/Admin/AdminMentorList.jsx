@@ -27,7 +27,6 @@ const MentorTableData=({props,index})=>{
 
 
 const AdminMentorList = () => {
-  const [MentorsList, setMentorsList] = useState([])
 
   const dispatch = useDispatch()
   const {mentors, status, error} = useSelector((state)=>state.Mentors)
@@ -35,11 +34,8 @@ const AdminMentorList = () => {
     toast.error(error)
   }
   useEffect(() => {
-    dispatch(fetchMentors())
-    if (mentors?.length !==0){
 
-      setMentorsList(mentors)
-    }
+    dispatch(fetchMentors())
     
   }, [dispatch])
 

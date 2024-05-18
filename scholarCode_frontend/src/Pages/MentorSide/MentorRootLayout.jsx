@@ -1,14 +1,28 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import logo from '../../assets/logo.png'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Dropdown from 'react-bootstrap/Dropdown';
 import {Outlet,Link, Navigate, useNavigate} from 'react-router-dom'
 import './MentorRootLayout.css'
+import { useDispatch, useSelector } from 'react-redux';
+import { mentorLogout } from '../../Redux/Slices/MentorAuthSlice';
 
 const MentorRootLayout = () => {
+    const dispatch = useDispatch()
+    const selector = useSelector((state)=>state.MentorToken)
+    console.log('sele',selector)
+    const navigate = useNavigate()
+    const handleLogout = useCallback(()=>{
+        dispatch(mentorLogout())
+        navigate('/mentor/login/')
+        localStorage.removeItem('access')
+        localStorage.removeItem('refresh')
+
+    },[dispatch])
   return (
     <>    
+    {(!selector.is_authenticated | !selector.type == 'mentor')?<Navigate to={'/mentor/login/'}/>:<>
         <div className='mentor-navbar'>
             <Row>
                 <Col sm = {10}>
@@ -25,7 +39,7 @@ const MentorRootLayout = () => {
                         <Dropdown.Menu className='p-2 '>
                             <Dropdown.Item >Action</Dropdown.Item>
                             <Dropdown.Item ><Link to={'/mentor/profile/'} className="react-router-link text-dark"> Profile</Link></Dropdown.Item>
-                            <Dropdown.Item >Logout</Dropdown.Item>
+                            <Dropdown.Item  onClick={handleLogout}>Logout</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Col>
@@ -38,7 +52,7 @@ const MentorRootLayout = () => {
         <Link to={'mentor/reviews/'} className="react-router-link text-dark"><h2 className='aside-content'>Reviews List</h2></Link>
         <Link to={'mentor/courses/'} className="react-router-link text-dark"><h2 className='aside-content'>Courses Assigned</h2></Link>
         <Link to={'mentor/users/'} className="react-router-link text-dark"><h2 className='aside-content'>Users Assigned</h2></Link>
-    </div>
+    </div></>}
 </>
   )
 }

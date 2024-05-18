@@ -1,17 +1,17 @@
 import { axiosFormInstance, axiosInstance } from "../Utils/AxiosInstances";
 
+export const userDetailsInstance = async(id) =>{
+    const res = await axiosInstance.get(`user/${id}/`)
+    if(res.status === 200 ){
+        return res.data
+    }
+}
+
 export const usersListInstance = async()=>{
     const res = await axiosInstance.get('users/')
     if (res.status === 200){
 
         return res.data;
-    }
-}
-
-export const userDetailsInstance = async(id) =>{
-    const res = await axiosInstance.get(`user/${id}/`)
-    if(res.status === 200 ){
-        return res.data
     }
 }
 export const userstatusInstance = async(id,updateData) =>{

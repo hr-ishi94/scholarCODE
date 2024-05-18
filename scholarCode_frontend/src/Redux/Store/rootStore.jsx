@@ -67,4 +67,20 @@ export const initialstate = {
         type: null,
         registerSuccess: null,
     },
+    MentorToken:{
+        access: null,
+        refresh: null,
+        is_authenticated: false,
+        is_superuser: false,
+        type: null,
+        registerSuccess: null,
+    },
+    UserToken:{
+        access: null,
+        refresh: null,
+        is_authenticated: false,
+        is_superuser: false,
+        type: null,
+        registerSuccess: null,
+    },
 }
