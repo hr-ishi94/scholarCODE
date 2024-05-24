@@ -63,10 +63,10 @@ function App() {
           {/* Mentor side layout */}
           <Route element={<MentorRootLayout/>}>
             <Route path='/mentor/reviews/' element={<MentorReviewList/>}></Route>
-            <Route path='/mentor/review/id/' element={<MentorReviewDetails/>}></Route>
+            <Route path='/mentor/review/:id/' element={<MentorReviewDetails/>}></Route>
             <Route path='/mentor/users/' element={<MentorUserList/>}></Route>
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
-            <Route path='/mentor/course/id/' element={<MentorCourseDetails/>}></Route>
+            <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
           </Route>
 
@@ -75,7 +75,7 @@ function App() {
             <Route path='/' element={<Home/>}></Route>
             <Route path='/mentors/' element={<Mentors/>}></Route>
             <Route path='/courses/' element={<Courses/>}></Route>
-            <Route path='/course/id/' element={<SingleCourse/>}></Route>
+            <Route path='/course/:id/' element={<SingleCourse/>}></Route>
             <Route path='/user/signup/' element={<SignUp/>}></Route>
             <Route path='/user/login/' element={<Login/>}></Route>
             <Route path='/user/profile/' element={<UserProfile/>}></Route>

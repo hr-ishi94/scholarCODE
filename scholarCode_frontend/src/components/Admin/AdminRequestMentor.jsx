@@ -103,7 +103,7 @@ const ApprovalModal=(props)=> {
   const handleApproval= async ()=>{
     try{
       const id = props.id
-      const updateStaff = {is_staff:true,isActive:false}
+      const updateStaff = {is_staff:true}
       const res = await mentorApprovalInstance(id,updateStaff)
       console.log("new mentor selected")
       dispatch(mentorApproval())

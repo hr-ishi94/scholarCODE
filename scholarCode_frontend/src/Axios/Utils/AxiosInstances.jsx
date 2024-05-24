@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { main } from '../Urls/EndPoints'
+import { main,course } from '../Urls/EndPoints'
 import { jwtDecode } from 'jwt-decode'
 import dayjs from 'dayjs'  
 
@@ -21,8 +21,8 @@ axiosInstance.interceptors.request.use(
         const accessToken = localStorage.getItem('access')
         const refreshToken = localStorage.getItem('refresh')
         if (accessToken){
-            config.headers.Authorization = `Bearer ${accessToken}`
             const user = jwtDecode(accessToken)
+            config.headers.Authorization = `Bearer ${accessToken}`
             const isExp = dayjs.unix(user.exp).diff(dayjs())<1
             if(isExp){
                 const res = await axios.post(`${main}api/token/refresh/`,{refresh:refreshToken})
@@ -52,4 +52,20 @@ export const axiosFormInstance = axios.create({
         'content-type': 'multipart/form-data',
     }
 
+})
+
+// mentor side 
+export const axiosCourseInstance = axios.create({
+    baseURL:course,
+    headers:{
+        'content-Type':'application/json'
+    }
+})
+
+// mentor side form
+export const axiosCourseFormInstance = axios.create({
+    baseURL:course,
+    headers:{
+        'content-Type':'application/json'
+    }
 })

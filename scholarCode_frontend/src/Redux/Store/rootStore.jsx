@@ -83,4 +83,10 @@ export const initialstate = {
         type: null,
         registerSuccess: null,
     },
+    // mentor assigned courses
+    MentorCourses:{
+        courses:[],
+        status:'idle',
+        error:''
+    }
 }

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import logo from '../../assets/logo.png'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -7,19 +7,48 @@ import {Outlet,Link, Navigate, useNavigate} from 'react-router-dom'
 import './MentorRootLayout.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { mentorLogout } from '../../Redux/Slices/MentorAuthSlice';
+import { jwtDecode } from 'jwt-decode';
+import { clearMentor, fetchMentor } from '../../Redux/Slices/MentorDetailSlice';
 
 const MentorRootLayout = () => {
     const dispatch = useDispatch()
     const selector = useSelector((state)=>state.MentorToken)
-    console.log('sele',selector)
+    const MentorAuthenticated= selector.is_authenticated
+    const {mentor,status,error} = useSelector((state)=>state.Mentor)
     const navigate = useNavigate()
+
+    
+    useEffect(()=>{
+        const fetchMentorDetails = async () =>{
+            try{
+                if(selector.access){
+                    const access = selector.access
+                    const decodedToken = jwtDecode(selector.access)
+                    const mentorId = decodedToken.user_id
+                    await dispatch(fetchMentor(mentorId))
+                
+            }
+            
+        }catch(error){
+            console.log("not logged in")
+        }
+
+       }
+       fetchMentorDetails()
+    },[selector,dispatch])
+
+
+
     const handleLogout = useCallback(()=>{
         dispatch(mentorLogout())
+        dispatch(clearMentor())
         navigate('/mentor/login/')
         localStorage.removeItem('access')
         localStorage.removeItem('refresh')
 
     },[dispatch])
+
+
   return (
     <>    
     {(!selector.is_authenticated | !selector.type == 'mentor')?<Navigate to={'/mentor/login/'}/>:<>

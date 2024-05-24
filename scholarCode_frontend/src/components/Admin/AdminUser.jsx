@@ -69,9 +69,9 @@ const AdminUser = () => {
             <br />
             <h6 className='m-2'>Designation: {user.designation}</h6>
             <br />
-            <h6 className='m-2'>Status: {user.isactive?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
+            <h6 className='m-2'>Status: {user.is_active?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
             <br />
-            <Button className="p-2" variant={user.isactive?"danger":"success"} onClick={() => setModalShow(true)}>{user.isactive?"Block User":"Unblock User"}</Button>
+            <Button className="p-2" variant={user.is_active?"danger":"success"} onClick={() => setModalShow(true)}>{user.is_active?"Block User":"Unblock User"}</Button>
             
             </Col>
            
@@ -117,7 +117,7 @@ function MyVerticallyCenteredModal(props) {
   const id = props.id
   const handleBlock = async () => {
     try {
-    const updateData = { isactive: !props.user.isactive }; 
+    const updateData = { is_active: !props.user.is_active }; 
     const updatedUser = await userstatusInstance(id, updateData); // Pass update data to userstatusInstance
     console.log("User status updated successfully:", updatedUser);
       dispatch(blockUser(id));

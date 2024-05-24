@@ -1,15 +1,66 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import signupImage from '../../assets/signupImage.jpg'
 import Form from 'react-bootstrap/Form';
 import './SignUp.css'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { UserLogin } from '../../Redux/Slices/UserAuthSlice';
+import { Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
 
-    const [, set] = useState(second)
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
+    const [authData, setAuthData] = useState({
+        email:"",
+        password:""
+    })
+
+    const handleChange = (e)=>{
+        const {name,value} = e.target
+        setAuthData((prevData)=>({
+            ...prevData,
+            [name]:value
+        }))
+    }
+    
+    const handleSubmit =useCallback(async (e)=>{
+        e.preventDefault()
+        const isFormValid = Object.values(authData).every((value)=>{
+            if(typeof value === 'string'){
+                return value.trim() !== ''
+
+            }
+            return true
+        })
+        if (isFormValid){
+
+            try{
+                const res = await dispatch(UserLogin(authData))
+                console.log(res,'ress')
+                if (res.payload.error === 'Authentication Failed'){
+                    toast.error("Invalid credentials")
+                }else{
+                    toast.success('Successfully logged in')
+                    navigate('/')
+                    localStorage.setItem('access',res.payload.access)
+                    localStorage.setItem('refresh',res.payload.refresh)
+                }
+                
+
+            }catch(error){
+                console.log(error)
+            }
+        }else{
+            toast.error("All fields are required!")
+        }
+
+    },[authData])
   return (
     <>
         <Row className='p-5 mx-5'>
@@ -21,16 +72,16 @@ const Login = () => {
                 <p className='mx-5 mt-5'>Already have an account? <Link to={'/user/signup/'}>Signup</Link> </p>
                 <div className='p-5'>
 
-                <Form>
+                <Form onSubmit={(e)=>handleSubmit(e)}>
                     
                     <Form.Group className="mb-3" controlId="formGroupEmail">
-                        <Form.Control type="email" placeholder="Email" size='lg'/>
+                        <Form.Control type="email" name='email' value={authData.email} onChange={handleChange} placeholder="Email" size='lg'/>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Control type="password" placeholder="Password" size='lg'/>
+                        <Form.Control type="password" name='password' value={authData.password} onChange={handleChange} placeholder="Password" size='lg'/>
                     </Form.Group>
+                    <Button className='signupButton' variant='' type='submit'>Login</Button>
                     
-                    <button className='signupButton' type='submit'>Login</button>
                     <br />
                     {/* <h3 className='text-center p-5 '>or</h3> */}
                 </Form>

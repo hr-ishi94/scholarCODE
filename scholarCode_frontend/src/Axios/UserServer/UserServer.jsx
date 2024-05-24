@@ -1,11 +1,11 @@
 import { axiosInstance } from "../Utils/AxiosInstances";
 
-export const UserRegister = async({username,email,password,isactive})=>{
+export const UserRegister = async({username,email,password,is_active})=>{
     const newUser = {
         username,
         email,
         password,
-        isactive
+        is_active
     }
     try{
         const response = await axiosInstance.post('/users/',newUser)

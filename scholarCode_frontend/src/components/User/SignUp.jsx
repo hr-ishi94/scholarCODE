@@ -18,7 +18,7 @@ const SignUp = () => {
         email:"",
         password:"",
         confirm_password:"",
-        isactive:false
+        is_active:false
     })
     const [loading, setLoading] = useState(false)
     const [signupError,setSignupError] = useState("")

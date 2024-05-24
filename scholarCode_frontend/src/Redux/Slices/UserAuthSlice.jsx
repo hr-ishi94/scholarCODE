@@ -3,6 +3,7 @@ import { initialstate } from "../Store/rootStore";
 import { UserResponse } from "../../Axios/UserServer/UserLoginResponse";
 
 export const UserLogin = createAsyncThunk('user/login',async ({email,password})=>{
+    console.log(email,"emails")
     const authdata = await UserResponse(email,password)
     return authdata
 })
@@ -11,6 +12,14 @@ const UserauthSlice = createSlice({
     name:'auth-user',
     initialState:initialstate.UserToken,
     reducers:{
+        userLogout:(state)=>{
+            state.access = null,
+            state.refresh = null,
+            state.is_authenticated =false,
+            state.is_superuser= false,
+            state.type = null,
+            state.registerSuccess= null
+        }
 
     },
     extraReducers:(builders)=>{
@@ -27,5 +36,5 @@ const UserauthSlice = createSlice({
 })
 
 
-
+export const {userLogout} = UserauthSlice.actions
 export default UserauthSlice.reducer

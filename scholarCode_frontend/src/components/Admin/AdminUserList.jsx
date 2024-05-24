@@ -57,7 +57,7 @@ const AdminUserList = () => {
           <td>{user.first_name}</td>
           <td>04</td>
           <td>{user.email}</td>
-          <td>{user.isactive?<span className='text-success'>Active</span>:<span className='text-danger'>InActive</span>}</td>
+          <td>{user.is_active?<span className='text-success'>Active</span>:<span className='text-danger'>InActive</span>}</td>
           <td><Link to={`/admin/user/${user.id}/`}><Button className="p-1 m-1 text-light"style={{backgroundColor:"#12A98E"}} variant=''>View</Button></Link></td>
         </tr>
 

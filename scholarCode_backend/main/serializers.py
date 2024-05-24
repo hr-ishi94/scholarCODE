@@ -99,6 +99,9 @@ class MentorLoginSerializer(serializers.ModelSerializer):
         if not mentor.is_staff:
             raise AuthenticationFailed("Please check your mail for activation link and then login")
         
+        if mentor.is_superuser:
+            raise AuthenticationFailed("Sorry Admin, You can't login as mentor")
+        
         mentor_token = mentor.tokens()
         return {
             'email':mentor.email,
@@ -120,6 +123,15 @@ class MentorSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+    
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password',None)
+        for attr, value in validated_data.items():
+            setattr(instance,attr,value)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
 
 # user model serializer 
 class UserSerializer(serializers.ModelSerializer):
@@ -137,11 +149,20 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password',None)
+        for attr, value in validated_data.items():
+            setattr(instance,attr,value)
+        if password:
+            instance.set_password(password)
+        instance.save()
+        return instance
+    
 class MentorSerializerWithToken(MentorSerializer):
     token = serializers.SerializerMethodField(read_only = True)
     class Meta:
         model = Mentor
-        fields = ['id','is_staff','isActive','token']
+        fields = ['id','is_staff','is_active','token']
 
     def get_token(self,obj):
         token = RefreshToken.for_user(obj)

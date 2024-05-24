@@ -19,6 +19,7 @@ export const UserResponse  = async(email,password)=>{
         }
 
     }catch(error){
+        console.log(error.Response,"erooroii")
         error = {'error':'Authentication Failed'}
         return error
     }

@@ -64,9 +64,9 @@ const AdminActiveMentor = () => {
             <br />
             <label className='m-2'>No. of courses assigned: </label>
             <br />
-            <label className='m-2'>Status:{mentor.isActive?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</label>
+            <label className='m-2'>Status:{mentor.is_active?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</label>
             <br />
-            <Button className='p-2' variant={mentor.isActive?"danger":"success"} onClick={() => setModalShow(true)}>{mentor.isActive?"Block":"UnBlock"}</Button>
+            <Button className='p-2' variant={mentor.is_active?"danger":"success"} onClick={() => setModalShow(true)}>{mentor.is_active?"Block":"UnBlock"}</Button>
           <br />
           <br />
           {/* <h4>Courses Assigned</h4>
@@ -102,15 +102,15 @@ export default AdminActiveMentor
 
 function MentorStatusModal(props) {
   const id = props.id
-  const status = props.mentor.isActive?"block":"unblock"
+  const status = props.mentor.is_active?"block":"unblock"
   const dispatch = useDispatch()
   const changeStatus = async()=>{
     try{
-      const statusUpdate = {isActive:!props.mentor.isActive}
+      const statusUpdate = {is_active:!props.mentor.is_active}
       const response = await mentorStatusInstance(id,statusUpdate)
       console.log("mentorupdate response",response.data)
       dispatch(mentorStatus())
-      console.log(props.mentor.isActive)
+      console.log(props.mentor.is_active)
       props.onHide()
     }
     catch(error){

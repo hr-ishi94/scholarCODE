@@ -1,5 +1,5 @@
-import React from 'react'
-import {Outlet} from 'react-router-dom'
+import React, { useCallback, useEffect } from 'react'
+import {Outlet,Link, useNavigate} from 'react-router-dom'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -9,14 +9,61 @@ import '../../components/NavBar/Navibar.css'
 import '../../components/Footer/Footer.css'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { userLogout } from '../../Redux/Slices/UserAuthSlice';
+import { jwtDecode } from 'jwt-decode';
+import { fetchUser, logoutUser } from '../../Redux/Slices/UserDetailsSlice';
+import { toast } from 'react-toastify';
+import Loader from '../../components/Utils/Loader';
 
 const Homelayout = () => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const userSelector = useSelector((state)=>state.UserToken)
+  const {user,status,error} = useSelector((state)=>state.User)
+  const userAuthenticated = userSelector.is_authenticated
+  
+  useEffect(()=>{
+    const fetchUserData = async()=>{
+      
+      try{
+        if(userSelector.access){
+          
+          const access = userSelector.access
+          const decodedToken = jwtDecode(access)
+          const userId = decodedToken.user_id
+          await dispatch(fetchUser(userId))
+        }
+      }
+      catch(error){
+        console.log("not logged in")
+      }
+    }
+    fetchUserData()
+    
+  },[userSelector,dispatch])
+  
+  
+  const handleLogout = useCallback(()=>{
+    dispatch(userLogout())
+    dispatch(logoutUser())
+    navigate('/')
+    toast.success("Logout successful")
+    localStorage.removeItem('access')
+    localStorage.removeItem('refresh')
+  },[dispatch])
+  console.log("user:",user)
+  
+  if (status === "loading") {
+    return <Loader />;
+  }
+  
+  
   return (
     <>
      <Navbar collapseOnSelect expand="lg" className="bg-body-tertiary">
         <Container>
-          <Navbar.Brand href="#home"><img src={logo} className='logo'/></Navbar.Brand>
+        <Link to={'/'} className="react-router-link"><Navbar.Brand href="#home"><img src={logo} className='logo'/></Navbar.Brand></Link>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
@@ -27,14 +74,17 @@ const Homelayout = () => {
               <Link to={'/mentors/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Mentors</Nav.Link></Link>
               <Nav.Link href="#deets" className='options'>Contact Us</Nav.Link>
               {/* <Link to={'/user/signup/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link> */}
-              <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>
-              <NavDropdown title="User" className='options' id="collapsible-nav-dropdown">
+              {!userAuthenticated?
+              <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>:
+              <NavDropdown title={( user.first_name)?user.first_name:"User"} className='options ' id="collapsible-nav-dropdown">
+                <NavDropdown.Item href="#action/3.1" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> My courses</Link></NavDropdown.Item>
+                <NavDropdown.Divider />
                 <NavDropdown.Item href="#action/3.1" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> User Profile</Link></NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4" className='options'>
+                <NavDropdown.Item href="#action/3.4" className='options' onClick={handleLogout}>
                   Logout
                 </NavDropdown.Item>
-              </NavDropdown>
+              </NavDropdown>}
               
             </Nav>
           </Navbar.Collapse>

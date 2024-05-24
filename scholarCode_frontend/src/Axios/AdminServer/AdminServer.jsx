@@ -17,7 +17,7 @@ export const usersListInstance = async()=>{
 export const userstatusInstance = async(id,updateData) =>{
     try{
         console.log(id,"idss")
-        const res = await axiosInstance.put(`user/${id}/`,updateData)
+        const res = await axiosFormInstance.put(`user/${id}/`,updateData)
         console.log('updated res',res)
         if(res.status === 200 ){
             return res.data
@@ -52,7 +52,7 @@ export const mentorDetails= async (id)=>{
 export const mentorStatusInstance = async (id,updateMentor)=>{
     try{
 
-        const res = await axiosInstance.put(`mentor/${id}/`,updateMentor)
+        const res = await axiosFormInstance.put(`mentor/${id}/`,updateMentor)
         if (res.status ===200){
             return res.data
         }else{

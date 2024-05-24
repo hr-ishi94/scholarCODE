@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Image from 'react-bootstrap/Image'
@@ -331,10 +331,8 @@ const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task,id})=>{
       task:""
     })
     const dispatch = useDispatch()
-
-    useEffect(() => {
-        setNewTask(task)
-    }, [task]);
+    console.log(task.id)
+    
 
     const handleChange = (e)=>{
         
@@ -357,6 +355,10 @@ const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task,id})=>{
         }
 
     }
+    useEffect(() => {
+      setNewTask(task)
+      dispatch(fetchTask(task.id))
+  }, [task,dispatch]);
 
     return (
     <>

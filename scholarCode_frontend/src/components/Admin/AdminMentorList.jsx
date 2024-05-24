@@ -18,7 +18,7 @@ const MentorTableData=({props,index})=>{
     <td>{mentor.first_name } {mentor.last_name} </td>
     <td>04</td>
     <td>{mentor.email}</td>
-    <td>{mentor.isActive?<span className='text-success'>Active</span>:<span className='text-danger'>Inactive</span>}</td>
+    <td>{mentor.is_active?<span className='text-success'>Active</span>:<span className='text-danger'>Inactive</span>}</td>
     
     
  </>

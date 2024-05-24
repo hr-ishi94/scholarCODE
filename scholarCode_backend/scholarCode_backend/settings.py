@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # custom_apps
     'main',
+    'course',
 
     # dependencies
     'rest_framework',

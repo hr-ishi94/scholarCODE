@@ -1,0 +1,22 @@
+from django.db import models
+from main.models import *
+
+# Create your models here.
+class MentorCourses(models.Model):
+    mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
+    course = models.OneToOneField(Course,on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.course.name
+
+class EnrolledCourse(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    course = models.ForeignKey(MentorCourses, on_delete=models.CASCADE)
+    curr_module = models.CharField(max_length=100,default=1)
+    enroll_id= models.CharField(max_length=100)
+    is_completed =models.BooleanField(default=False)
+    certificate = models.CharField(blank=True)
+
+    def __str__(self):
+        return self.enroll_id
+

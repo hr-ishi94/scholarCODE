@@ -74,6 +74,7 @@ class CustomUser(AbstractBaseUser):
     username = models.CharField(max_length=150, unique=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -102,10 +103,8 @@ class Mentor(CustomUser):
     course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
     linkedin_profile = models.CharField(max_length=300)
     profile_img = models.ImageField(upload_to='mentor/uploads/',blank=True)
-    isActive = models.BooleanField(default=True)
     
 class User(CustomUser):
     designation = models.CharField(max_length=100,blank=True)
     profile_img = models.ImageField(upload_to='user/uploads/',blank=True)
-    isactive = models.BooleanField(default=True)
 

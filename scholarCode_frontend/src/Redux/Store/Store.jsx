@@ -13,6 +13,7 @@ import AdminAuthSlice from "../Slices/AdminAuthSlice";
 import usersListSlice from '../Slices/UserListSlice'
 import MentorAuthSlice from "../Slices/MentorAuthSlice";
 import UserAuthSlice from "../Slices/UserAuthSlice";
+import MentorCourseSlice from "../Slices/mentorSide/MentorCourseSlice";
 
 
 const rootReducer = combineReducers({
@@ -27,7 +28,10 @@ const rootReducer = combineReducers({
     Task:TaskEditSlice,
     AdminToken:AdminAuthSlice,
     MentorToken:MentorAuthSlice,
-    UserToken:UserAuthSlice
+    UserToken:UserAuthSlice,
+    // mentor side
+    MentorCourses :MentorCourseSlice
+    
 
 })
 

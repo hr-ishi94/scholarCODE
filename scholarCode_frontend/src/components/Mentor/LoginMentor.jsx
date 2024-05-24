@@ -12,7 +12,6 @@ const LoginMentor = () => {
   const dispatch = useDispatch()
   const selector = useSelector((state)=>state.MentorToken)
   const MentorAuthenticated = selector.is_authenticated
-  console.log(selector,MentorAuthenticated,'sele')
   const navigate = useNavigate()
   
   const [authData, setauthData] = useState({

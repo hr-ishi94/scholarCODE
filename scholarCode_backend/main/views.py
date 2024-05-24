@@ -44,6 +44,7 @@ class AdminLogin(generics.CreateAPIView):
         
         serializer.is_valid(raise_exception = True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+    
 # user login 
 class UserLogin(generics.CreateAPIView):
     serializer_class = UserLoginSerializer
@@ -82,6 +83,12 @@ class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
+        data = request.data.copy()
+        password = data.get('password')
+        if password:
+            instance.set_password(password)
+            instance.save()
+            data.pop('password',None)
         serializer = self.get_serializer(instance,data = request.data,partial = True)
         if serializer.is_valid():
             serializer.save()
@@ -100,7 +107,7 @@ class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
     def put (self,request, *args, **kwargs):
         data = request.data
         try:
-            Mentor.objects.filter(pk = kwargs['pk']).update(is_staff = data['is_staff'],isActive = data['isActive'])
+            Mentor.objects.filter(pk = kwargs['pk']).update(is_staff = data['is_staff'])
             mentor = Mentor.objects.get(pk=kwargs['pk'])
             print(mentor.pk,"dsfsdfdskkkkk")
             email_subject = 'Mentor Request Accepted'
@@ -130,7 +137,7 @@ class MentorActivateAccountView(View):
             mentor = None
 
         if mentor is not None and generate_token.check_token(mentor,token):
-            mentor.isActive = True
+            mentor.is_active = True
             mentor.save()
             message = {"details": "Account is activated..."}
             return HttpResponse("Activation success.You can login to your account now")
@@ -165,7 +172,7 @@ class UserList(generics.ListCreateAPIView):
                         username=username,
                         email=email,
                         password=make_password(data['password']),
-                        isactive=data['isactive']
+                        is_active=data['is_active']
                     )
                     email_subject = 'Activate Your Account'
                     message = render_to_string("activate.html", {
@@ -197,7 +204,7 @@ class ActivateAccountView(View):
             user = None
 
         if user is not None and generate_token.check_token(user, token):
-            user.isactive = True
+            user.is_active = True
             user.save()
             message = {"details": "Account is activated..."}
             return HttpResponse("Activation success.You can login to your account now")
@@ -212,6 +219,12 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
+        data = request.data.copy()
+        password = data.get('password')
+        if password:
+            instance.set_password(password)
+            instance.save()
+            data.pop('password',None)
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -242,7 +255,7 @@ class CoursesList(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
     authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
 
@@ -251,7 +264,7 @@ class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer 
     authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data = request.data, partial =True)
@@ -287,7 +300,7 @@ class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['GET','POST'])
 @authentication_classes([JWTAuthentication])
-@permission_classes([AdminOnlyPermission,IsAuthenticated])
+# @permission_classes([AdminOnlyPermission,IsAuthenticated])
 def TaskList(request, course_id):
     
     if request.method == 'GET':
