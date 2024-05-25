@@ -88,5 +88,11 @@ export const initialstate = {
         courses:[],
         status:'idle',
         error:''
+    },
+    // Enrolled courses,
+    EnrolledCourses:{
+        enrolls:[],
+        status:'idle',
+        error:''
     }
 }

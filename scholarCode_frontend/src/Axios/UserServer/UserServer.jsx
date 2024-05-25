@@ -1,4 +1,4 @@
-import { axiosInstance } from "../Utils/AxiosInstances";
+import { axiosCourseInstance, axiosInstance } from "../Utils/AxiosInstances";
 
 export const UserRegister = async({username,email,password,is_active})=>{
     const newUser = {
@@ -20,4 +20,19 @@ export const UserRegister = async({username,email,password,is_active})=>{
         }
     }
 
+}
+
+export const EnrolledCoursesList = async (id)=>{
+    try{
+
+        const res = await axiosCourseInstance.get(`/enroll/${id}/`)
+        if(res.status === 200){
+            return res.data
+        }
+
+    }catch(error){
+        
+        console.log("error:",error)
+        
+    }
 }

@@ -10,6 +10,7 @@ class MentorCourseSerializer(serializers.ModelSerializer):
         fields = ['id','mentor','course']
         
 class EnrollSerializer(serializers.ModelSerializer):
+    course = MentorCourseSerializer()
     
     class Meta:
         model = EnrolledCourse

@@ -6,14 +6,14 @@ import { Button } from 'react-bootstrap'
 import samplecourse from '../../assets/samplecourse.png'
 import Modal  from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseDetails } from '../../Redux/Slices/CourseDetailsSlice'
 import { fetchTasksList } from '../../Redux/Slices/TasksListSlice'
 import Loader from '../Utils/Loader'
 import { mentorCourseDelete } from '../../Axios/MentorServer/MentorServer'
 import { toast } from 'react-toastify'
-import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
+import { clearCourse, fetchMentorCourse, relieveCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 
 
 
@@ -21,15 +21,18 @@ const MentorCourseDetails = () => {
     const params = useParams()
     const dispatch = useDispatch()
     const {course,status,error} = useSelector((state)=>state.Course)
+    
     const taskSelector = useSelector((state)=>state.Tasks)
-    const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
-    const mentorCourse = mentorCourseSelector.courses.filter((mentorCourse)=>mentorCourse.course == course.id )
-    const id = mentorCourse[0].id
+    const mentorSelector= useSelector((state)=>state.Mentor)
+    const mentorId =  mentorSelector.mentor.id
+
+    
     const [modalShow, setModalShow] = useState(false);
     
     useEffect(()=>{
         dispatch(fetchCourseDetails(params.id))
         dispatch(fetchTasksList(params.id))
+        // dispatch(fetchMentorCourse(mentorId))
     },[dispatch])
     
     const modulesSet = new Set()
@@ -109,7 +112,7 @@ const MentorCourseDetails = () => {
       <MyVerticallyCenteredModal
         show={modalShow}
         onHide={() => setModalShow(false)}
-        id = {id}
+        course = {course}
       />
     </Row>
     
@@ -120,11 +123,23 @@ const MentorCourseDetails = () => {
 export default MentorCourseDetails
 
 function MyVerticallyCenteredModal(props) {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    
+    const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
+    const mentorCourse = mentorCourseSelector.courses.filter((mentorCourse)=>mentorCourse.course == props.course.id )
+    const id = mentorCourse[0].id
+    console.log(mentorCourseSelector,'sf')
+    // const id = 1
+
     const handleDelete =useCallback(async ()=>{
     try{
 
-        const res = await mentorCourseDelete(props.id)
-        console.log("success")
+        const res = await mentorCourseDelete(id)
+        navigate('/mentor/courses/')
+        dispatch(relieveCourse(id))
+        console.log("success",id)
+        toast.success("You have relieved the course ")
     }catch(error){
         toast.error('Failed to releive from the course')
     }        

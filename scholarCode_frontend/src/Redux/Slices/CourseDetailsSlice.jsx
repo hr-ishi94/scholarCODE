@@ -10,7 +10,7 @@ export const fetchCourseDetails = createAsyncThunk('admin/course/details',async(
         return res
     }
     catch(error){
-        throw error
+        console.log(error)
     }
 })
 

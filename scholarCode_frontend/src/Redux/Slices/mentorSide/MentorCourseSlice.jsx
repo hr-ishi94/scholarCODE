@@ -9,7 +9,7 @@ export const fetchMentorCourse =createAsyncThunk('mentor/course',async(id)=>{
         return response
     }
     catch(error){
-        throw error
+        console.log("mentor fetching error")
     }
 })
 
@@ -20,7 +20,13 @@ const MentorCourseSlice = createSlice({
     reducers:{
         addCourse :(state,action)=>{
             state.courses=[...state.courses,action.payload]
-        }
+        },
+        clearCourse:(state)=>{
+            return initialstate.MentorCourses
+        },
+        relieveCourse: (state, action) => {
+            state.courses=state.courses.filter((mentorCourse) => mentorCourse.id !== action.payload)
+            }
 
     },
     extraReducers:(builder)=>{
@@ -41,5 +47,5 @@ const MentorCourseSlice = createSlice({
     }
 })
 
-export const {addCourse} = MentorCourseSlice.actions
+export const {addCourse,clearCourse,relieveCourse} = MentorCourseSlice.actions
 export default MentorCourseSlice.reducer

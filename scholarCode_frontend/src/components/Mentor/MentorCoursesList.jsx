@@ -32,17 +32,20 @@ const MentorCoursesList = () => {
         dispatch(fetchMentorCourse(id))
         dispatch(fetchCoursesList())
     },[dispatch])
-
+    console.log(mentorCourseSelector,'df')
     const sortedCourses = [];
-
-    mentorCourseSelector.courses.forEach(courseId => {
-        const matchingCourse = courseSelector.courses.find(course => course.id === courseId.course);
-
-        if (matchingCourse) {
-        sortedCourses.push(matchingCourse);
+   
+    if (mentorCourseSelector.courses && mentorCourseSelector.courses.length > 0) {
+        mentorCourseSelector.courses.forEach(courseId => {
+            const matchingCourse = courseSelector.courses.find(course => course.id === courseId.course);
+            if (matchingCourse) {
+                sortedCourses.push(matchingCourse);
+            }
+        });
+    } else {
+        // Handle the case of an empty array (optional)
+        console.log("No courses found in mentorCourseSelector.courses");
     }
-
-    });
             
     if (mentorCourseSelector.status =='loading'){
         return <Loader/>
