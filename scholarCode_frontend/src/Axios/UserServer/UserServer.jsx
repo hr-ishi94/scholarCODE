@@ -36,3 +36,18 @@ export const EnrolledCoursesList = async (id)=>{
         
     }
 }
+
+export const EnrollCourse = async(id,FormData) =>{
+    console.log(FormData,'keid')
+    try{
+        const res = await axiosCourseInstance.post(`/enroll/${id}/`,FormData)
+        if(res.status === 200){
+            return res.data
+        }
+    }catch(error){
+        if(error.response){
+            console.log('user server error:',error.response.data)
+            return error.response
+        }
+    }
+}

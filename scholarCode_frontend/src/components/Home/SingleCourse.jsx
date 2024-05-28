@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect ,useState} from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Image from 'react-bootstrap/Image'
@@ -11,49 +11,143 @@ import { fetchCourseDetails } from '../../Redux/Slices/CourseDetailsSlice'
 import Loader from '../Utils/Loader'
 import Card from 'react-bootstrap/Card';
 import { fetchTasksList } from '../../Redux/Slices/TasksListSlice'
-import Form from 'react-bootstrap/Form';
+import axios from "axios";
 import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
+import logo from '../../assets/logo.png'
+import { toast } from 'react-toastify'
+import { EnrollCourse } from '../../Axios/UserServer/UserServer'
+import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
+
 
 const SingleCourse = () => {
 
+  const dispatch = useDispatch()
+
+  
   const enrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
   const {course,status,error} = useSelector((state)=>state.Course)
   const TaskSelector  = useSelector((state)=>state.Tasks)
   const userSelector = useSelector((state)=>state.User)
-  
-  console.log(enrolledCourseSelector.enrolls[1].course.course,'sopas')
-  const EnrolledCourse= enrolledCourseSelector && enrolledCourseSelector.enrolls.find((enroll)=>enroll.course.course === course.id)
-  const currModule = EnrolledCourse.curr_module
-  console.log(currModule,'sfp')  
+  const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
+  const MentorSelector = useSelector((state)=>state.Mentors)
+  const user_id = userSelector.user.id
+  useEffect(()=>{
+    dispatch(fetchCourseDetails(params.id))
+    dispatch(fetchTasksList(params.id))
+    dispatch(fetchEnrolledCourses(user_id))
+    
+
+  },[dispatch])
+  const MentorCourse=mentorCourseSelector && mentorCourseSelector.courses.find((n)=>n.course == course.id)
+  const EnrolledCourse= enrolledCourseSelector && enrolledCourseSelector.enrolls.find((enroll)=>enroll.course === MentorCourse.id)
+  const mentorData = MentorCourse && MentorSelector.mentors.find((mentor)=>mentor.id = MentorCourse.mentor)
+  const currModule = EnrolledCourse?EnrolledCourse.curr_module:''
+
 
   const params = useParams()
-  const user_id =userSelector.user.id
   const tasks  = TaskSelector.tasks
-  const moduleSet= new Set()
+  const moduleSet = new Set()
   
   
-  
-  tasks.map((task)=>
+  tasks && tasks.map((task)=>
     moduleSet.add(task.module))
   
   const modules = [...moduleSet]
 
   modules.sort();
-  
-  
-  const dispatch = useDispatch()
-  useEffect(()=>{
-    dispatch(fetchCourseDetails(params.id))
-    dispatch(fetchTasksList(params.id))
-    dispatch(fetchEnrolledCourses(user_id))
-  },[dispatch])
 
-
-
+  const enrollCourse = async(id)=>{
+    const formData = {
+      user:userSelector.user.id,
+      course:MentorCourse.id
+    }
+    const res = await EnrollCourse(id,formData)
+    console.log('response',res) 
+  }
 
   if (status === 'loading'){
     return <Loader/>
   }
+  
+
+  // RAZORPAY
+    //Function to load razorpay script for the display of razorpay payment SDK.
+    function loadRazorpayScript(src) {
+      return new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = src;
+          script.onload = () => {
+              resolve(true);
+          };
+          script.onerror = () => {
+              resolve(false);
+          };
+          document.body.appendChild(script);
+      });
+  }
+  
+  //function will get called when clicked on the pay button.
+  async function displayRazorpayPaymentSdk() {
+    const res = await loadRazorpayScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+    );
+  
+    if (!res) {
+        alert("Razorpay SDK failed to load. please check are you online?");
+        return;
+    }
+  
+    // creating a new order and sending order ID to backend
+    const result = await axios.post("http://127.0.0.1:8000/course/razorpay_order/", {
+        "email" : userSelector.user.email,
+        'course_id':course.id,
+        'amount':course.price
+    });
+  
+    if (!result) {
+        alert("Server error. please check are you online?");
+        return;
+    }
+  
+    // Getting the order details back
+     const {merchantId=null , amount=null,currency=null,orderId=null } = result.data;
+  
+    const options = {
+        key: merchantId,
+        amount: amount.toString(),
+        currency: currency,
+        name: "ScholarCODE",
+        description: "Test Transaction",
+        image:logo,
+        order_id: orderId,
+        prefill: {
+         
+          email: userSelector.user.email,
+      },
+        notes: {
+            address: "None",
+        },
+        theme: {
+            color: "#12A98E",
+        },
+        handler: async function (response) {
+          const verificationResult = await axios.post("http://127.0.0.1:8000/course/razorpay_callback/", response);
+          if (verificationResult.data.status === 'Payment Done') {
+            enrollCourse(user_id)
+            toast.success('Course Enrolled successfully!')
+          } else {
+            toast.error('Payment verification failed. Please try again.')
+          }
+        }
+    };
+  
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
+  }
+
+
+
+
 
   return (
     <div className='container'>
@@ -97,7 +191,7 @@ const SingleCourse = () => {
                   <br />
                   <h4 >Price: ₹{course.price}* only</h4>
                   <br />
-                  <Button className='p-2 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Enroll now</Button>
+                  <Button className='p-2 text-light' variant='' style={{backgroundColor:"#12A98E"}} onClick={displayRazorpayPaymentSdk}>Enroll now</Button>
                   </>
                 }
                 
@@ -108,6 +202,8 @@ const SingleCourse = () => {
     <br />
     <br />
     <Row>
+    {/* {
+                  !EnrolledCourse? */}
       <Col sm={4}>
       <h3 className='mx-3'><i className="fa-solid fa-certificate"></i> Certifications</h3>
       <br />
@@ -119,6 +215,19 @@ const SingleCourse = () => {
       <br />
       <br />
       </Col>
+      {/* :<Col>
+      <h3 className='mx-5'>Mentor Details</h3>
+      <Card style={{ width: '18rem' }}>
+        <Card.Img variant="top" src=""/>
+        <Card.Body>
+          <Card.Text>
+            Some quick example text to build on the card title and make up the
+            bulk of the card's content.
+          </Card.Text>
+        </Card.Body>
+      </Card>
+      
+      </Col>} */}
       <Col sm={8}>
       <h2><strong>Syllabus</strong></h2>
       <br />
@@ -171,6 +280,8 @@ const SingleCourse = () => {
       </Col>
     </Row>
 
+
+
     </div>
 
 
@@ -179,6 +290,5 @@ const SingleCourse = () => {
 }
 
 export default SingleCourse
-
 
 

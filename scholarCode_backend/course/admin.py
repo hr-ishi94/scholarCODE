@@ -3,3 +3,4 @@ from .models import *
 # Register your models here.
 admin.site.register(MentorCourses)
 admin.site.register(EnrolledCourse)
+admin.site.register(RazorpayPayment)

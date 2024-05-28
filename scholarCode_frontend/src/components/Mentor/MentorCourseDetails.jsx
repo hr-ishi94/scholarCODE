@@ -22,6 +22,12 @@ const MentorCourseDetails = () => {
     const dispatch = useDispatch()
     const {course,status,error} = useSelector((state)=>state.Course)
     
+    useEffect(()=>{
+        dispatch(fetchCourseDetails(params.id))
+        dispatch(fetchTasksList(params.id))
+        dispatch(fetchMentorCourse(mentorId))
+    },[dispatch])
+    
     const taskSelector = useSelector((state)=>state.Tasks)
     const mentorSelector= useSelector((state)=>state.Mentor)
     const mentorId =  mentorSelector.mentor.id
@@ -29,11 +35,6 @@ const MentorCourseDetails = () => {
     
     const [modalShow, setModalShow] = useState(false);
     
-    useEffect(()=>{
-        dispatch(fetchCourseDetails(params.id))
-        dispatch(fetchTasksList(params.id))
-        // dispatch(fetchMentorCourse(mentorId))
-    },[dispatch])
     
     const modulesSet = new Set()
 
@@ -168,3 +169,5 @@ function MyVerticallyCenteredModal(props) {
     </Modal>
   );
 }
+
+

@@ -25,6 +25,14 @@ def EnrolledCoursesList(request,user_id):
             return Response(serializer.data)
         except Exception as e:
             return Response({'message':str(e)},status= status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method =='POST':
+        serializer = EnrollSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+
 
 
 

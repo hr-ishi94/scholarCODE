@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 
 const CourseCard = ({course})=>(
+
     <Card style={{ width: '22rem' }} className='m-3 p-3'>
       <Link to={`/course/${course.id}/`}>
         <Card.Img variant="top" src={course.thumbnail ? course.thumbnail : ""} />
@@ -27,8 +28,21 @@ const CourseCard = ({course})=>(
 
 const Courses = () => {
   const {courses,status,error} = useSelector((state)=>state.Courses)
+  const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
+  
+  const CourseIdSet = new Set()
+  
+  MentorCourseSelector && MentorCourseSelector.courses.map((course)=>{
+    CourseIdSet.add(course.course)
+  })
+  
+  console.log(MentorCourseSelector,'sfdg')
+  console.log(CourseIdSet,'set')
+  
 
-  const activeCourses = courses.filter((course)=>course.status === true)
+
+
+  const activeCourses = courses.filter((course)=>course.status === true && CourseIdSet.has(course.id))
   
   const renderRows = (courses) => {
     const rows = [];

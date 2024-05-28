@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer ,useState} from 'react'
+import React, { useCallback, useEffect, useReducer ,useState} from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Image from 'react-bootstrap/Image'
@@ -21,7 +21,7 @@ const UserProfile = () => {
 
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
-    
+   
     
     if (status === "loading") {
         return <Loader />;

@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter,Routes,Route } from 'react-router-dom';
+import { Routes,Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AdminUserList from './components/Admin/AdminUserList';
 import AdminRootLayoot from './Pages/AdminSide/AdminRootLayout';
@@ -32,6 +32,9 @@ import MentorProfile from './components/Mentor/MentorProfile';
 import MentorReviewDetails from './components/Mentor/MentorReviewDetails';
 import SingleCourse from './components/Home/SingleCourse';
 import UserProfile from './components/Home/UserProfile';
+import Payment from './components/Home/Payment';
+import Sample from './components/Home/Sample';
+
 
 
 function App() {
@@ -80,12 +83,18 @@ function App() {
             <Route path='/user/login/' element={<Login/>}></Route>
             <Route path='/user/profile/' element={<UserProfile/>}></Route>
             <Route path='/mentor/join/' element={<JoinMentor/>}></Route>
+            <Route path='/payment/' element={<Payment/>}></Route>
+            <Route path='/sample/' element={<Sample/>}></Route>
+           
+            
           </Route>
           
 
 
           
         </Routes>
+
+        
         <ToastContainer
         position="bottom-right"
         autoClose={2000}
