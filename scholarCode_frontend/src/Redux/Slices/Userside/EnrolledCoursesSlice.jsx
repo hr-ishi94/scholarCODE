@@ -18,6 +18,9 @@ const EnrolledCoursesSlice = createSlice({
     name:'enrolls',
     initialState:initialstate.EnrolledCourses,
     reducers:{
+        newEnroll:(state,action)=>{
+            state.enrolls =[...state.enrolls,action.payload]
+        }
 
     },
     extraReducers:(builder)=>{
@@ -37,5 +40,5 @@ const EnrolledCoursesSlice = createSlice({
     }
 })
 
-
+export const { newEnroll } = EnrolledCoursesSlice.actions
 export default EnrolledCoursesSlice.reducer

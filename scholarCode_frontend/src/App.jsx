@@ -34,6 +34,7 @@ import SingleCourse from './components/Home/SingleCourse';
 import UserProfile from './components/Home/UserProfile';
 import Payment from './components/Home/Payment';
 import Sample from './components/Home/Sample';
+import MentorUser from './components/Mentor/MentorUser';
 
 
 
@@ -68,6 +69,7 @@ function App() {
             <Route path='/mentor/reviews/' element={<MentorReviewList/>}></Route>
             <Route path='/mentor/review/:id/' element={<MentorReviewDetails/>}></Route>
             <Route path='/mentor/users/' element={<MentorUserList/>}></Route>
+            <Route path='/mentor/user/:id' element={<MentorUser/>}></Route>
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>

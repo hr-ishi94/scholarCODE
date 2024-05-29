@@ -21,6 +21,9 @@ const MentorCourseDetails = () => {
     const params = useParams()
     const dispatch = useDispatch()
     const {course,status,error} = useSelector((state)=>state.Course)
+    const taskSelector = useSelector((state)=>state.Tasks)
+    const mentorSelector= useSelector((state)=>state.Mentor)
+    const mentorId =  mentorSelector.mentor.id
     
     useEffect(()=>{
         dispatch(fetchCourseDetails(params.id))
@@ -28,9 +31,6 @@ const MentorCourseDetails = () => {
         dispatch(fetchMentorCourse(mentorId))
     },[dispatch])
     
-    const taskSelector = useSelector((state)=>state.Tasks)
-    const mentorSelector= useSelector((state)=>state.Mentor)
-    const mentorId =  mentorSelector.mentor.id
 
     
     const [modalShow, setModalShow] = useState(false);
@@ -128,14 +128,17 @@ function MyVerticallyCenteredModal(props) {
     const navigate = useNavigate()
     
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
-    const mentorCourse = mentorCourseSelector.courses.filter((mentorCourse)=>mentorCourse.course == props.course.id )
-    const id = mentorCourse[0].id
-    console.log(mentorCourseSelector,'sf')
-    // const id = 1
+    const [mentorCourse] = mentorCourseSelector.courses.filter((mentorCourse)=>mentorCourse.course == props.course.id )
+    const id = mentorCourse?.id
+    
+    // console.log(mentorCourse[0].courseStatus?'sf':'sd')
+    // const id = 1  
 
+    
     const handleDelete =useCallback(async ()=>{
-    try{
 
+  
+      try{
         const res = await mentorCourseDelete(id)
         navigate('/mentor/courses/')
         dispatch(relieveCourse(id))

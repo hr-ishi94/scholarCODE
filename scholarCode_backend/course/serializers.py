@@ -4,14 +4,12 @@ from main.serializers import *
 import datetime
 
 class MentorCourseSerializer(serializers.ModelSerializer):
-    # course = CourseSerializer()
 
     class Meta:
         model = MentorCourses
         fields = ['id','mentor','course']
         
 class EnrollSerializer(serializers.ModelSerializer):
-    # course = MentorCourseSerializer()
     
     class Meta:
         model = EnrolledCourse

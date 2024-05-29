@@ -12,7 +12,7 @@ import Loader from '../Utils/Loader'
 import Card from 'react-bootstrap/Card';
 import { fetchTasksList } from '../../Redux/Slices/TasksListSlice'
 import axios from "axios";
-import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
+import { fetchEnrolledCourses, newEnroll } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
 import logo from '../../assets/logo.png'
 import { toast } from 'react-toastify'
 import { EnrollCourse } from '../../Axios/UserServer/UserServer'
@@ -61,10 +61,16 @@ const SingleCourse = () => {
       user:userSelector.user.id,
       course:MentorCourse.id
     }
-    const res = await EnrollCourse(id,formData)
-    console.log('response',res) 
+    try{
+      const res = await EnrollCourse(id,formData)
+      console.log('responsei',res) 
+      dispatch(newEnroll(res))
+      
+    }catch(error){
+      toast.error("Payment Failed")
+    }
   }
-
+  
   if (status === 'loading'){
     return <Loader/>
   }
