@@ -84,7 +84,8 @@ const MentorUser = () => {
     </thead>
     <tbody >
       
-        {UserEnrolledCourses.map((enroll,index)=>(
+        {
+        UserEnrolledCourses.map((enroll,index)=>(
             
             
             <tr>

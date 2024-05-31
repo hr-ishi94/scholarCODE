@@ -87,7 +87,6 @@ class CallbackView(APIView):
                     payment_object.payment_id = response['razorpay_payment_id']
                     payment_object.signature_id = response['razorpay_signature']
                     payment_object.save()
-
                     return Response({'status': 'Payment Done'}, status=status.HTTP_200_OK)
                 except RazorpayPayment.DoesNotExist:
                     return Response({'status': 'RazorpayPayment does not exist'}, status=status.HTTP_404_NOT_FOUND)
