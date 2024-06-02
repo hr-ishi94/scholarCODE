@@ -16,7 +16,6 @@ import { fetchEnrolledCourses, newEnroll } from '../../Redux/Slices/Userside/Enr
 import logo from '../../assets/logo.png'
 import { toast } from 'react-toastify'
 import { EnrollCourse } from '../../Axios/UserServer/UserServer'
-import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 
 
 const SingleCourse = () => {
@@ -38,10 +37,28 @@ const SingleCourse = () => {
     
 
   },[dispatch])
-  const MentorCourse=mentorCourseSelector && mentorCourseSelector.courses.find((n)=>n.course == course.id)
-  const EnrolledCourse= enrolledCourseSelector && enrolledCourseSelector.enrolls.find((enroll)=>enroll.course === MentorCourse.id)
+  
+  const MentorCourse=mentorCourseSelector && mentorCourseSelector.courses.filter((n)=>n.course == course.id)
+  const mentorCourseSet = new Set()
+  MentorCourse.map((course)=>{
+    mentorCourseSet.add(course.id)
+  })
+  const mentorCourseId = [...mentorCourseSet]
+  
+  const EnrolledCourse= enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course))
+  console.log(EnrolledCourse,'SDFSD')
   const mentorData = MentorCourse && MentorSelector.mentors.find((mentor)=>mentor.id = MentorCourse.mentor)
   const currModule = EnrolledCourse?EnrolledCourse.curr_module:''
+
+  console.log(mentorCourseId,'elf')
+
+  function getRandomMentorCourse() {
+    const randomIndex = Math.floor(Math.random() * MentorCourse.length);
+    return MentorCourse[randomIndex];
+  }
+
+  const chosenMentorCourse = getRandomMentorCourse();
+  console.log(chosenMentorCourse,'res')
 
 
   const params = useParams()
@@ -59,7 +76,7 @@ const SingleCourse = () => {
   const enrollCourse = async(id)=>{
     const formData = {
       user:userSelector.user.id,
-      course:MentorCourse.id
+      course:chosenMentorCourse.id
     }
     try{
       const res = await EnrollCourse(id,formData)
@@ -208,8 +225,8 @@ const SingleCourse = () => {
     <br />
     <br />
     <Row>
-    {/* {
-                  !EnrolledCourse? */}
+    {
+                  !EnrolledCourse?
       <Col sm={4}>
       <h3 className='mx-3'><i className="fa-solid fa-certificate"></i> Certifications</h3>
       <br />
@@ -221,19 +238,21 @@ const SingleCourse = () => {
       <br />
       <br />
       </Col>
-      {/* :<Col>
+      :<Col>
       <h3 className='mx-5'>Mentor Details</h3>
-      <Card style={{ width: '18rem' }}>
-        <Card.Img variant="top" src=""/>
+      {/* <Card style={{ width: '14rem' }} className='text-center mx-4 p-3'>
+        <Card.Img variant="top"
+        className='mx-1'
+        style={{ width: '180px', height: '180px', objectFit: 'cover', borderRadius: '40%' }}
+        src={mentorData.profile_img?mentorData.profile_img:''}/>
+        <Card.Title>{mentorData.first_name } {mentorData.last_name}</Card.Title>
         <Card.Body>
-          <Card.Text>
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+          <Card.Text>{mentorData.designation}
           </Card.Text>
         </Card.Body>
-      </Card>
+      </Card> */}
       
-      </Col>} */}
+      </Col>} 
       <Col sm={8}>
       <h2><strong>Syllabus</strong></h2>
       <br />
@@ -262,7 +281,8 @@ const SingleCourse = () => {
         
       ))}
 
-      {modules.map((module,index)=>(
+      {
+      modules.map((module,index)=>(
         <div key={index}>
         {module !==currModule &&
         <>

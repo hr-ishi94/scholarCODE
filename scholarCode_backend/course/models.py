@@ -7,11 +7,11 @@ N = 9
 # Create your models here.
 class MentorCourses(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
-    course = models.OneToOneField(Course,on_delete=models.CASCADE)
+    course = models.ForeignKey(Course,on_delete=models.CASCADE)
     courseStatus = models.BooleanField(default=True)
     
     def __str__(self):
-        return self.course.name
+        return self.course.name+" - "+self.mentor.first_name
 
 class EnrolledCourse(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)

@@ -49,7 +49,7 @@ def EnrolledCoursesList(request,user_id):
 def MentorCourseList(request,mentor_id):
     if request.method == 'GET':
         try:
-            courses = MentorCourses.objects.filter(mentor = mentor_id)
+            courses = MentorCourses.objects.all()
             if not courses:
                 return Response({'message':'No course found for this mentor'})
             serializer = MentorCourseSerializer(courses,many = True)
