@@ -45,7 +45,7 @@ def EnrolledCoursesList(request,user_id):
 
 
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','PUT'])
 def MentorCourseList(request,mentor_id):
     if request.method == 'GET':
         try:
