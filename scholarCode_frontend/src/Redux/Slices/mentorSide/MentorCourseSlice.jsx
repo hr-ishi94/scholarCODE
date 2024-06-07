@@ -2,10 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { MentorCourseAssign, MentorCourseList } from "../../../Axios/MentorServer/MentorServer";
 import { initialstate } from "../../Store/rootStore";
 
-export const fetchMentorCourse =createAsyncThunk('mentor/course',async(id)=>{
+export const fetchMentorCourse =createAsyncThunk('mentor/course',async()=>{
 
     try{
-        const response = await MentorCourseList(id)
+        const response = await MentorCourseList()
         return response
     }
     catch(error){

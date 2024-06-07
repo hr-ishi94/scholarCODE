@@ -26,8 +26,8 @@ export const MentorRegister = async({first_name,last_name, email, username, desi
     }
 }
 
-export const MentorCourseList = async(id)=>{
-    const res = await axiosCourseInstance.get(`mentor/${id}`)
+export const MentorCourseList = async()=>{
+    const res = await axiosCourseInstance.get(`mentor/`)
     if (res.status === 200){
         return res.data
     }

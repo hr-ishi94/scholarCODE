@@ -16,11 +16,15 @@ import { fetchEnrolledCourses, newEnroll } from '../../Redux/Slices/Userside/Enr
 import logo from '../../assets/logo.png'
 import { toast } from 'react-toastify'
 import { EnrollCourse } from '../../Axios/UserServer/UserServer'
+import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
+import avatar from '../../assets/avatar.jpg'
+import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 
 
 const SingleCourse = () => {
 
   const dispatch = useDispatch()
+  const params = useParams()
 
   
   const enrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
@@ -30,38 +34,40 @@ const SingleCourse = () => {
   const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const MentorSelector = useSelector((state)=>state.Mentors)
   const user_id = userSelector.user.id
+  
   useEffect(()=>{
     dispatch(fetchCourseDetails(params.id))
     dispatch(fetchTasksList(params.id))
     dispatch(fetchEnrolledCourses(user_id))
+    dispatch(fetchMentors())
+    dispatch(fetchMentorCourse())
     
 
-  },[dispatch])
-  
+  },[dispatch,params.id,user_id])
+ 
   const MentorCourse=mentorCourseSelector && mentorCourseSelector.courses.filter((n)=>n.course == course.id)
   const mentorCourseSet = new Set()
   MentorCourse.map((course)=>{
     mentorCourseSet.add(course.id)
   })
+
+  // array with all mentorCOurses id
   const mentorCourseId = [...mentorCourseSet]
-  
-  const EnrolledCourse= enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course))
-  console.log(EnrolledCourse,'SDFSD')
-  const mentorData = MentorCourse && MentorSelector.mentors.find((mentor)=>mentor.id = MentorCourse.mentor)
+  // current course if enrolled
+  const [EnrolledCourse] = enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course))
+  const currMentorCourse = EnrolledCourse && mentorCourseSelector && mentorCourseSelector.courses.find((course)=>course.id == EnrolledCourse.course)
+  const mentorData = currMentorCourse && MentorSelector.mentors.find((mentor) => mentor.id ==currMentorCourse.mentor)
   const currModule = EnrolledCourse?EnrolledCourse.curr_module:''
 
-  console.log(mentorCourseId,'elf')
-
+// function to choose random mentor
+console.log(MentorCourse)
   function getRandomMentorCourse() {
     const randomIndex = Math.floor(Math.random() * MentorCourse.length);
     return MentorCourse[randomIndex];
   }
 
-  const chosenMentorCourse = getRandomMentorCourse();
-  console.log(chosenMentorCourse,'res')
-
-
-  const params = useParams()
+  
+  
   const tasks  = TaskSelector.tasks
   const moduleSet = new Set()
   
@@ -70,10 +76,13 @@ const SingleCourse = () => {
     moduleSet.add(task.module))
   
   const modules = [...moduleSet]
-
+  
   modules.sort();
-
+  
   const enrollCourse = async(id)=>{
+    const chosenMentorCourse = getRandomMentorCourse();
+    console.log(chosenMentorCourse,'res')
+
     const formData = {
       user:userSelector.user.id,
       course:chosenMentorCourse.id
@@ -240,17 +249,17 @@ const SingleCourse = () => {
       </Col>
       :<Col>
       <h3 className='mx-5'>Mentor Details</h3>
-      {/* <Card style={{ width: '14rem' }} className='text-center mx-4 p-3'>
+      <Card style={{ width: '14rem' }} className='text-center mx-4 p-3'>
         <Card.Img variant="top"
         className='mx-1'
         style={{ width: '180px', height: '180px', objectFit: 'cover', borderRadius: '40%' }}
-        src={mentorData.profile_img?mentorData.profile_img:''}/>
+        src={mentorData.profile_img?mentorData.profile_img:avatar}/>
         <Card.Title>{mentorData.first_name } {mentorData.last_name}</Card.Title>
         <Card.Body>
           <Card.Text>{mentorData.designation}
           </Card.Text>
         </Card.Body>
-      </Card> */}
+      </Card>
       
       </Col>} 
       <Col sm={8}>

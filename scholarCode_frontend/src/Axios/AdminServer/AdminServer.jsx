@@ -118,11 +118,17 @@ export const coursesAddInstance = async(newCourse)=>{
 }
 
 export const courseDetails= async (id)=>{
-    const res = await axiosInstance.get(`course/${id}/`)
-    if (res.status === 200){
+    try{
         
-        return res.data;
-
+        const res = await axiosInstance.get(`course/${id}/`)
+        if (res.status === 200){
+            
+            return res.data;
+    
+        }
+    }catch(error){
+        console.log("error occured ",error)
+        return error
     }
 }
 

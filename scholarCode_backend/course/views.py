@@ -46,7 +46,7 @@ def EnrolledCoursesList(request,user_id):
 
 
 @api_view(['GET','POST'])
-def MentorCourseList(request,mentor_id):
+def MentorCourseList(request):
     if request.method == 'GET':
         try:
             courses = MentorCourses.objects.all()

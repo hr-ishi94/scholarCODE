@@ -36,13 +36,14 @@ const CourseDetailsSlice = createSlice({
 
         })
         .addCase(fetchCourseDetails.fulfilled,(state,action)=>{
-            state.status = 'succeeded'
             state.course = action.payload
+            state.status = 'succeeded'
             state.error=''
 
         })
         .addCase(fetchCourseDetails.rejected,(state,action)=>{
             state.status = 'failed'
+            state.course = null
             state.error = action.error.message
 
         })
