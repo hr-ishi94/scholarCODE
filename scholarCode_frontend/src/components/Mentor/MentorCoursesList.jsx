@@ -29,7 +29,7 @@ const MentorCoursesList = () => {
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
 
     useEffect(()=>{
-        dispatch(fetchMentorCourse(id))
+        dispatch(fetchMentorCourse())
         dispatch(fetchCoursesList())
     },[dispatch])
     console.log(mentorCourseSelector,'df')
@@ -37,7 +37,7 @@ const MentorCoursesList = () => {
    
     if (mentorCourseSelector.courses && mentorCourseSelector.courses.length > 0) {
         mentorCourseSelector.courses.forEach(courseId => {
-            const matchingCourse = courseSelector.courses.find(course => course.id === courseId.course);
+            const matchingCourse = courseSelector.courses.find(course => course.id === courseId.course && courseId.mentor === id);
             if (matchingCourse) {
                 sortedCourses.push(matchingCourse);
             }

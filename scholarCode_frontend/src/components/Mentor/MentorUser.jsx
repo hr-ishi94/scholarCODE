@@ -55,13 +55,13 @@ const MentorUser = () => {
                 
             </Col>
             <Col sm={6} >
-                <h2>Mentor Profile</h2>
+                <h2>Student Details</h2>
                 <br />
                     <h5 className='m-2'>Name: {user.first_name} {user.last_name} </h5>
                     <h6 className='m-2'>Email:{user.email} </h6>
                     <h6 className='m-2'>Designation: {user.designation} </h6>
 
-                    <h6 className='m-2'>Courses Enrolled : 0 </h6>
+                    <h6 className='m-2'>Courses Enrolled :<strong> {UserEnrolledCourses.length} nos</strong></h6>
                     <br />
                     <Button className="p-2 text-light" variant="" style={{backgroundColor:"#12A98E"}}  >Chat with {user.first_name}</Button>
                     
@@ -82,14 +82,15 @@ const MentorUser = () => {
         {/* <th>Action</th> */}
         </tr>
     </thead>
-    <tbody >
+    <tbody>
       
         {
-        UserEnrolledCourses.map((enroll,index)=>(
+            UserEnrolledCourses.map((enroll,index)=>(
             
             
-            <tr>
+            <tr key={index}>
             <td>{index + 1}</td>
+            
             <td>course.name</td>
             <td>{enroll.curr_module}</td>
             <td>{!enroll.Is_completed?<span className='text-primary'>Ongoing</span>:<span className='text-success'>Completed</span>}</td>
