@@ -35,6 +35,7 @@ import UserProfile from './components/Home/UserProfile';
 import Payment from './components/Home/Payment';
 import Sample from './components/Home/Sample';
 import MentorUser from './components/Mentor/MentorUser';
+import Chat from './components/Mentor/Chat';
 
 
 
@@ -73,6 +74,7 @@ function App() {
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
+            <Route path='/mentor/chat/' element= {<Chat roomName="general"/>}></Route>
           </Route>
 
           {/* Home page layout */}

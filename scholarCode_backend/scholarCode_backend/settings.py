@@ -49,13 +49,15 @@ INSTALLED_APPS = [
     # custom_apps
     'main',
     'course',
+    'chat',
 
     # dependencies
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'corsheaders'
+    'corsheaders',
+    'channels'
 
 ]
 
@@ -89,7 +91,18 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'scholarCode_backend.asgi.application'
 
+
+CHANNEL_LAYERS = {
+    'default':{
+        'BACKEND':'channels_redis.core.RedisChannelLayer',
+        'CONFIG':{
+            
+            'hosts':['https://diverse-fly-54895.upstash.io']
+        }
+    }
+}
 
 REST_FRAMEWORK = {
     
