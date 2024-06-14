@@ -95,13 +95,19 @@ TEMPLATES = [
 ASGI_APPLICATION = 'scholarCode_backend.asgi.application'
 
 
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_redis.core.RedisChannelLayer",
+#         "CONFIG": {
+#             "hosts": ["rediss://:AdZvAAIncDE2MDJjZTg0ODE5OTY0YzNlYTAyMjg5OTM1OTUzZTliOHAxNTQ4OTU@diverse-fly-54895.upstash.io:6379"],
+#         },
+#     },
+# }
+
+
 CHANNEL_LAYERS = {
-    'default':{
-        'BACKEND':'channels_redis.core.RedisChannelLayer',
-        'CONFIG':{
-            
-            'hosts':['https://diverse-fly-54895.upstash.io']
-        }
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
 
