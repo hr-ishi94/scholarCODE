@@ -15,6 +15,7 @@ import MentorAuthSlice from "../Slices/MentorAuthSlice";
 import UserAuthSlice from "../Slices/UserAuthSlice";
 import MentorCourseSlice from "../Slices/mentorSide/MentorCourseSlice";
 import EnrolledCoursesSlice from "../Slices/Userside/EnrolledCoursesSlice";
+import ChatSlice from "../Slices/Userside/ChatSlice";
 
 const rootReducer = combineReducers({
     userList :usersListSlice,
@@ -31,7 +32,8 @@ const rootReducer = combineReducers({
     UserToken:UserAuthSlice,
     // mentor side
     MentorCourses :MentorCourseSlice,
-    EnrolledCourses:EnrolledCoursesSlice
+    EnrolledCourses:EnrolledCoursesSlice,
+    Chat:ChatSlice,
 
     
 

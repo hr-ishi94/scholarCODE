@@ -31,7 +31,7 @@ export const EnrolledCoursesList = async (id)=>{
         }
 
     }catch(error){
-        
+
         console.log("error:",error)
         
     }
@@ -49,5 +49,17 @@ export const EnrollCourse = async(id,FormData) =>{
             console.log('user server error:',error.response.data)
             return error.response
         }
+    }
+}
+
+export const getChat = async (id)=>{
+    const user_id1 = id.user_id1
+    const user_id2 = id.user_id2
+    console.log(user_id1,user_id2,'users chat get')
+    try{
+        const res = await axiosInstance.get(`/chat/user/${user_id1}/${user_id2}/`)
+    }
+    catch(error){
+        throw error
     }
 }

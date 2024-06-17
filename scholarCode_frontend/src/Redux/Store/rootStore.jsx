@@ -94,5 +94,10 @@ export const initialstate = {
         enrolls:[],
         status:'idle',
         error:''
+    },
+    Chat:{
+        msg:[],
+        status:'idle',
+        error:null
     }
 }

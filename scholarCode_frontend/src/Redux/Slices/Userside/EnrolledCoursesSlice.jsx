@@ -30,11 +30,15 @@ const EnrolledCoursesSlice = createSlice({
         })
         .addCase(fetchEnrolledCourses.fulfilled,(state,action)=>{
             state.status = 'succeeded'
-            state.enrolls = action.payload
+            if (Array.isArray(action.payload)) {
+                state.enrolls = action.payload;
+            } else {
+                state.enrolls = [];
+            }
         })
         .addCase(fetchEnrolledCourses.rejected,(state,action)=>{
             state.status = 'failed'
-            state.enrolls=[]
+            state.enrolls=''
             state.error = action.error.message
         })
     }

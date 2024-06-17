@@ -53,6 +53,7 @@ const SingleCourse = () => {
 
   // array with all mentorCOurses id
   const mentorCourseId = [...mentorCourseSet]
+  
   // current course if enrolled
   const [EnrolledCourse] = enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course))
   const currMentorCourse = EnrolledCourse && mentorCourseSelector && mentorCourseSelector.courses.find((course)=>course.id == EnrolledCourse.course)
