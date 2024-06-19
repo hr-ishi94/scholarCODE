@@ -23,11 +23,12 @@ class MentorCourseView(generics.RetrieveUpdateDestroyAPIView):
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET','POST'])
-def EnrolledCoursesList(request,user_id):
+@api_view(['GET','POST','PUT'])
+def EnrolledCoursesList(request):
     if request.method == 'GET':
         try:
-            enrolls = EnrolledCourse.objects.filter(user = user_id)
+            # enrolls = EnrolledCourse.objects.filter(user = user_id)
+            enrolls = EnrolledCourse.objects.all()
             if not enrolls:
                 return Response({'message':'No courses for this mentor'})
             serializer = EnrollSerializer(enrolls, many = True)
@@ -40,6 +41,9 @@ def EnrolledCoursesList(request,user_id):
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PUT':
+        data = request.data
+        print(data)
         
 
 
@@ -63,3 +67,6 @@ def MentorCourseList(request):
                 return Response(serializer.data,status= status.HTTP_200_OK)
             return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
         
+class ReviewMarkView(generics.ListCreateAPIView):
+    queryset = ReviewMarks.objects.all()
+    serializer_class = ReviewMarkSerializer

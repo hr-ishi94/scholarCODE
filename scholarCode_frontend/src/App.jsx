@@ -74,7 +74,7 @@ function App() {
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
-            <Route path='/mentor/chat/' element= {<Chat roomName="general"/>}></Route>
+            <Route path='/mentor/chat/' element= {<Chat/>}></Route>
           </Route>
 
           {/* Home page layout */}

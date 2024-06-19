@@ -99,5 +99,10 @@ export const initialstate = {
         msg:[],
         status:'idle',
         error:null
+    },
+    ReviewMark :{
+        marks:[],
+        status:'idle',
+        error:null
     }
 }

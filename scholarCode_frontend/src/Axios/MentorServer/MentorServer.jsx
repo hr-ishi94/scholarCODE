@@ -68,3 +68,28 @@ export const mentorCourseDelete = async (id)=>{
         console.log("failed to delete",error)
     }
 }
+
+export const ReviewMarkList = async()=>{
+    try{
+        const res = await axiosCourseInstance.get('/review_marks/')
+        if (res.status === 200){
+            return res.data
+            
+        }
+    }catch(error){
+        console.log(error,'error')
+    }
+}
+
+export const ReviewMarkPost = async(formData)=>{
+    try{
+
+        const res = await axiosCourseInstance.post('/review_marks/',formData)
+        return res
+    }
+    catch(error){
+        console.log(error,'error')
+    }
+    
+}
+

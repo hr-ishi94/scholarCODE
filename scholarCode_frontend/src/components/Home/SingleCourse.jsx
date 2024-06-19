@@ -38,7 +38,7 @@ const SingleCourse = () => {
   useEffect(()=>{
     dispatch(fetchCourseDetails(params.id))
     dispatch(fetchTasksList(params.id))
-    dispatch(fetchEnrolledCourses(user_id))
+    dispatch(fetchEnrolledCourses())
     dispatch(fetchMentors())
     dispatch(fetchMentorCourse())
     
@@ -55,7 +55,8 @@ const SingleCourse = () => {
   const mentorCourseId = [...mentorCourseSet]
   
   // current course if enrolled
-  const [EnrolledCourse] = enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course))
+  const [EnrolledCourse] = enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course) && enroll.user === user_id)
+  console.log(EnrolledCourse,'sei')
   const currMentorCourse = EnrolledCourse && mentorCourseSelector && mentorCourseSelector.courses.find((course)=>course.id == EnrolledCourse.course)
   const mentorData = currMentorCourse && MentorSelector.mentors.find((mentor) => mentor.id ==currMentorCourse.mentor)
   const currModule = EnrolledCourse?EnrolledCourse.curr_module:''

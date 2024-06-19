@@ -3,9 +3,9 @@ import { initialstate } from "../../Store/rootStore";
 import { EnrolledCoursesList } from "../../../Axios/UserServer/UserServer";
 
 
-export const fetchEnrolledCourses = createAsyncThunk('user/enroll',async (id)=>{
+export const fetchEnrolledCourses = createAsyncThunk('user/enroll',async ()=>{
     try{
-        const res = await EnrolledCoursesList(id)
+        const res = await EnrolledCoursesList()
         return res
     }
     catch(error){

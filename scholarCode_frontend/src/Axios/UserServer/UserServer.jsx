@@ -22,10 +22,10 @@ export const UserRegister = async({username,email,password,is_active})=>{
 
 }
 
-export const EnrolledCoursesList = async (id)=>{
+export const EnrolledCoursesList = async ()=>{
     try{
 
-        const res = await axiosCourseInstance.get(`/enroll/${id}/`)
+        const res = await axiosCourseInstance.get(`/enroll/`)
         if(res.status === 200){
             return res.data
         }
@@ -37,16 +37,30 @@ export const EnrolledCoursesList = async (id)=>{
     }
 }
 
-export const EnrollCourse = async(id,FormData) =>{
+export const EnrollCourse = async(FormData) =>{
     console.log(FormData,'keid')
     try{
-        const res = await axiosCourseInstance.post(`/enroll/${id}/`,FormData)
+        const res = await axiosCourseInstance.post(`/enroll/`,FormData)
         if(res.status === 200){
             return res.data
         }
     }catch(error){
         if(error.response){
             console.log('user server error:',error.response.data)
+            return error.response
+        }
+    }
+}
+export const EnrollPut = async (enrollForm) =>{
+    console.log(enrollForm)
+    try{
+        const res = await axiosCourseInstance.put('/enroll/',enrollForm)
+        if (res.status === 200){
+            return res.data
+        }
+    }catch(error){
+        if(error.response){
+            console.log('user server error: ',error.message.data)
             return error.response
         }
     }

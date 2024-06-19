@@ -19,11 +19,12 @@ const MentorCoursesList = () => {
     const mentorSelector = useSelector((state)=>state.Mentor)
     const categorySelector = useSelector((state)=> state.Categories)
     const courseSelector = useSelector((state)=>state.Courses)
+    
 
     const [showModal ,setShowModal] =useState(false)
     const handleShow=()=>setShowModal(true)
     const handleClose=()=>setShowModal(false)
-
+    
     const id = mentorSelector.mentor.id
     const dispatch = useDispatch()
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
@@ -32,6 +33,8 @@ const MentorCoursesList = () => {
         dispatch(fetchMentorCourse())
         dispatch(fetchCoursesList())
     },[dispatch])
+
+
     console.log(mentorCourseSelector,'df')
     const sortedCourses = [];
    

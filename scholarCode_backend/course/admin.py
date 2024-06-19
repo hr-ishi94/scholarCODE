@@ -4,3 +4,4 @@ from .models import *
 admin.site.register(MentorCourses)
 admin.site.register(EnrolledCourse)
 admin.site.register(RazorpayPayment)
+admin.site.register(MentorTimes)
