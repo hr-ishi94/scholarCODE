@@ -5,7 +5,7 @@ import  Button  from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import  Table  from 'react-bootstrap/Table'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
@@ -21,13 +21,16 @@ const MentorReviewDetails = () => {
   const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
   const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
+  
   useEffect(()=>{
     dispatch(fetchEnrolledCourses())  
     dispatch(fetchReviewMarks())
     },[])
-    const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
-    const CourseId = MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course)
-  console.log(CourseId,'sddd')
+  
+  const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
+  const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course)
+  console.log(mentorCourse.mentor,'sddd')
+  console.log(CurrCourse.user)
   const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user)
   
   console.log(ReviewMarksList)
@@ -41,6 +44,15 @@ const MentorReviewDetails = () => {
   };
   const [button,setButton] = useState(true)
   const handleReviewButton = () => setButton(!button)
+
+  const [review, setReview] = useState(false);
+
+  const handleConfirmClose = () => setReview(false);
+  const handleConfirmShow = () => {
+    handleReviewButton()  
+    setReview(true)
+  };
+
 
   const style = {
     position: "absolute",
@@ -72,8 +84,10 @@ const MentorReviewDetails = () => {
       <Col sm={4}>
       {
         button &&
-      <Button className='p-2 text-light' style={{backgroundColor:"#12A98E"}} variant='' disabled onClick={handleReviewButton}>Conduct Review</Button>
+      <Button className='p-2 text-light' style={{backgroundColor:"#12A98E"}} variant='' onClick={handleConfirmShow}>Conduct Review</Button>
+      
       }
+    <ReviewConfirmModal handleConfirmClose={handleConfirmClose} review={review} userid = {CurrCourse.user} mentorid = {mentorCourse.mentor} courseid = {params.id}/>
       {/* {
        ! button &&
        } */}
@@ -157,7 +171,7 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
 
   const  enrollForm={
     ...CurrCourse,
-    module:CurrCourse
+    module:CurrCourse,
     next_review_date: addDays(CurrCourse.next_review_date,7),
     next_review_time: null
   }
@@ -219,6 +233,35 @@ console.log(formData,'sdf')
           </Button>
           <Button variant="" onClick={handleSubmit} className='p-1 text-light'style={{backgroundColor:"#12A98E"}} >
             Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
+}
+
+
+function ReviewConfirmModal({handleConfirmClose,review,userid, mentorid,courseid}) {
+  const navigate = useNavigate()
+  const handleConfirm = ()=>{
+    navigate(`/meeting/${userid}/${mentorid}/${courseid}/`)
+  }
+  
+  return (
+    <>
+     
+
+      <Modal show={review} onHide={handleConfirmClose} >
+        <Modal.Header closeButton className='p-3'>
+          <Modal.Title>Conduct Review</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className='p-1'>Are you ready to conduct the review?</Modal.Body>
+        <Modal.Footer className='p-1'>
+          <Button variant="secondary" className='p-1' onClick={handleConfirmClose}>
+            Close
+          </Button>
+          <Button variant="" className='p-1 text-light' style={{backgroundColor:'#12A98E'}} onClick={handleConfirm}>
+            Confirm
           </Button>
         </Modal.Footer>
       </Modal>

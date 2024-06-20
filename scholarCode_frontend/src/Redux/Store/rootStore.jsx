@@ -104,5 +104,8 @@ export const initialstate = {
         marks:[],
         status:'idle',
         error:null
+    },
+    ZegoCalls:{
+        links:[]
     }
 }

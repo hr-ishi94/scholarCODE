@@ -72,14 +72,14 @@ class MentorLogin(generics.CreateAPIView):
 class MentorList(generics.ListCreateAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
-    authentication_classes =[JWTAuthentication]
+    # authentication_classes =[JWTAuthentication]
 
     
 # GET, PUT, DELETE particular mentor
 class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
-    authentication_classes =[JWTAuthentication]
+    # authentication_classes =[JWTAuthentication]
 
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
@@ -101,8 +101,8 @@ class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
 class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
     queryset =Mentor.objects.all()
     serializer_class = MentorSerializer
-    authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    # authentication_classes =[JWTAuthentication]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     
     def put (self,request, *args, **kwargs):
         data = request.data
@@ -149,7 +149,7 @@ class MentorActivateAccountView(View):
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes =[JWTAuthentication]
+    # authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
@@ -215,7 +215,7 @@ class ActivateAccountView(View):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    authentication_classes =[JWTAuthentication]
+    # authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -238,23 +238,23 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class Categories(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    # authentication_classes =[JWTAuthentication]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
 #GET, PUT, DELETE particular categories
 class CategoryList(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    # authentication_classes =[JWTAuthentication]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
 # GET,POST Course List
 class CoursesList(generics.ListCreateAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer
-    authentication_classes =[JWTAuthentication]
+    # authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
 
 
@@ -263,7 +263,7 @@ class CoursesList(generics.ListCreateAPIView):
 class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Course.objects.all()
     serializer_class = CourseSerializer 
-    authentication_classes =[JWTAuthentication]
+    # authentication_classes =[JWTAuthentication]
     # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
@@ -284,8 +284,8 @@ class CourseDetail(generics.RetrieveUpdateDestroyAPIView):
 class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
     queryset= Task.objects.all()
     serializer_class = TaskSerializer
-    authentication_classes =[JWTAuthentication]
-    permission_classes = [AdminOnlyPermission,IsAuthenticated]
+    # authentication_classes =[JWTAuthentication]
+    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
     def put(self,request,*args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data = request.data, partial = True)
@@ -299,7 +299,7 @@ class TaskUpdate(generics.RetrieveUpdateDestroyAPIView):
 
 
 @api_view(['GET','POST'])
-@authentication_classes([JWTAuthentication])
+# @authentication_classes([JWTAuthentication])
 # @permission_classes([AdminOnlyPermission,IsAuthenticated])
 def TaskList(request, course_id):
     

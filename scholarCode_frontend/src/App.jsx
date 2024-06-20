@@ -36,6 +36,7 @@ import Payment from './components/Home/Payment';
 import Sample from './components/Home/Sample';
 import MentorUser from './components/Mentor/MentorUser';
 import Chat from './components/Mentor/Chat';
+import ZegoCall from './components/Mentor/utils/ZegoCall';
 
 
 
@@ -76,6 +77,8 @@ function App() {
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
             <Route path='/mentor/chat/' element= {<Chat/>}></Route>
           </Route>
+
+          <Route path='/meeting/:userid/:mentorid/:courseid/' element={<ZegoCall/>}></Route>
 
           {/* Home page layout */}
           <Route element={<Homelayout/>}>

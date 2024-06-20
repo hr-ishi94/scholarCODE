@@ -19,6 +19,7 @@ import { EnrollCourse } from '../../Axios/UserServer/UserServer'
 import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
 import avatar from '../../assets/avatar.jpg'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
+import { clearLinks } from '../../Redux/Slices/ZegoCallSlice'
 
 
 const SingleCourse = () => {
@@ -34,17 +35,55 @@ const SingleCourse = () => {
   const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const MentorSelector = useSelector((state)=>state.Mentors)
   const user_id = userSelector.user.id
+
+  const ZegoCallSelector = useSelector((state)=>state.ZegoCall)
+  console.log(ZegoCallSelector,'zeo')
+
+  function getFormattedDate() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
   
+  // Function to get formatted time
+  function getFormattedTime() {
+    const date = new Date();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
+  const [currentDate, setCurrentDate] = useState(getFormattedDate());
+  const [currentTime, setCurrentTime] = useState(getFormattedTime());
+
   useEffect(()=>{
     dispatch(fetchCourseDetails(params.id))
     dispatch(fetchTasksList(params.id))
     dispatch(fetchEnrolledCourses())
     dispatch(fetchMentors())
     dispatch(fetchMentorCourse())
+    // dispatch(clearLinks())
+
+    const dateInterval = setInterval(() => {
+      setCurrentDate(getFormattedDate());
+    }, 24 * 60 * 60 * 1000); // Update the date every 24 hours
+
+    const timeInterval = setInterval(() => {
+      setCurrentTime(getFormattedTime());
+    }, 1000); // Update the time every second
+
+    // Cleanup intervals on component unmount
+    return () => {
+      clearInterval(dateInterval);
+      clearInterval(timeInterval);
+    };
     
 
   },[dispatch,params.id,user_id])
- 
+
+  
   const MentorCourse=mentorCourseSelector && mentorCourseSelector.courses.filter((n)=>n.course == course.id)
   const mentorCourseSet = new Set()
   MentorCourse.map((course)=>{
@@ -56,13 +95,13 @@ const SingleCourse = () => {
   
   // current course if enrolled
   const [EnrolledCourse] = enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course) && enroll.user === user_id)
-  console.log(EnrolledCourse,'sei')
   const currMentorCourse = EnrolledCourse && mentorCourseSelector && mentorCourseSelector.courses.find((course)=>course.id == EnrolledCourse.course)
   const mentorData = currMentorCourse && MentorSelector.mentors.find((mentor) => mentor.id ==currMentorCourse.mentor)
   const currModule = EnrolledCourse?EnrolledCourse.curr_module:''
 
+  const [ZegoCallLink] = ZegoCallSelector.links.filter((n)=>n.userid === user_id && n.courseid === EnrolledCourse.id)
+  console.log(ZegoCallLink?ZegoCallLink.link:'sd')
 // function to choose random mentor
-console.log(MentorCourse)
   function getRandomMentorCourse() {
     const randomIndex = Math.floor(Math.random() * MentorCourse.length);
     return MentorCourse[randomIndex];
@@ -269,23 +308,36 @@ console.log(MentorCourse)
       <br />
       {modules.map((module,index)=>(
         <div key={index}>
-        {module ===currModule &&
+        {module === currModule &&
         <>
         
         <h2>{module}</h2>
-        {tasks.filter((task)=>task.module === module).map((task,index)=>(
+        {
+        
+        tasks.filter((task)=>task.module === module).map((task,index)=>(
+        
           <ul>
             <li className=''>
               <h4 key={index}> {task.name}
               <input type="checkbox" style={{width:"25px",height:"25px",marginLeft:"5px",}}/>
               </h4>
               
-            </li>  
+            </li> 
           </ul>
-              
-
           
-        ))}
+              
+              
+              
+              ))}
+            <h5>Your next review is scheduled on : <span className='text-danger'>{EnrolledCourse.next_review_date}</span> Time: {EnrolledCourse.next_review_time?<span className='text-danger'>{EnrolledCourse.next_review_time.time}</span>:<span className='text-primary'>Not scheduled</span>}  </h5> 
+            {!((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.next_review_time.time))?
+            <Button className='p-1 m-1 text-light' href= {ZegoCallLink?ZegoCallLink.link:'' } style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>:
+            <Button disabled className='p-1 m-1 text-light' style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>
+            }
+            
+            <p>Date: {currentDate}</p>
+            <p>Date: {currentTime}</p>
+      {/* <p>Time: {currentTime<EnrolledCourse.next_review_time.time?"hi":"helo"}</p> */}
         </>
         }
         </div>
@@ -295,7 +347,7 @@ console.log(MentorCourse)
       {
       modules.map((module,index)=>(
         <div key={index}>
-        {module !==currModule &&
+        {module !== currModule &&
         <>
         
         <h2 className='text-secondary'>{module}</h2>
