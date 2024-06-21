@@ -22,13 +22,23 @@ class MentorCourseView(generics.RetrieveUpdateDestroyAPIView):
             return Response(serializer.data,status= status.HTTP_200_OK)
         return Response(serializer.errors, status= status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['GET','POST','PUT'])
+@api_view(['GET'])
 def EnrolledCoursesList(request):
     if request.method == 'GET':
         try:
-            # enrolls = EnrolledCourse.objects.filter(user = user_id)
             enrolls = EnrolledCourse.objects.all()
+            if not enrolls:
+                return Response({'message':'No courses for this mentor'})
+            serializer = EnrollSerializer(enrolls, many = True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response({'message':str(e)},status= status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET','POST','PUT'])
+def EnrolledCoursesUser(request,user_id):
+    if request.method == 'GET':
+        try:
+            enrolls = EnrolledCourse.objects.filter(user = user_id)
             if not enrolls:
                 return Response({'message':'No courses for this mentor'})
             serializer = EnrollSerializer(enrolls, many = True)
@@ -42,8 +52,28 @@ def EnrolledCoursesList(request):
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PUT':
-        data = request.data
-        print(data)
+        try:       
+            data = request.data
+            enroll_id = data.get('id')
+            print(enroll_id)
+            print(data)
+            try:
+                course = EnrolledCourse.objects.get(id = enroll_id , user = user_id )
+            except EnrolledCourse.DoesNotExist:
+                return Response({'status':'error','message':'Enrollment not found'})
+            
+            if 'next_review_time' in request.data and request.data['next_review_time'] is None:
+                course.next_review_time = None
+            
+            serializer = EnrollSerializer(course,data=data,partial = True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status':'success','data':serializer.data},status=status.HTTP_200_OK)
+            
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Handle exceptions and return an error response
+            return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
 
@@ -70,3 +100,10 @@ def MentorCourseList(request):
 class ReviewMarkView(generics.ListCreateAPIView):
     queryset = ReviewMarks.objects.all()
     serializer_class = ReviewMarkSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = ReviewMarkSerializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data,status = status.HTTP_200_OK)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)

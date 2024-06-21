@@ -21,11 +21,21 @@ export const UserRegister = async({username,email,password,is_active})=>{
     }
 
 }
+export const EnrolledAllCourses = async (id) =>{
+    try{
+        const res = await axiosCourseInstance.get('/enrolls/')
+        if (res.status === 200){
+            return res.data
+        }
+    }catch(error){
+        console.log("error",error)
+    }
+}
 
-export const EnrolledCoursesList = async ()=>{
+export const EnrolledCoursesList = async (id)=>{
     try{
 
-        const res = await axiosCourseInstance.get(`/enroll/`)
+        const res = await axiosCourseInstance.get(`/enroll/${id}/`)
         if(res.status === 200){
             return res.data
         }
@@ -37,10 +47,11 @@ export const EnrolledCoursesList = async ()=>{
     }
 }
 
-export const EnrollCourse = async(FormData) =>{
+
+export const EnrollCourse = async(id,FormData) =>{
     console.log(FormData,'keid')
     try{
-        const res = await axiosCourseInstance.post(`/enroll/`,FormData)
+        const res = await axiosCourseInstance.post(`/enroll/${id}/`,FormData)
         if(res.status === 200){
             return res.data
         }
@@ -51,10 +62,11 @@ export const EnrollCourse = async(FormData) =>{
         }
     }
 }
-export const EnrollPut = async (enrollForm) =>{
+
+export const EnrollPut = async (userid,enrollForm) =>{
     console.log(enrollForm)
     try{
-        const res = await axiosCourseInstance.put('/enroll/',enrollForm)
+        const res = await axiosCourseInstance.put(`/enroll/${userid}/`,enrollForm)
         if (res.status === 200){
             return res.data
         }

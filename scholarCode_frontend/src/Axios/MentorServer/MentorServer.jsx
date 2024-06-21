@@ -85,10 +85,18 @@ export const ReviewMarkPost = async(formData)=>{
     try{
 
         const res = await axiosCourseInstance.post('/review_marks/',formData)
-        return res
+        if (res.status === 200  || res.status === 201){
+
+            return res.data
+        }
+        
     }
     catch(error){
-        console.log(error,'error')
+        if (error.response.data){
+            return error.response
+        }else{
+            return error
+        }
     }
     
 }

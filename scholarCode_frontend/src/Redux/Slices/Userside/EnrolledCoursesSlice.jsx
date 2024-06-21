@@ -3,9 +3,9 @@ import { initialstate } from "../../Store/rootStore";
 import { EnrolledCoursesList } from "../../../Axios/UserServer/UserServer";
 
 
-export const fetchEnrolledCourses = createAsyncThunk('user/enroll',async ()=>{
+export const fetchEnrolledCourses = createAsyncThunk('user/enroll',async (id)=>{
     try{
-        const res = await EnrolledCoursesList()
+        const res = await EnrolledCoursesList(id)
         return res
     }
     catch(error){
@@ -19,8 +19,18 @@ const EnrolledCoursesSlice = createSlice({
     initialState:initialstate.EnrolledCourses,
     reducers:{
         newEnroll:(state,action)=>{
-            state.enrolls =[...state.enrolls,action.payload]
+            state.enrolls = [...state.enrolls,action.payload]
+        }, 
+        enrollPut: (state, action) => {
+            const { enroll_id, formData } = action.payload;
+            const index = state.enrolls.findIndex((enroll )=> enroll.id === enroll_id);
+            console.log('hrishi',index,enroll_id,formData)
+            if (index !== -1) {
+                state.enrolls[index] = formData;
+            }
         }
+        
+
 
     },
     extraReducers:(builder)=>{
@@ -44,5 +54,5 @@ const EnrolledCoursesSlice = createSlice({
     }
 })
 
-export const { newEnroll } = EnrolledCoursesSlice.actions
+export const { newEnroll,enrollPut } = EnrolledCoursesSlice.actions
 export default EnrolledCoursesSlice.reducer

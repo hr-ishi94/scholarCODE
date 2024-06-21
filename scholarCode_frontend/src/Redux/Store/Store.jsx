@@ -18,6 +18,7 @@ import EnrolledCoursesSlice from "../Slices/Userside/EnrolledCoursesSlice";
 import ChatSlice from "../Slices/Userside/ChatSlice";
 import ReviewMarkSlice from "../Slices/mentorSide/ReviewMarkSlice";
 import ZegoCallSlice from "../Slices/ZegoCallSlice";
+import AllEnrolledCoursesSlice from "../Slices/Userside/AllEnrolledCoursesSlice";
 
 const rootReducer = combineReducers({
     userList :usersListSlice,
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
     // mentor side
     MentorCourses :MentorCourseSlice,
     EnrolledCourses:EnrolledCoursesSlice,
+    AllEnrolls:AllEnrolledCoursesSlice,
     Chat:ChatSlice,
     ReviewMarks:ReviewMarkSlice,
     ZegoCall:ZegoCallSlice,

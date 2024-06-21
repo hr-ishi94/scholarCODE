@@ -3,7 +3,8 @@ from . import views
 from  . import razorpay
 
 urlpatterns = [
-    path('enroll/',views.EnrolledCoursesList,name="enroll_course"),
+    path('enrolls/',views.EnrolledCoursesList,name="enroll_course"),
+    path('enroll/<int:user_id>/',views.EnrolledCoursesUser,name="enroll_course"),
     path('mentor/',views.MentorCourseList,name="mentor_courses"),
     path('mentor/delete/<int:pk>/',views.MentorCourseView.as_view(),name="mentor_courses"),
     path('razorpay_order/',razorpay.PaymentView.as_view(),name='payment_view'),

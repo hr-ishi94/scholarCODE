@@ -6,9 +6,9 @@ import Button from 'react-bootstrap/Button'
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice';
-import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
 import { fetchUsers } from '../../Redux/Slices/UserListSlice';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
+import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 
 const MentorReviewList = () => {
     const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
@@ -22,7 +22,7 @@ const MentorReviewList = () => {
         dispatch(fetchUsers())
         dispatch(fetchCoursesList())
         dispatch(fetchMentorCourse())
-        dispatch(fetchEnrolledCourses())
+        dispatch(fetchAllEnrolledCourses())
 
     },[dispatch])
 
@@ -65,7 +65,7 @@ const MentorReviewList = () => {
             <th>id</th>
             <th>Name</th>
             <th>Course</th>
-            <th>Review date</th>
+            <th>Next Review date</th>
             <th>Time</th>
             <th>Action</th>
             </tr>
@@ -81,8 +81,16 @@ const MentorReviewList = () => {
                 }
                 <td>{CoursesObject[course.course]}</td>
                 
+                {course.is_completed?<>
+                
+                    <td className='text-success'>Course Completed</td>
+                    <td>----</td>
+                </>:
+                <>
                 <td>{course.next_review_date}</td>
                 <td>{course.next_review_time?course.next_review_time.time: <span className='text-primary'> Not Scheduled</span>}</td>
+
+                </>}
                 <td><Link to={`/mentor/review/${course.id}/`}><Button variant='' style={{backgroundColor:"#12A98E"}} className='text-light p-1'>view</Button></Link></td>
             </tr>
             ))}
@@ -98,35 +106,7 @@ const MentorReviewList = () => {
         <br />
         <br />
         <br />
-        {/* <div>
-
-        <h1>Review History</h1>
-        <Table striped bordered hover>
-        <thead>
-            <tr>
-            <th>id</th>
-            <th>Name</th>
-            <th>Last Review Date</th>
-            <th>No.of Modules</th>
-            <th>Status</th>
-            <th>Action</th>
-            </tr>
-        </thead>
-        <tbody >
-
-            <tr>
-                <td>1</td>
-                <td>sdg</td>
-                <td>dsgdgs</td>
-                <td>sddd</td>
-                <td><Button variant='' style={{backgroundColor:"#12A98E"}} className='text-light p-1'>view</Button></td>
-            </tr>
-            
-        </tbody>
-        </Table>
-        
-            
-        </div> */}
+       
 
     </div>
     
