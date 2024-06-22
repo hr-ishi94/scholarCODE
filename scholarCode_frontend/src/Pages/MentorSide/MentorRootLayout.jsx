@@ -25,7 +25,7 @@ const MentorRootLayout = () => {
                     const access = selector.access
                     const decodedToken = jwtDecode(selector.access)
                     const mentorId = decodedToken.user_id
-                    await dispatch(fetchMentor(mentorId))
+                    dispatch(fetchMentor(mentorId))
                 
             }
             

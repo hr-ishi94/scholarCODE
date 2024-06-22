@@ -37,6 +37,7 @@ import Sample from './components/Home/Sample';
 import MentorUser from './components/Mentor/MentorUser';
 import Chat from './components/Mentor/Chat';
 import ZegoCall from './components/Mentor/utils/ZegoCall';
+import ChatScreenLayout from './Pages/HomePage/ChatScreenLayout';
 
 
 
@@ -75,10 +76,13 @@ function App() {
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
-            <Route path='/mentor/chat/' element= {<Chat/>}></Route>
           </Route>
+          <Route element={<ChatScreenLayout/>}>
 
+          <Route path='/chat/' element= {<Chat/>}></Route>
           <Route path='/meeting/:userid/:mentorid/:courseid/' element={<ZegoCall/>}></Route>
+
+          </Route>
 
           {/* Home page layout */}
           <Route element={<Homelayout/>}>
