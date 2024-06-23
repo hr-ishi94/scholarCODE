@@ -55,8 +55,6 @@ def EnrolledCoursesUser(request,user_id):
         try:       
             data = request.data
             enroll_id = data.get('id')
-            print(enroll_id)
-            print(data)
             try:
                 course = EnrolledCourse.objects.get(id = enroll_id , user = user_id )
             except EnrolledCourse.DoesNotExist:

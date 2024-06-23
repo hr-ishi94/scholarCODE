@@ -4,7 +4,11 @@ import Messages from './Messages'
 const ChatArea = () => {
   return (
     <div className="chat-history chat-area">
-      <Messages/>
+      <ul className="m-b-0">
+
+        <Messages/>
+
+      </ul>
             <div className="chat-message clearfix m">
             <div className="input-group p-2">
                 <input type="text" className="form-control " placeholder="Enter text here..."/>                                    
