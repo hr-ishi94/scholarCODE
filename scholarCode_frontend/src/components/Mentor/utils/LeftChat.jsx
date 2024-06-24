@@ -1,73 +1,70 @@
-import React from 'react'
+import { jwtDecode } from 'jwt-decode'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { axiosChatInstance } from '../../../Axios/Utils/AxiosInstances'
+import { Avatar, Stack } from '@mui/material'
+import { stringAvatar } from '../../../constants/mui'
 
-const LeftChat = () => {
+
+const LeftChat = ({Chat = ()=>{}}) => {
+  const userId = jwtDecode(localStorage.getItem('access')).user_id
+  const [chatUsers, setChatUsers] = useState([])
+  useEffect(()=>{
+    getChatUsers(userId)
+  },[])
+
+
+  const getChatUsers = async (userId)=>{
+    try{
+
+      const res = await axiosChatInstance.get(`/chat_users/${userId}/`)
+      setChatUsers(res.data)
+    }catch(error){
+      console.log('Error while fetching users:',error)
+    }
+
+  }
 
   return (
     <>
     <div id="plist" className="people-list p-2">
-                        <div className="input-group p-2">
-                            <div className="input-group-prepend ">
-                                <span className="input-group-text p-2"><i className="fa fa-search"></i></span>
-                            </div>
-                            <input type="text" className="form-control" placeholder="Search..."/>
-                        </div>
-                        <ul className="list-unstyled chat-list mt-2 mb-0 px-2">
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            <li className="clearfix p-2">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="avatar"/>
-                                <div className="about">
-                                    <div className="name">Vincent Porter</div>
-                                    <div className="status"> <i className="fa fa-circle offline"></i> left 7 mins ago </div>                                            
-                                </div>
-                            </li>
-                            
-                        </ul>
-                    </div>
-      
-
-    </>
+      <div className="input-group p-2">
+          <div className="input-group-prepend ">
+              <span className="input-group-text p-2"><i className="fa fa-search"></i></span>
+          </div>
+          <input type="text" className="form-control" placeholder="Search..."/>
+      </div>
+      <ul className="list-unstyled chat-list mt-2 mb-0 px-2">
+        {chatUsers.map((user,index)=>
+          <ChatUserItem user= {user} userId ={userId} key={index} Chat={Chat}/>
+        )}
+          
+      </ul>
+    </div>
+  </>
   )
 }
 
 export default LeftChat
+
+
+const ChatUserItem = ({user,userId,Chat = ()=>{ }})=>{
+
+
+  const isUser = user.user1.id === userId
+  const displayUser = !isUser?user.user1:user.user2
+  const isMentor = displayUser.is_staff
+  
+  
+  return(
+        <button style={{width:'13em',borderRadius:'5px'}} onClick={()=>Chat({id:displayUser.id, username:displayUser.username})}>
+          <li className="d-flex p-1">
+            <Stack direction='row' spacing={2} className='mx-2'>
+              <Avatar{ ...stringAvatar(`${displayUser.first_name} ${displayUser.last_name}` )}/>
+            </Stack>
+              <h5 className='mt-2'>{displayUser.first_name} {displayUser.last_name}</h5>
+          </li>
+              <h6 style={{color:'#12A98E'}}>{isMentor &&  'Mentor'}</h6>
+        </button>
+  )
+}

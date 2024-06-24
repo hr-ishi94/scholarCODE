@@ -6,17 +6,15 @@ import { Padding } from '@mui/icons-material'
 
 const Chat = () => {
 
-    const [usr , setUsr ] = useState('')
-    const [usrname , setUsrname ] = useState('')
-    const Chat = (id, username) => {
-    console.log("id:", id);
-    console.log("username:", username);
-    // Assuming setUsr and setUsrname are state update functions
-    // You can set the states with the received id and username
-    setUsr(id.id);
-    setUsrname(id.username);
-    console.log(usr,usrname);
-    }
+    const [user , setUser ] = useState('')
+    const [username , setUsername ] = useState('')
+    
+    
+    const Chat = ({id, username}) => {
+    setUser(id);
+    setUsername(username);
+}
+    console.log(user,username,'krishn');
     
     
     const style = {
@@ -36,10 +34,10 @@ const Chat = () => {
                 <h2>Chat</h2>
                 
                 <div className="card left-area">
-                    <LeftChat Chat = {Chat} edit/>
+                    <LeftChat Chat = {Chat} />
                 </div>
                 <div className=" chat-layout" >
-                    <ChatLayout usr={usr} usrname= {usrname} />
+                    <ChatLayout user={user} username= {username} />
                 </div>
             </div>
         </div>

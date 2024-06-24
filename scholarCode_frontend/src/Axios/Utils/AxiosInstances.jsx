@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { main,course } from '../Urls/EndPoints'
+import { main,course, socket} from '../Urls/EndPoints'
 import { jwtDecode } from 'jwt-decode'
 import dayjs from 'dayjs'  
 
@@ -68,4 +68,13 @@ export const axiosCourseFormInstance = axios.create({
     headers:{
         'content-Type':'application/json'
     }
+})
+
+
+export const axiosChatInstance = axios.create({
+    baseURL:socket,
+    headers:{
+        'content-Type' : 'application/json'
+    }
+
 })

@@ -41,7 +41,7 @@ body{
 }
 
 .chat-area{
-    height: 26em;
+    height: 30em;
     border-bottom-left-radius: .55rem;
     border-bottom-right-radius: .55rem;
     background-color: #BCFFDB;
@@ -196,8 +196,8 @@ body{
 }
 
 .chat .chat-message {
-    padding: 20px;
-    margin-top:260px
+    padding: 30px;
+    margin-top:270px
 }
 
 .online,
@@ -226,9 +226,7 @@ body{
 
 .clearfix:after {
     visibility: hidden;
-    display: block;
-    font-size: 0;
-    content: " ";
+    display: block;    content: " ";
     clear: both;
     height: 0
 }

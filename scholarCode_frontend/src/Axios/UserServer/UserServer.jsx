@@ -1,4 +1,4 @@
-import { axiosCourseInstance, axiosInstance } from "../Utils/AxiosInstances";
+import { axiosChatInstance, axiosCourseInstance, axiosInstance } from "../Utils/AxiosInstances";
 
 export const UserRegister = async({username,email,password,is_active})=>{
     const newUser = {
@@ -83,7 +83,8 @@ export const getChat = async (id)=>{
     const user_id2 = id.user_id2
     console.log(user_id1,user_id2,'users chat get')
     try{
-        const res = await axiosInstance.get(`/chat/user/${user_id1}/${user_id2}/`)
+        const res = await axiosChatInstance.get(`/user/${user_id1}/${user_id2}/`)
+        return res.data
     }
     catch(error){
         throw error
