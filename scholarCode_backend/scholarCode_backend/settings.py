@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-ikr^_f2$2fwrb_22l@87pvpf8@(ji(soisp=9a!=v@w1@xkclw
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -104,6 +104,17 @@ ASGI_APPLICATION = 'scholarCode_backend.asgi.application'
 #     },
 # }
 
+# # settings.py
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
+
+
 
 CHANNEL_LAYERS = {
     "default": {
@@ -170,6 +181,15 @@ DATABASES = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://localhost:5173",
+]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://google.com',
+    'http://localhost:8000',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3000'
+
 ]
 
 # Password validation

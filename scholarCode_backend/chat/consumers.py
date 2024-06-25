@@ -9,15 +9,15 @@ from .models import ChatRooms, Messages
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         request_user = self.scope['user']
-        print(request_user,'USER')
         if request_user:
             self.chat_with_user = self.scope["url_route"]["kwargs"]["id"]
             user_ids = [int(request_user.id),int(self.chat_with_user) ]
             user_ids = sorted(user_ids)
-            self.room_group_name = f" chat_{user_ids[0]}-{user_ids[1]}"
+            self.room_group_name = f" chat_{user_ids[0]}-{user_ids[1]} "
 
+            print(self.channel_layer,'-->&&&&&USER')
             # Join room group
-            await self.channel_layer.group_add(self.room_group_name, self.channel_name )
+            self.channel_layer.group_add(self.room_group_name, self.channel_name )
             self.chat_room = await self.get_or_create_chat_room()
         await self.accept()
 

@@ -196,8 +196,10 @@ body{
 }
 
 .chat .chat-message {
-    padding: 30px;
-    margin-top:270px
+    padding: 40px;
+    position: relative;
+    top: 14em;
+    display: flex;
 }
 
 .online,

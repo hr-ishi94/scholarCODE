@@ -16,5 +16,5 @@ class JwtAuthentication(BaseAuthentication):
             user = CustomUser.objects.get(id = user_id)
             print("auth_token_user_id: ",user_id)
             return user
-        except user_id.DoesNotExist:
+        except user.DoesNotExist:
             raise AuthenticationFailed('Unauthenticated')

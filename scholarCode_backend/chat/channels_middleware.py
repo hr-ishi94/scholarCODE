@@ -21,6 +21,7 @@ class JWTwebsocketMiddleware(BaseMiddleware):
 
         try:
             user = await authentication.authenticate_websocket(scope, token)
+            print(user,'usssssssss')
             if user is not None:
                 scope['user'] = user 
             else:
@@ -28,8 +29,9 @@ class JWTwebsocketMiddleware(BaseMiddleware):
                     'type':'websocket.close',
                     'code':4000
                 })
-                return await super().__call__(scope,receive,send)
+            return await super().__call__(scope,receive,send)
         except:
+            # print('Disconnecting')
             await send({
                 'type' : 'websocket.close',
                 'code' : 4002

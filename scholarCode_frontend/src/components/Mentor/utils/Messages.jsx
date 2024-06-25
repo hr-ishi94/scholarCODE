@@ -1,18 +1,18 @@
 import React from 'react'
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
-const Messages = () => {
+const Messages = ({text,send,sender}) => {
+  const isSender = send === sender;
   return (
-    <>
-    
-        <li className="clearfix p-2">
-            <div className="message-data text-right">
-                <span className="message-data-time">10:10 AM, Today</span>
-                <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="avatar"/>
-            </div>
-            <div className="message other-message float-right"> Hi Aiden, how are you? How is the project coming along? </div>
-        </li>
-        
-    </>
+    <Container className="mb-2 ">
+      <Row className={isSender ? 'justify-content-end' : 'justify-content-start'}>
+        <Col xs={10} md={7} className={`p-2 rounded-3 ${isSender ? 'bg-primary text-white' : 'bg-light text-secondary'} font-weight-bold`}>
+          {text}
+        </Col>
+      </Row>
+    </Container>
   )
 }
 
