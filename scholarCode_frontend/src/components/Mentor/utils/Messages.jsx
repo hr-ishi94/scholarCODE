@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 const Messages = ({text,send,sender}) => {
+  
   const isSender = send === sender;
   return (
     <Container className="mb-2 ">

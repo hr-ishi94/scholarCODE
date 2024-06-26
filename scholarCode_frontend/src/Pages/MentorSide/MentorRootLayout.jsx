@@ -17,7 +17,7 @@ const MentorRootLayout = () => {
     const {mentor,status,error} = useSelector((state)=>state.Mentor)
     const navigate = useNavigate()
 
-    
+    console.log(mentor,'krishnasi')
     useEffect(()=>{
         const fetchMentorDetails = async () =>{
             try{
@@ -54,15 +54,16 @@ const MentorRootLayout = () => {
     {(!selector.is_authenticated | !selector.type == 'mentor')?<Navigate to={'/mentor/login/'}/>:<>
         <div className='mentor-navbar'>
             <Row>
-                <Col sm = {10}>
+                <Col sm = {9}>
                     <img src={logo} className='mentor-nav-logo ' alt="" />
                 
                 </Col>
-                <Col sm = {2} className='d-flex'>
-                    <button className='noti-mentor text-center '><i className="fa-regular fa-bell mentor-drop"></i></button>
-                    <Dropdown className='mt-3' >
+                <Col sm = {3} className='d-flex '>
+                    <button className='noti-mentor text-center px-2 '><  i className="fa-regular fa-bell mentor-drop"></i></button>
+                    <Link to={'/chat/'} className=' text-light react-router-link px-2 mt-3'>Messages</Link>
+                    <Dropdown className='mt-3 px-1  ' >
                         <Dropdown.Toggle variant="success" style={{backgroundColor:'#12A98E',border:'none'}} id="dropdown-basic">
-                            mentor
+                           Mentor: {mentor.first_name}
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu className='p-2 '>

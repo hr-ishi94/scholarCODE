@@ -72,23 +72,27 @@ const Homelayout = () => {
             <Link to={'/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Home</Nav.Link></Link> 
               <Link to={'/courses/'} className='react-router-link'><Nav.Link href="#deets"  className='options'> Courses</Nav.Link></Link>
               <Link to={'/mentors/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Mentors</Nav.Link></Link>
-              <Nav.Link href="#deets" className='options'>Contact Us</Nav.Link>
               {/* <Link to={'/user/signup/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Signup</Nav.Link></Link> */}
               {!userAuthenticated?
-              <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>:
+              <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>
+              :
+              <>
+              <Link to={'/chat/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Messages</Nav.Link></Link>
               <NavDropdown title={( user.first_name)?user.first_name:"User"} className='options ' id="collapsible-nav-dropdown">
-                <NavDropdown.Item href="#action/3.1" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> My courses</Link></NavDropdown.Item>
+                <NavDropdown.Item href="" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> My courses</Link></NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.1" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> User Profile</Link></NavDropdown.Item>
+                <NavDropdown.Item href="" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> User Profile</Link></NavDropdown.Item>
                 <NavDropdown.Divider />
-                <NavDropdown.Item href="#action/3.4" className='options' onClick={handleLogout}>
+                <NavDropdown.Item href="" className='options' onClick={handleLogout}>
                   Logout
                 </NavDropdown.Item>
-              </NavDropdown>}
+              </NavDropdown>
+              </>
+              }
               
             </Nav>
           </Navbar.Collapse>
-        </Container>
+          </Container>
       </Navbar>
       
       <Outlet/>

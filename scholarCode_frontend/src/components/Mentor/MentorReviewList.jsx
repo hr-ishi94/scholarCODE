@@ -9,6 +9,7 @@ import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSli
 import { fetchUsers } from '../../Redux/Slices/UserListSlice';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
+import Loader from '../Utils/Loader';
 
 const MentorReviewList = () => {
     const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
@@ -46,7 +47,9 @@ const MentorReviewList = () => {
 
     const MentorCoursesList = EnrolledCourseSelector && EnrolledCourseSelector.enrolls.filter((enroll)=>MentorCourseSet.has(enroll.course))
 
-
+    if(EnrolledCourseSelector.status === 'loading'){
+        return <Loader/>
+    }
     const style = {
         position: "absolute",
         left: "350px",

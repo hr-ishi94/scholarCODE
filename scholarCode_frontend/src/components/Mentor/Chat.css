@@ -41,10 +41,11 @@ body{
 }
 
 .chat-area{
-    height: 30em;
+    height: 22em;
     border-bottom-left-radius: .55rem;
     border-bottom-right-radius: .55rem;
     background-color: #BCFFDB;
+    overflow-y: scroll;
     /* background-image: url(https://img.freepik.com/free-vector/abstract-geometric-wireframe-background_52683-59421.jpg); */
 }
 
@@ -196,10 +197,16 @@ body{
 }
 
 .chat .chat-message {
-    padding: 40px;
+    background-color: #BCFFDB;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
     position: relative;
-    top: 14em;
+    /* top: 1em; */
     display: flex;
+}
+.send-button{
+    border-radius: 100px;
+    background-color: #12A98E;
 }
 
 .online,

@@ -5,7 +5,7 @@ import  Button  from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import  Table  from 'react-bootstrap/Table'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { enrollPut, fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
@@ -15,6 +15,8 @@ import { EnrollCourse, EnrollPut, EnrolledAllCourses } from '../../Axios/UserSer
 import { toast } from 'react-toastify';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 import { Vurl } from '../../Axios/Urls/EndPoints';
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
+import Loader from '../Utils/Loader';
 
 const MentorReviewDetails = () => {
   
@@ -23,15 +25,19 @@ const MentorReviewDetails = () => {
   const UserSelector = useSelector((state)=>state.userList)
   const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
+  const CourseSelector = useSelector((state)=>state.Courses)
   const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
-  
   useEffect(()=>{
     dispatch(fetchAllEnrolledCourses())  
     dispatch(fetchReviewMarks())
-    },[dispatch])
+    dispatch(fetchCoursesList())
+  },[dispatch])
   
   const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
   const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course)
+  const CourseName = ()=>{
+    
+  }
   console.log(mentorCourse.mentor,'sddd')
   console.log(CurrCourse,'sd')
   const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user)
@@ -75,6 +81,10 @@ const MentorReviewDetails = () => {
 
     }
 
+    if(EnrolledCourseSelector.status === 'loading'){
+      return <Loader/>
+    }
+
   const style = {
     position: "absolute",
     left: "350px",
@@ -88,12 +98,16 @@ const MentorReviewDetails = () => {
         <Col>
         
       <br />
-      {UserSelector.users.filter((user)=>user.id === CurrCourse.user).map((user)=>
+      {UserSelector.users.filter((user)=>user.id === CurrCourse.user).map((user)=><>
       <h5>Student Name:  <strong>  {user.first_name} {user.last_name}</strong></h5>
+      <Link to={`/mentor/user/${user.id}/`}><Button className='pb-2 text-primary' variant=''>View User Details</Button></Link>
+      </>
       )}
       <h6>Course Enroll ID:  <strong>  {CurrCourse.enroll_id}</strong></h6>
       <br />
       <h5>Course Name:  <strong>  {CurrCourse.course}</strong></h5>
+      {/* {CourseSelector.courses.filter((crs)=>crs.id === CurrCourse.course).map((n)=>
+      )} */}
       <br />
       {!CurrCourse.is_completed ?
     <>
@@ -134,7 +148,7 @@ const MentorReviewDetails = () => {
 
   </>:
       <>
-      <p className='text-primary'>Candidate Completed the course please Issue the Certificate.</p>
+      <p style={{color:"#12A98E"}}>Candidate Completed the course please Issue the Certificate. <i className="fa-solid fa-circle-check"></i></p>
       <Col sm={4}>
       <Button className='p-2 text-light' style={{backgroundColor:'#12A98E'}} variant='' >Issue Certificate</Button>
       </Col>

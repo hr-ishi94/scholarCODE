@@ -20,6 +20,7 @@ import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
 import avatar from '../../assets/avatar.jpg'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 import { clearLinks } from '../../Redux/Slices/ZegoCallSlice'
+import ReactStars from 'react-stars'
 
 
 const SingleCourse = () => {
@@ -61,7 +62,7 @@ const SingleCourse = () => {
   useEffect(()=>{
     dispatch(fetchCourseDetails(params.id))
     dispatch(fetchTasksList(params.id))
-    dispatch(fetchEnrolledCourses())
+    dispatch(fetchEnrolledCourses(user_id))
     dispatch(fetchMentors())
     dispatch(fetchMentorCourse())
     // dispatch(clearLinks())
@@ -93,13 +94,24 @@ const SingleCourse = () => {
   // array with all mentorCOurses id
   const mentorCourseId = [...mentorCourseSet]
   
-  // current course if enrolled
-  const [EnrolledCourse] = enrolledCourseSelector && enrolledCourseSelector.enrolls.filter((enroll)=> mentorCourseId.includes(enroll.course) && enroll.user === user_id)
-  const currMentorCourse = EnrolledCourse && mentorCourseSelector && mentorCourseSelector.courses.find((course)=>course.id == EnrolledCourse.course)
-  const mentorData = currMentorCourse && MentorSelector.mentors.find((mentor) => mentor.id ==currMentorCourse.mentor)
-  const currModule = EnrolledCourse?EnrolledCourse.curr_module:''
+  //get Enrolled  Course for the user
+  const enrolledCourses = enrolledCourseSelector?.enrolls||[]
+  const [EnrolledCourse] = enrolledCourses.filter((enroll)=> mentorCourseId.includes(enroll.course) && enroll.user === user_id)
+  // get the current mentor course
+  const mentorCourses = mentorCourseSelector?.courses ||[]
+  const currMentorCourse = EnrolledCourse ?mentorCourses.find((course)=>course.id == EnrolledCourse.course):null
+  console.log(currMentorCourse,'sjei')
+  
+  // get mentor data
+  const mentors = MentorSelector?.mentors||[]
+  const mentorData = currMentorCourse ?mentors.find((mentor) => mentor.id ==currMentorCourse.mentor):null
 
-  const [ZegoCallLink] = ZegoCallSelector.links.filter((n)=>n.userid === user_id && n.courseid === EnrolledCourse.id)
+  const currModule = EnrolledCourse?.curr_module||''
+  
+  // get the zego call link
+  const zegoLinks = ZegoCallSelector?.links || []
+  const [ZegoCallLink] =   zegoLinks.filter((n)=>n.userid === user_id && n.courseid === EnrolledCourse?.id)
+  
   console.log(ZegoCallLink?ZegoCallLink.link:'sd')
 // function to choose random mentor
   function getRandomMentorCourse() {
@@ -299,11 +311,14 @@ const SingleCourse = () => {
         <Card.Body>
           <Card.Text>{mentorData.designation}
           </Card.Text>
+      <Button className=' p-1 text-light 'style={{backgroundColor:'#12A98E'}} variant=''>Message Me</Button>
         </Card.Body>
       </Card>
+      <br />
       
       </Col>} 
-      <Col sm={8}>
+      {!(EnrolledCourse?.is_completed)?
+        <Col sm={8}>
       <h2><strong>Syllabus</strong></h2>
       <br />
       {modules.map((module,index)=>(
@@ -364,9 +379,28 @@ const SingleCourse = () => {
         
       ))}
 
-      <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Click to download your certificate</Button> 
+      <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
 
       </Col>
+      :
+      <Col sm={8}>
+        <h4>You have successfully completed this course 
+          <br />
+          <br />
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+        </h4>
+        {/* <ReactStars disabled
+  count={5}
+  size={24}
+  color2={'#ffd700'} 
+  /> */}
+        <Button className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
+      
+      </Col>}
     </Row>
 
 
