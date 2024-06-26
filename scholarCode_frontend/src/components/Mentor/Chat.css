@@ -55,7 +55,9 @@ body{
     -webkit-transition: .5s;
     transition: .5s
 }
-
+.v-call{
+    margin-left: 15px;
+}
 .people-list .chat-list li {
     padding: 10px 15px;
     list-style: none;
@@ -109,7 +111,7 @@ body{
 .chat .chat-header .chat-about {
     float: left;
     padding-left: 10px;
-    margin-top:5px;
+    /* margin-top:5px; */
 }
 
 .chat .chat-history {

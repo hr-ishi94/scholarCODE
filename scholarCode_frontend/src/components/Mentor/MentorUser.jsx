@@ -1,13 +1,17 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Table from 'react-bootstrap/Table';
 import { Button, Image } from 'react-bootstrap'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../Utils/Loader'
 import { course } from '../../Axios/Urls/EndPoints';
+import  avatar  from '../../assets/avatar.jpg';
+import { jwtDecode } from 'jwt-decode';
+import { addChatRoom } from '../../Axios/UserServer/UserServer';
+
 
 
 
@@ -16,8 +20,12 @@ const MentorUser = () => {
     const dispatch = useDispatch()
     const {user,status,error} = useSelector((state)=>state.User)
     const MentorCourseSelector =  useSelector((state)=>state.MentorCourses)
-    const EnrollCoursSelector = useSelector((state)=>state.EnrolledCourses)
+    const EnrollCourseSelector = useSelector((state)=>state.EnrolledCourses)
     const CoursesSelector = useSelector((state)=>state.Courses)
+    const Token = jwtDecode(localStorage.getItem('access'))
+    const mentorId = Token.user_id
+    const navigate = useNavigate()
+
     console.log(CoursesSelector.courses )
     useEffect(()=>{
         dispatch(fetchUser(params.id))},
@@ -30,7 +38,19 @@ const MentorUser = () => {
 
     
     console.log(params.id)
-    const UserEnrolledCourses= EnrollCoursSelector.enrolls.filter((enroll)=>enroll.user == params.id && mentorCourseSet.has(enroll.course))
+    const UserEnrolledCourses= EnrollCourseSelector.enrolls.filter((enroll)=>enroll.user == params.id && mentorCourseSet.has(enroll.course))
+    const handleChat=useCallback(async()=>{
+        const ids = {
+            "user_id1":user.id,
+            "user_id2":mentorId,
+        }
+        try{
+            const res = await addChatRoom(ids)
+            navigate('/chat/')
+        }catch(error){
+            console.log('chat error:',error)
+        }
+    })
     
     if (status === 'loading'){
         return <Loader/>
@@ -47,7 +67,7 @@ const MentorUser = () => {
          <Row className=' my-5'>
             <Col sm={6} className='text-center'>
                 
-                <Image src={user.profile_img?user.profile_img:''} className='w-25 mx-3 rounded' />
+                <Image src={user.profile_img?user.profile_img:avatar} className='w-25 mx-3 rounded' />
                 <br />
                 <h4>{user.username}</h4>
                 <h4>{user.email}</h4>
@@ -63,7 +83,7 @@ const MentorUser = () => {
 
                     <h6 className='m-2'>Courses Enrolled :<strong> {UserEnrolledCourses.length} nos</strong></h6>
                     <br />
-                    <Button className="p-2 text-light" variant="" style={{backgroundColor:"#12A98E"}}  >Chat with {user.first_name}</Button>
+                    <Button className="p-2 text-light" variant="" style={{backgroundColor:"#12A98E"}} onClick={handleChat}> <i className="fa-solid fa-comment"></i> Chat with {user.first_name}</Button>
                     
                     
                 

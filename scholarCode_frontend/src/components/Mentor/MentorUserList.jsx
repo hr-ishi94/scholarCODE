@@ -9,6 +9,7 @@ import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSli
 import { fetchUsers } from '../../Redux/Slices/UserListSlice';
 import Loader from '../Utils/Loader';
 import { Link } from 'react-router-dom';
+import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 
 const MentorUserList = () => {
     const MentorSelector = useSelector((state)=>state.MentorToken)
@@ -18,12 +19,13 @@ const MentorUserList = () => {
     const userSelector = useSelector((state)=>state.userList)
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
     const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
+    const allEnrolledCourses = useSelector((state)=>state.AllEnrolls)
     
-    console.log(EnrolledCourseSelector,'ero')
     const dispatch = useDispatch()
     
     useEffect(()=>{
         dispatch(fetchMentorCourse(mentorId))
+        dispatch(fetchAllEnrolledCourses())
         dispatch(fetchUsers())
     },[dispatch])
     
@@ -31,11 +33,13 @@ const MentorUserList = () => {
     const mentorCourseSet = new Set()
     const enrollUserSet = new Set()
     
+    console.log(allEnrolledCourses.enrolls,'enro')
     mentorCourseSelector.courses.map((course)=>{
         mentorCourseSet.add(course.id)
     })
+    console.log(mentorCourseSet,'mcourse')
 
-    EnrolledCourseSelector.enrolls.filter((enroll)=>mentorCourseSet.has(enroll.id)).map((enroll)=>{
+    allEnrolledCourses.enrolls.filter((enroll)=>mentorCourseSet.has(enroll.course)).map((enroll)=>{
         enrollUserSet.add(enroll.user)
     })
     const users = userSelector.users.filter((user)=>enrollUserSet.has(user.id))

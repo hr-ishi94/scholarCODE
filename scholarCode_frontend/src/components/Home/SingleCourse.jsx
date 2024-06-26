@@ -5,7 +5,7 @@ import Row from 'react-bootstrap/Row'
 import Image from 'react-bootstrap/Image'
 import { Button } from 'react-bootstrap'
 import samplecourse from '../../assets/samplecourse.png'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchCourseDetails } from '../../Redux/Slices/CourseDetailsSlice'
 import Loader from '../Utils/Loader'
@@ -15,7 +15,7 @@ import axios from "axios";
 import { fetchEnrolledCourses, newEnroll } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
 import logo from '../../assets/logo.png'
 import { toast } from 'react-toastify'
-import { EnrollCourse } from '../../Axios/UserServer/UserServer'
+import { EnrollCourse, addChatRoom } from '../../Axios/UserServer/UserServer'
 import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
 import avatar from '../../assets/avatar.jpg'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
@@ -27,6 +27,7 @@ const SingleCourse = () => {
 
   const dispatch = useDispatch()
   const params = useParams()
+  const navigate = useNavigate()
 
   
   const enrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
@@ -118,6 +119,22 @@ const SingleCourse = () => {
     const randomIndex = Math.floor(Math.random() * MentorCourse.length);
     return MentorCourse[randomIndex];
   }
+
+  const handleChat = useCallback(async()=>{
+    const ids = {
+      'user_id1' :mentorData.id,
+      'user_id2' : user_id
+    }
+    try{
+      const res = await addChatRoom(ids)
+      console.log(res)
+      navigate('/chat/')
+      
+    }catch(error){
+      console.log(error,"error in chat")
+    }
+
+  },[])
 
   
   
@@ -311,7 +328,7 @@ const SingleCourse = () => {
         <Card.Body>
           <Card.Text>{mentorData.designation}
           </Card.Text>
-      <Button className=' p-1 text-light 'style={{backgroundColor:'#12A98E'}} variant=''>Message Me</Button>
+      <Button className=' p-1 text-light 'style={{backgroundColor:'#12A98E'}} onClick={handleChat} variant=''><i className="fa-solid fa-comment"></i> Chat with {mentorData.first_name}</Button>
         </Card.Body>
       </Card>
       <br />

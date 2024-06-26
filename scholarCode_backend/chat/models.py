@@ -8,8 +8,9 @@ class ChatRooms(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user1','user2')
-
+        constraints = [
+            models.UniqueConstraint(fields=['user1', 'user2'], name='unique_chatroom_users')
+        ]
     def __str__(self):
         return f"{self.user1.username} - {self.user2.username} chatroom"
     

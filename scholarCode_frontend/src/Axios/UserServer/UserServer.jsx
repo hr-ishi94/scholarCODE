@@ -90,3 +90,12 @@ export const getChat = async (id)=>{
         throw error
     }
 }
+
+export const addChatRoom = async (ids)=>{
+    try{
+        const res = await axiosChatInstance.post(`/add_chat_rooms/`,ids)
+        return res.data
+    }catch(error){
+        throw error
+    }
+}

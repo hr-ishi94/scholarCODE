@@ -6,8 +6,9 @@ import { ChatMsg } from '../../../Redux/Slices/Userside/ChatSlice';
 import { useDispatch } from 'react-redux';
 import { SOCKET } from '../../../Axios/Urls/EndPoints';
 import { Badge } from 'antd';
-import { Button } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import InputEmoji from 'react-input-emoji';
+import { useNavigate } from 'react-router-dom';
 
 const ChatArea = ({ user, username }) => {
   const access = localStorage.getItem('access');
@@ -17,7 +18,7 @@ const ChatArea = ({ user, username }) => {
   const [newMessage, setNewMessage] = useState('');
   const dispatch = useDispatch();
   const chatContainerRef = useRef(null);
-
+  const navigate = useNavigate()
   useEffect(() => {
     const user_id1 = user;
     const user_id2 = userId;
@@ -91,20 +92,39 @@ const ChatArea = ({ user, username }) => {
     }
   }, [messages]);
 
+  const handleVcall = (()=>{
+    console.log('vcall running')
+    // navigate(`/meeting/${userid}/${mentorid}/${courseid}/`)
+  })
+
   return (
     <div className="chat-history">
       <div className="chat-header clearfix card text-light" style={{ backgroundColor: '#12A98E' }}>
-        <div className="row p-1">
-          <div className="col-lg-6 px-3 p-1 d-flex">
-            <a href="javascript:void(0);" className="mx-2" data-toggle="modal" data-target="#view_info">
-              <Avatar />
-            </a>
-            <div className="chat-about">
-              <h5 className="m-b-0">{username ? username : 'user'}</h5>
-              <Badge status="success" /> online
-            </div>
+        
+          <div >
+            <Row>
+              <Col sm={11}>
+                <div  className='px-5 pt-2 d-flex'>
+                  <a href="javascript:void(0);" className="mx-2 mt-2 " data-toggle="modal" data-target="#view_info">
+                    <Avatar />
+                  </a>
+                  <div className="chat-about">
+                    <h5>{username ? username : 'user'}</h5>
+                    <Badge status="success" /> online
+                  </div>
+                </div>
+              </Col>
+              <Col sm={1} >
+              <Button className='text-light rounded-circle mt-3' variant='' onClick={handleVcall}>
+
+              <h5 className='pt-2 px-2'>
+                <i className="fa-solid fa-video"></i>
+              </h5>
+              </Button>
+              </Col>
+            </Row>
+
           </div>
-        </div>
       </div>
       <div ref={chatContainerRef} className="chat-area">
         <div className="mx-4 mt-1">
