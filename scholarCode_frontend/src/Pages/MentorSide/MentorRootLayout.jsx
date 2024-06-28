@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { mentorLogout } from '../../Redux/Slices/MentorAuthSlice';
 import { jwtDecode } from 'jwt-decode';
 import { clearMentor, fetchMentor } from '../../Redux/Slices/MentorDetailSlice';
+import { TimePicker } from '@mui/x-date-pickers';
 
 const MentorRootLayout = () => {
     const dispatch = useDispatch()
@@ -59,8 +60,10 @@ const MentorRootLayout = () => {
                 
                 </Col>
                 <Col sm = {3} className='d-flex '>
-                    <button className='noti-mentor text-center px-2 '><  i className="fa-regular fa-bell mentor-drop"></i></button>
+                
+                    <Link    className=' text-light react-router-link px-2 mt-3'>Time Slots</Link>
                     <Link to={'/chat/'} className=' text-light react-router-link px-2 mt-3'>Messages</Link>
+                    <button className='noti-mentor text-center px-2 '><  i className="fa-regular fa-bell mentor-drop"></i></button>
                     <Dropdown className='mt-3 px-1  ' >
                         <Dropdown.Toggle variant="success" style={{backgroundColor:'#12A98E',border:'none'}} id="dropdown-basic">
                            Mentor: {mentor.first_name}

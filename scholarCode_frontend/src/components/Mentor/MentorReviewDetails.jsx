@@ -17,6 +17,7 @@ import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolled
 import { Vurl } from '../../Axios/Urls/EndPoints';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import Loader from '../Utils/Loader';
+import ReviewExtendModal from './ReviewExtendModal';
 
 const MentorReviewDetails = () => {
   
@@ -27,44 +28,88 @@ const MentorReviewDetails = () => {
   const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
   const CourseSelector = useSelector((state)=>state.Courses)
   const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
+
+  
+  function getFormattedDate() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  
+  // Function to get formatted time
+  function getFormattedTime() {
+    const date = new Date();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  }
+  const [currentDate, setCurrentDate] = useState(getFormattedDate());
+  const [currentTime, setCurrentTime] = useState(getFormattedTime());
+
   useEffect(()=>{
     dispatch(fetchAllEnrolledCourses())  
     dispatch(fetchReviewMarks())
     dispatch(fetchCoursesList())
+
+    const dateInterval = setInterval(() => {
+      setCurrentDate(getFormattedDate());
+    }, 24 * 60 * 60 * 1000); // Update the date every 24 hours
+
+    const timeInterval = setInterval(() => {
+      setCurrentTime(getFormattedTime());
+    }, 1000); // Update the time every second
+
+    // Cleanup intervals on component unmount
+    return () => {
+      clearInterval(dateInterval);
+      clearInterval(timeInterval);
+    };
+    
   },[dispatch])
   
   const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
   const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course)
+  
   const CourseName = ()=>{
-    
+    const res = MentorCourseSelector.courses.find((course)=> course.id === CurrCourse.course)
+    const course = CourseSelector.courses.find((crs)=>crs.id === res.course)
+    return course.name
   }
-  console.log(mentorCourse.mentor,'sddd')
-  console.log(CurrCourse,'sd')
+  const course = CourseName()
+
   const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user)
   
-  console.log(ReviewMarksList)
-  
   const [show, setShow] = useState(false);
-  
   const handleClose = () => setShow(false);
   const handleShow = () => {
     setShow(true)
     handleReviewButton()  
-    };
-    const [button,setButton] = useState(true)
-    const handleReviewButton = () => setButton(!button)
-    
-    const [review, setReview] = useState(false);
-    
-    const handleConfirmClose = () => setReview(false);
-    const handleConfirmShow = () => {
-      handleReviewButton()  
-      setReview(true)
-      };
-      
-    const [currTime,setCurrTime]=useState( CurrCourse.next_review_time?CurrCourse.next_review_time.time:'') 
-  console.log(currTime,'cirry')
+  };
+  
+  const [extendModalShow,setExtendModalShow] = useState(false)
+  
+  const handleExtendShow = () => setExtendModalShow(true)
+  const handleExtendClose = () => setExtendModalShow(false) 
+  
 
+  const [button,setButton] = useState(true)
+  const handleReviewButton = () => setButton(!button)
+  
+  const [review, setReview] = useState(false);
+  
+  const handleConfirmClose = () => setReview(false);
+
+  const handleConfirmShow = () => {
+    handleReviewButton()  
+    setReview(true)
+    };
+
+    const [currTime,setCurrTime] = useState(CurrCourse.review_time)  
+    
+    const isDisabled = !((currentTime >= currTime ) && (currentDate === CurrCourse.next_review_date))
     const TimeChange = (e)=>{
         const {name,value} = e.target
         setCurrTime(value)
@@ -72,8 +117,15 @@ const MentorReviewDetails = () => {
       }
     const handleTimeSubmit = async()=>{
       try {
-        const res = await EnrollPut(CurrCourse.user,{next_review_time:currTime})
-        
+        const time = {
+          ...CurrCourse,
+          review_time:currTime
+        }
+        const ne = await EnrollPut(CurrCourse.user,time)
+        console.log(ne.data,CurrCourse.id,'kiii')
+        const payload = { enroll_id: CurrCourse.id, formData: ne.data };
+        dispatch(enrollPut(payload));
+        toast.success('Review Time has been scheduled')
 
       }catch(error){
         console.log(error,'error')
@@ -105,7 +157,7 @@ const MentorReviewDetails = () => {
       )}
       <h6>Course Enroll ID:  <strong>  {CurrCourse.enroll_id}</strong></h6>
       <br />
-      <h5>Course Name:  <strong>  {CurrCourse.course}</strong></h5>
+      <h5>Course Name:  <strong>  {course}</strong></h5>
       {/* {CourseSelector.courses.filter((crs)=>crs.id === CurrCourse.course).map((n)=>
       )} */}
       <br />
@@ -114,31 +166,40 @@ const MentorReviewDetails = () => {
       <h5>Current module:  <strong>  {CurrCourse.curr_module}</strong></h5>
       <br />
       
-      <h5>Upcoming Review Date:  <strong className='text-primary'>  {CurrCourse.next_review_date}</strong></h5>
-      <input type="date" value={CurrCourse.next_review_date} />
+      <h5>Upcoming Review Date:  
+      <input type="date" value={CurrCourse.next_review_date} disabled/></h5>
       <br />
-      <input type="time" min="09:00" max='18:00' value={CurrCourse.next_review_time ?CurrCourse.next_review_time.time: null } />
-
-
-      <h5>Time scheduled:  <strong>  <input type='time' min="09:00" name='next_review_time' max="18:00" onChange={TimeChange} value={currTime && currTime}></input></strong><Button className='mx-1 p-1 text-light' variant='' onClick={handleTimeSubmit} style={{backgroundColor:"#12A98E"}} > <i className="fa-solid fa-check "></i></Button></h5>
+      <h5>Time scheduled:  <strong>  <input type='time' min="09:00" name='review_time' max="18:00" onChange={TimeChange} value={currTime?currTime:null}></input></strong>
+      <Button className='mx-1 p-1 text-light' variant='' onClick={handleTimeSubmit} style={{backgroundColor:"#12A98E"}} > <i className="fa-solid fa-check "></i></Button></h5>
       
+        {
+          (!currTime && CurrCourse.next_review_date === currentDate ) &&
+
+        <p className='text-danger'><i className="fa-solid fa-circle-exclamation"></i> Please Schedule the time for today's review</p>
+        }
       <br />
       <Row className='mx-5'>
       
        <Col sm={4}>
+       
       {
         button &&
-        <Button className='p-2 text-light' style={{backgroundColor:"#12A98E"}} variant='' onClick={handleConfirmShow}>Conduct Review</Button>
-      
-        }
-    <ReviewConfirmModal handleConfirmClose={handleConfirmClose} review={review} userid = {CurrCourse.user} mentorid = {mentorCourse.mentor} courseid = {params.id}/>
+        <>
+        <Button className='p-2 text-light' style={{backgroundColor:"#12A98E"}} variant='' onClick={handleConfirmShow} disabled={isDisabled}>Conduct Review</Button>
+        {!isDisabled && <p className='text-danger'><i className="fa-solid fa-circle-exclamation"></i> Please Conduct the review now!</p>}
+        </>
+        
+      }
+      <ReviewConfirmModal handleConfirmClose={handleConfirmClose} review={review} userid = {CurrCourse.user} mentorid = {mentorCourse.mentor} courseid = {params.id}/>
       {
         ! button && 
         <Button className='p-2 text-light' style={{backgroundColor:'#12A98E'}} variant='' onClick={handleShow}>Submit Review</Button>
-        }
+      }
+   
       </Col>
       <Col sm={4}>
-      <Button className='p-2'>Extend Review</Button>
+        <Button className='p-2' onClick={handleExtendShow}>Extend Review</Button>
+        <ReviewExtendModal show={extendModalShow} handleClose= {handleExtendClose} course= {CurrCourse}/>
       </Col>
       <Col>
         
@@ -146,7 +207,8 @@ const MentorReviewDetails = () => {
       </Col>
       </Row>
 
-  </>:
+  </>
+  :
       <>
       <p style={{color:"#12A98E"}}>Candidate Completed the course please Issue the Certificate. <i className="fa-solid fa-circle-check"></i></p>
       <Col sm={4}>
@@ -197,7 +259,6 @@ export default MentorReviewDetails
 
 function ReviewMarkModal({handleClose,show,CurrCourse}) {
   const CourseSelector = useSelector((state) =>state.Course)
-  console.log(CurrCourse,'edi')
   const [formData,setFormData] =useState({
     module:CurrCourse.curr_module,
     user:CurrCourse.user,
@@ -216,10 +277,10 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
       break
     } 
   }
-  console.log(is_completed?'sd':'sfffffffff')
+  // console.log(is_completed?'sd':'sfffffffff')
   const dispatch = useDispatch()
   const addDays = (dateString, days) => {
-    const date = new Date(dateString);
+  const date = new Date(dateString);
     date.setDate(date.getDate() + days);
   
     // Format the date back to YYYY-MM-DD
@@ -237,10 +298,9 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
     curr_module,
     is_completed,
     next_review_date: addDays(CurrCourse.next_review_date,7),
-    next_review_time: null,
+    review_time: null,
     vcall_link:null
   }
-  console.log(CurrCourse.id,'sed')
   
 
   const handleSubmit = async()=>{
@@ -250,9 +310,14 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
       // console.log(res,'s.ll')
       
       if (res.id){
+        const payload = { 
+          enroll_id: CurrCourse.id,
+          formData: ne.data 
+        };
+        dispatch(enrollPut(payload));
         toast.success('Mark added successfully')
-        }else {  
-          toast.error('Enter mark in between 0 and 50')
+      }else {  
+        toast.error('Enter mark in between 0 and 50')
           }
           
           }catch(error){
@@ -261,8 +326,10 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
       
             handleClose()
             dispatch(fetchReviewMarks())
-            // dispatch(fetchEnrolledCourses(CurrCourse.user))
-            dispatch(enrollPut(CurrCourse.id,ne))
+
+            
+
+            
   }
 
   const handleChange = (e)=>{
@@ -273,7 +340,6 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
       [name] : Number(value) 
    }) )
   }
-// console.log(formData,'sdf')
 
   return (
     <>
@@ -325,9 +391,11 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
 function ReviewConfirmModal({handleConfirmClose,review,userid, mentorid,courseid}) {
   const navigate = useNavigate()
   const url = `${Vurl}meeting/${userid}/${mentorid}/${courseid}/`
-  console.log(url,'s')
+  // console.log(url,'s')
   const handleConfirm = ()=>{
-    navigate(`/meeting/${userid}/${mentorid}/${courseid}/`)
+    // navigate(``)
+    window.open(`${Vurl}meeting/${userid}/${mentorid}/${courseid}/`)
+    handleConfirmClose()
   }
   
   return (

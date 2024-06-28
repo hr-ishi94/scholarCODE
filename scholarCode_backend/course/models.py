@@ -35,11 +35,12 @@ class EnrolledCourse(models.Model):
     is_completed =models.BooleanField(default=False)
     certificate = models.CharField(blank=True)
     next_review_date =  models.DateField(default = default_review_date)
-    next_review_time = models.ForeignKey(MentorTimes,on_delete=models.CASCADE,blank=True,null=True)
+    # next_review_time = models.ForeignKey(MentorTimes,on_delete=models.CASCADE,blank=True,null=True)
+    review_time = models.TimeField(blank=True,null=True)
     vcall_link = models.CharField(max_length=300,null=True, blank=True)
 
     class Meta:
-        unique_together = ('next_review_date','next_review_time')
+        unique_together = ('next_review_date','review_time')
 
     def generate_enroll_id(self):
         self.enroll_id =  ''.join(random.choices(string.ascii_uppercase +

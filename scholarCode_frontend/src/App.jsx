@@ -77,8 +77,8 @@ function App() {
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
           </Route>
-          <Route element={<ChatScreenLayout/>}>
 
+          <Route element={<ChatScreenLayout/>}>
           <Route path='/chat/' element= {<Chat/>}></Route>
           <Route path='/meeting/:userid/:mentorid/:courseid/' element={<ZegoCall/>}></Route>
 

@@ -86,12 +86,12 @@ const MentorReviewList = () => {
                 
                 {course.is_completed?<>
                 
-                    <td className='text-success'>Course Completed</td>
+                    <td className='text-success'>Course Completed  <i className="fa-solid fa-circle-check"></i></td>
                     <td>----</td>
                 </>:
                 <>
                 <td>{course.next_review_date}</td>
-                <td>{course.next_review_time?course.next_review_time.time: <span className='text-primary'> Not Scheduled</span>}</td>
+                <td>{course.review_time?course.review_time: <span className='text-primary'> Not Scheduled</span>}</td>
 
                 </>}
                 <td><Link to={`/mentor/review/${course.id}/`}><Button variant='' style={{backgroundColor:"#12A98E"}} className='text-light p-1'>view</Button></Link></td>

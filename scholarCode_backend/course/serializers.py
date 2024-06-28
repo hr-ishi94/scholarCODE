@@ -18,7 +18,7 @@ class MentorTimesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EnrollSerializer(serializers.ModelSerializer):
-    next_review_time = MentorTimesSerializer(read_only = True) 
+    # next_review_time = MentorTimesSerializer(read_only = True) 
     class Meta:
         model = EnrolledCourse
         fields='__all__'

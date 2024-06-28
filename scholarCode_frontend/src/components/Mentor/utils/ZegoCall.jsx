@@ -51,8 +51,8 @@ const ZegoCall = () => {
 })
 }
   return (
-    <div>
-        <div ref={myMeeting}/>
+    <div >
+        <div className='p-5' ref={myMeeting}/>
     </div>
   )
 }

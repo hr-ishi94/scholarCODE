@@ -7,7 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import Loader from '../Utils/Loader'
-import { course } from '../../Axios/Urls/EndPoints';
+import { Vurl, course } from '../../Axios/Urls/EndPoints';
 import  avatar  from '../../assets/avatar.jpg';
 import { jwtDecode } from 'jwt-decode';
 import { addChatRoom } from '../../Axios/UserServer/UserServer';
@@ -46,11 +46,14 @@ const MentorUser = () => {
         }
         try{
             const res = await addChatRoom(ids)
-            navigate('/chat/')
-        }catch(error){
-            console.log('chat error:',error)
-        }
-    })
+            console.log(res,'ss')
+            // navigate('/chat/')
+            window.open(`${Vurl}chat/`)
+            
+          }catch(error){
+            console.log(error,"error in chat")
+          }
+    },[])
     
     if (status === 'loading'){
         return <Loader/>

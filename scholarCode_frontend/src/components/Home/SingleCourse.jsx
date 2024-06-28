@@ -21,6 +21,7 @@ import avatar from '../../assets/avatar.jpg'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 import { clearLinks } from '../../Redux/Slices/ZegoCallSlice'
 import ReactStars from 'react-stars'
+import { Vurl } from '../../Axios/Urls/EndPoints'
 
 
 const SingleCourse = () => {
@@ -38,8 +39,7 @@ const SingleCourse = () => {
   const MentorSelector = useSelector((state)=>state.Mentors)
   const user_id = userSelector.user.id
 
-  const ZegoCallSelector = useSelector((state)=>state.ZegoCall)
-  console.log(ZegoCallSelector,'zeo')
+  
 
   function getFormattedDate() {
     const date = new Date();
@@ -66,7 +66,6 @@ const SingleCourse = () => {
     dispatch(fetchEnrolledCourses(user_id))
     dispatch(fetchMentors())
     dispatch(fetchMentorCourse())
-    // dispatch(clearLinks())
 
     const dateInterval = setInterval(() => {
       setCurrentDate(getFormattedDate());
@@ -101,25 +100,24 @@ const SingleCourse = () => {
   // get the current mentor course
   const mentorCourses = mentorCourseSelector?.courses ||[]
   const currMentorCourse = EnrolledCourse ?mentorCourses.find((course)=>course.id == EnrolledCourse.course):null
-  console.log(currMentorCourse,'sjei')
-  
   // get mentor data
   const mentors = MentorSelector?.mentors||[]
   const mentorData = currMentorCourse ?mentors.find((mentor) => mentor.id ==currMentorCourse.mentor):null
 
   const currModule = EnrolledCourse?.curr_module||''
   
-  // get the zego call link
-  const zegoLinks = ZegoCallSelector?.links || []
-  const [ZegoCallLink] =   zegoLinks.filter((n)=>n.userid === user_id && n.courseid === EnrolledCourse?.id)
-  
-  console.log(ZegoCallLink?ZegoCallLink.link:'sd')
-// function to choose random mentor
+  // function to choose random mentor
   function getRandomMentorCourse() {
     const randomIndex = Math.floor(Math.random() * MentorCourse.length);
     return MentorCourse[randomIndex];
   }
 
+  // Attend review
+  const AttendReview =useCallback( ()=>{
+    console.log(`${Vurl}/${user_id}/${mentorData.id}/${EnrolledCourse.id}/`,'sukii')
+    window.open(`${Vurl}meeting/${user_id}/${mentorData.id}/${EnrolledCourse.id}/`)
+  },[])
+  // Handle message me
   const handleChat = useCallback(async()=>{
     const ids = {
       'user_id1' :mentorData.id,
@@ -128,7 +126,8 @@ const SingleCourse = () => {
     try{
       const res = await addChatRoom(ids)
       console.log(res)
-      navigate('/chat/')
+      // navigate('/chat/')
+      window.open(`${Vurl}chat/`)
       
     }catch(error){
       console.log(error,"error in chat")
@@ -361,15 +360,14 @@ const SingleCourse = () => {
               
               
               ))}
+            {((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.next_review_time.time))?
+            <Button className='p-1 m-1 text-light' onClick= {AttendReview} style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>:
+            <>
             <h5>Your next review is scheduled on : <span className='text-danger'>{EnrolledCourse.next_review_date}</span> Time: {EnrolledCourse.next_review_time?<span className='text-danger'>{EnrolledCourse.next_review_time.time}</span>:<span className='text-primary'>Not scheduled</span>}  </h5> 
-            {!((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.next_review_time.time))?
-            <Button className='p-1 m-1 text-light' href= {ZegoCallLink?ZegoCallLink.link:'' } style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>:
             <Button disabled className='p-1 m-1 text-light' style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>
+            </>
             }
             
-            <p>Date: {currentDate}</p>
-            <p>Date: {currentTime}</p>
-      {/* <p>Time: {currentTime<EnrolledCourse.next_review_time.time?"hi":"helo"}</p> */}
         </>
         }
         </div>
