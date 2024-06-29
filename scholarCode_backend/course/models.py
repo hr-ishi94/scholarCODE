@@ -31,11 +31,11 @@ class EnrolledCourse(models.Model):
     course = models.ForeignKey(MentorCourses, on_delete=models.CASCADE)
     total_modules = models.IntegerField(default=0)
     curr_module = models.CharField(max_length=100,default='module 1')
+    current_module = models.IntegerField(default=1)
     enroll_id= models.CharField(max_length=100, unique=True,blank=True)
     is_completed =models.BooleanField(default=False)
     certificate = models.CharField(blank=True)
     next_review_date =  models.DateField(default = default_review_date)
-    # next_review_time = models.ForeignKey(MentorTimes,on_delete=models.CASCADE,blank=True,null=True)
     review_time = models.TimeField(blank=True,null=True)
     vcall_link = models.CharField(max_length=300,null=True, blank=True)
 

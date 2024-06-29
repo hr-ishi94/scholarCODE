@@ -266,16 +266,21 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
     mark:null
 
   })
-  let curr_module = CurrCourse.curr_module 
+
+  let curr_module = CurrCourse.current_module 
   let is_completed = CurrCourse.is_completed
-  for(let i = 1;i<=CurrCourse.total_modules +1; i++){
-    if(CurrCourse.curr_module == `module ${i}`){
-      curr_module = `module ${i+1}`
+
+  for(let i = 1 ; i<=CurrCourse.total_modules +1; i++){
+
+    if(CurrCourse.curr_module == i){
+      curr_module = i++
     }
-    if (curr_module == `module ${CurrCourse.total_modules+1}`){
+
+    if (curr_module == CurrCourse.total_modules+1){
       is_completed = true
       break
     } 
+
   }
   // console.log(is_completed?'sd':'sfffffffff')
   const dispatch = useDispatch()

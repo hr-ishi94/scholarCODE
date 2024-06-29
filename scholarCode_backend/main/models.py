@@ -41,6 +41,7 @@ class Task(models.Model):
     name = models.CharField(max_length=500)
     course = models.ForeignKey(Course,on_delete=models.CASCADE,related_name='tasks')
     module = models.CharField(max_length=150)
+    task_module= models.IntegerField(default=0,blank=True)
 
     def __str__(self):
         return self.name

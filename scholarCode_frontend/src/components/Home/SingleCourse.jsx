@@ -22,9 +22,10 @@ import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSli
 import { clearLinks } from '../../Redux/Slices/ZegoCallSlice'
 import ReactStars from 'react-stars'
 import { Vurl } from '../../Axios/Urls/EndPoints'
-
+import TaskSection from './TaskSection'
 
 const SingleCourse = () => {
+
 
   const dispatch = useDispatch()
   const params = useParams()
@@ -40,26 +41,6 @@ const SingleCourse = () => {
   const user_id = userSelector.user.id
 
   
-
-  function getFormattedDate() {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-  
-  // Function to get formatted time
-  function getFormattedTime() {
-    const date = new Date();
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
-  }
-  const [currentDate, setCurrentDate] = useState(getFormattedDate());
-  const [currentTime, setCurrentTime] = useState(getFormattedTime());
-
   useEffect(()=>{
     dispatch(fetchCourseDetails(params.id))
     dispatch(fetchTasksList(params.id))
@@ -67,19 +48,7 @@ const SingleCourse = () => {
     dispatch(fetchMentors())
     dispatch(fetchMentorCourse())
 
-    const dateInterval = setInterval(() => {
-      setCurrentDate(getFormattedDate());
-    }, 24 * 60 * 60 * 1000); // Update the date every 24 hours
-
-    const timeInterval = setInterval(() => {
-      setCurrentTime(getFormattedTime());
-    }, 1000); // Update the time every second
-
-    // Cleanup intervals on component unmount
-    return () => {
-      clearInterval(dateInterval);
-      clearInterval(timeInterval);
-    };
+    
     
 
   },[dispatch,params.id,user_id])
@@ -136,25 +105,27 @@ const SingleCourse = () => {
   },[])
 
   
-  
   const tasks  = TaskSelector.tasks
-  const moduleSet = new Set()
-  
-  
-  tasks && tasks.map((task)=>
-    moduleSet.add(task.module))
-  
-  const modules = [...moduleSet]
-  
-  modules.sort();
+  // current module
+  const current_module = EnrolledCourse?.current_module
+
+  // Listing modules of the course
+  const newModules = new Set()
+  tasks && tasks.map((task)=>{
+      newModules.add(task.task_module)
+      
+  })
+  const modulesList = [...newModules]
+  modulesList.sort()
   
   const enrollCourse = async(id)=>{
+
     const chosenMentorCourse = getRandomMentorCourse();
-    console.log(chosenMentorCourse,'res')
 
     const formData = {
       user:userSelector.user.id,
-      course:chosenMentorCourse.id
+      course:chosenMentorCourse.id,
+      total_modules:modulesList.length
     }
     try{
       const res = await EnrollCourse(id,formData)
@@ -276,7 +247,7 @@ const SingleCourse = () => {
               <p >Explore the world of programming and enhance your skills with {course.name}. Enroll in this course to embark on a journey of self-learning and discovery.</p>
                 <br />
                 <div className='d-flex justify-content-between mx-5 px-5'style={{color:"#12A98E"}}>
-                  <h6><strong><i className="fa-solid fa-book-open"></i> {modules.length} Modules</strong></h6>
+                  <h6><strong><i className="fa-solid fa-book-open"></i> {modulesList.length} Modules</strong></h6>
                   <h6><strong><i className="fa-solid fa-video"></i> Weekly Reviews</strong></h6>
                   <h6><strong><i className="fa-solid fa-certificate"></i> Certification</strong></h6>
                   
@@ -336,65 +307,9 @@ const SingleCourse = () => {
       {!(EnrolledCourse?.is_completed)?
         <Col sm={8}>
       <h2><strong>Syllabus</strong></h2>
+      <TaskSection EnrolledCourse = {EnrolledCourse} modulesList = {modulesList} tasks = {tasks} current_module = {current_module} AttendReview={AttendReview}/>
       <br />
-      {modules.map((module,index)=>(
-        <div key={index}>
-        {module === currModule &&
-        <>
-        
-        <h2>{module}</h2>
-        {
-        
-        tasks.filter((task)=>task.module === module).map((task,index)=>(
-        
-          <ul>
-            <li className=''>
-              <h4 key={index}> {task.name}
-              <input type="checkbox" style={{width:"25px",height:"25px",marginLeft:"5px",}}/>
-              </h4>
-              
-            </li> 
-          </ul>
-          
-              
-              
-              
-              ))}
-            {((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.next_review_time.time))?
-            <Button className='p-1 m-1 text-light' onClick= {AttendReview} style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>:
-            <>
-            <h5>Your next review is scheduled on : <span className='text-danger'>{EnrolledCourse.next_review_date}</span> Time: {EnrolledCourse.next_review_time?<span className='text-danger'>{EnrolledCourse.next_review_time.time}</span>:<span className='text-primary'>Not scheduled</span>}  </h5> 
-            <Button disabled className='p-1 m-1 text-light' style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>
-            </>
-            }
-            
-        </>
-        }
-        </div>
-        
-      ))}
-
-      {
-      modules.map((module,index)=>(
-        <div key={index}>
-        {module !== currModule &&
-        <>
-        
-        <h2 className='text-secondary'>{module}</h2>
-        {tasks.filter((task)=>task.module === module).map((task,index)=>(
-          <div className='d-flex text-secondary'>
-            <h4 key={index}><i className="fa-solid fa-lock "></i> task{index+1}</h4>
-           
-          </div>
-          
-        ))}
-        </>
-        }
-        </div>
-        
-      ))}
-
-      <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
+      
 
       </Col>
       :
@@ -408,11 +323,7 @@ const SingleCourse = () => {
           <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
           <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
         </h4>
-        {/* <ReactStars disabled
-  count={5}
-  size={24}
-  color2={'#ffd700'} 
-  /> */}
+        
         <Button className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
       
       </Col>}
