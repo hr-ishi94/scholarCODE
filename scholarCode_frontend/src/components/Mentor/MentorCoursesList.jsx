@@ -133,6 +133,7 @@ const AddCourseModal = ({handleClose,show,mentorId})=> {
             [name]:Number(value)
         }))
     }
+    console.log(formData,'jjjj')
 
     const handleSubmit = async(e)=>{
         e.preventDefault()
@@ -168,10 +169,10 @@ const AddCourseModal = ({handleClose,show,mentorId})=> {
                 <Form.Group className="mb-3 p-3">
                     <Form.Label>Course</Form.Label>
                     <Form.Select  name='course' value={formData.course} onChange={handleChange}>
-                        <option >Choose the Course that you can Mentor</option>
+                        <option className='text-secondary'>Choose the Course that you can Mentor</option>
 
                         {courses.map((course)=>
-                            <option key={course.id} value={course.id} >{course.name}</option>
+                            <option key={course.id  } value={course.id} >{course.name}</option>
                         )}
 
                     </Form.Select>

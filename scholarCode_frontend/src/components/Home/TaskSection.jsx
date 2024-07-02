@@ -82,10 +82,13 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
             <TaskList module = {module} tasks = {tasks} reviewDate ={EnrolledCourse.next_review_date} currentDate = {currentDate}/>
            
             {
-            ((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.next_review_time.time))?
+            ((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.review_time))?
             <Button className='p-1 m-1 text-light' onClick= {AttendReview} style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>:
             <>
-            <h5>Your next review is scheduled on : <span className='text-danger'>{EnrolledCourse.next_review_date}</span> Time: {EnrolledCourse.next_review_time?<span className='text-danger'>{EnrolledCourse.next_review_time.time}</span>:<span className='text-primary'>Not scheduled</span>}  </h5> 
+            <h5>Your Review is scheduled on : <span className='text-danger'>{EnrolledCourse.next_review_date}</span> Time: {EnrolledCourse.review_time?<span className='text-danger'>{EnrolledCourse.review_time}</span>:<span className='text-primary'>Not scheduled</span>}  </h5> 
+            {!EnrolledCourse?.review_time &&
+            <p className='text-secondary'><i className="fa-solid fa-circle-exclamation text-primary"></i> Time will be updated two days prior review date.If not do ask your mentor to schedule it.</p>
+            }
             <Button disabled className='p-1 m-1 text-light' style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>
             </>
             }
@@ -99,7 +102,7 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
       {
       modulesList.map((module,index)=>(
         <div key={index}>
-        {module > current_module &&
+        {(module > current_module || !EnrolledCourse )  && 
         <>
         
         <h2 className='text-secondary'>Module {module}</h2>

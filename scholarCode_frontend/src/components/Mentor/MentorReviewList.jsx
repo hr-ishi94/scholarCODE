@@ -10,11 +10,13 @@ import { fetchUsers } from '../../Redux/Slices/UserListSlice';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 import Loader from '../Utils/Loader';
+import { jwtDecode } from 'jwt-decode';
 
 const MentorReviewList = () => {
     const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
     const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
-    const MentorSelector = useSelector((state)=>state.Mentor)
+    const MentorId = jwtDecode(localStorage.getItem('access')).user_id
+    console.log('mentor,',MentorId)
     const UserSelector = useSelector((state)=>state.userList)
     const CourseSelector = useSelector((state)=>state.Courses)
     const dispatch = useDispatch()
@@ -29,7 +31,7 @@ const MentorReviewList = () => {
 
     const MentorCourseSet = new Set()
     for(let course of MentorCourseSelector.courses){
-        if(!MentorCourseSet.has(course.id)){
+        if(!MentorCourseSet.has(course.id) && course.mentor === MentorId){
             MentorCourseSet.add(course.id)
         }
     }
@@ -74,7 +76,8 @@ const MentorReviewList = () => {
             </tr>
         </thead>
         <tbody >
-            {MentorCoursesList.map((course,index)=>(
+            {MentorCoursesList
+            .map((course,index)=>(
 
                 <tr key={index}>
                 <td>{index+1}</td>

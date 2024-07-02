@@ -24,7 +24,7 @@ const MentorUserList = () => {
     const dispatch = useDispatch()
     
     useEffect(()=>{
-        dispatch(fetchMentorCourse(mentorId))
+        dispatch(fetchMentorCourse())
         dispatch(fetchAllEnrolledCourses())
         dispatch(fetchUsers())
     },[dispatch])
@@ -35,7 +35,10 @@ const MentorUserList = () => {
     
     console.log(allEnrolledCourses.enrolls,'enro')
     mentorCourseSelector.courses.map((course)=>{
-        mentorCourseSet.add(course.id)
+        if (course.mentor === mentorId){
+
+            mentorCourseSet.add(course.id)
+        }
     })
     console.log(mentorCourseSet,'mcourse')
 

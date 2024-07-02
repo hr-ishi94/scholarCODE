@@ -38,10 +38,12 @@ class EnrolledCourse(models.Model):
     next_review_date =  models.DateField(default = default_review_date)
     review_time = models.TimeField(blank=True,null=True)
     vcall_link = models.CharField(max_length=300,null=True, blank=True)
-
+    
     class Meta:
-        unique_together = ('next_review_date','review_time')
-
+        constraints = [
+            models.UniqueConstraint(fields=['course', 'user'], name='user_enrolled_course')
+        ]
+    
     def generate_enroll_id(self):
         self.enroll_id =  ''.join(random.choices(string.ascii_uppercase +
                              string.digits, k=N))

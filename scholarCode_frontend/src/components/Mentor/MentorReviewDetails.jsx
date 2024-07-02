@@ -163,7 +163,7 @@ const MentorReviewDetails = () => {
       <br />
       {!CurrCourse.is_completed ?
     <>
-      <h5>Current module:  <strong>  {CurrCourse.curr_module}</strong></h5>
+      <h5>Current module:  <strong> module {CurrCourse.current_module}</strong></h5>
       <br />
       
       <h5>Upcoming Review Date:  
@@ -186,7 +186,7 @@ const MentorReviewDetails = () => {
         button &&
         <>
         <Button className='p-2 text-light' style={{backgroundColor:"#12A98E"}} variant='' onClick={handleConfirmShow} disabled={isDisabled}>Conduct Review</Button>
-        {!isDisabled && <p className='text-danger'><i className="fa-solid fa-circle-exclamation"></i> Please Conduct the review now!</p>}
+        {/* {!isDisabled && <p className='text-danger'><i className="fa-solid fa-circle-exclamation"></i> Please Conduct the review now!</p>} */}
         </>
         
       }
@@ -231,7 +231,7 @@ const MentorReviewDetails = () => {
         <thead>
           <tr>
             <th>No.</th>
-            <th>Module Number</th>
+            <th>Module </th>
             <th>Mark Scored (Out of 50)</th>
           </tr>
         </thead>
@@ -239,7 +239,7 @@ const MentorReviewDetails = () => {
         {ReviewMarksList && ReviewMarksList.map((n,index)=>
           <tr key={index}>
             <td>{index + 1}</td>
-            <td>{n.module}</td>
+            <td>Module  {n.module}</td>
             <td>{n.mark}</td>
           </tr>
         )}
@@ -267,16 +267,13 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
 
   })
 
-  let curr_module = CurrCourse.current_module 
+  let current_module = CurrCourse.current_module 
+  console.log(current_module,'kiho')
   let is_completed = CurrCourse.is_completed
 
   for(let i = 1 ; i<=CurrCourse.total_modules +1; i++){
 
-    if(CurrCourse.curr_module == i){
-      curr_module = i++
-    }
-
-    if (curr_module == CurrCourse.total_modules+1){
+    if (current_module == CurrCourse.total_modules+1){
       is_completed = true
       break
     } 
@@ -300,7 +297,7 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
 
   const  enrollForm={
     ...CurrCourse,
-    curr_module,
+    current_module:current_module + 1,
     is_completed,
     next_review_date: addDays(CurrCourse.next_review_date,7),
     review_time: null,

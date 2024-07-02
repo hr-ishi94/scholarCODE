@@ -37,7 +37,7 @@ export const MentorCourseList = async()=>{
 export const MentorCourseAssign = async (newCourse)=>{
     try{
         
-        const res = await axiosCourseFormInstance.post(`/mentor/${newCourse.mentor}/`,newCourse)
+        const res = await axiosCourseFormInstance.post(`/mentor/`,newCourse)
         if (res.status === 200){
             return res
         }

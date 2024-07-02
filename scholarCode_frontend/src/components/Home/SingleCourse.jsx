@@ -117,7 +117,7 @@ const SingleCourse = () => {
   })
   const modulesList = [...newModules]
   modulesList.sort()
-  
+  console.log(modulesList.length)
   const enrollCourse = async(id)=>{
 
     const chosenMentorCourse = getRandomMentorCourse();
