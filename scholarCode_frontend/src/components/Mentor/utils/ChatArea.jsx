@@ -18,7 +18,8 @@ const ChatArea = ({ user, username }) => {
   const [newMessage, setNewMessage] = useState('');
   const dispatch = useDispatch();
   const chatContainerRef = useRef(null);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   useEffect(() => {
     const user_id1 = user;
     const user_id2 = userId;
@@ -57,7 +58,7 @@ const ChatArea = ({ user, username }) => {
 
       newSocket.onclose = () => {
         console.log('WebSocket closed');
-        setTimeout(getSocket, 1000); // Reconnect after 1 second
+        setTimeout(getSocket, 1000);
       };
 
       newSocket.onmessage = (event) => {
@@ -87,44 +88,37 @@ const ChatArea = ({ user, username }) => {
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    } else {
-      console.error('chatContainerRef is null');
     }
   }, [messages]);
 
-  const handleVcall = (()=>{
-    console.log('vcall running')
+  const handleVcall = () => {
+    console.log('vcall running');
     // navigate(`/meeting/${userid}/${mentorid}/${courseid}/`)
-  })
+  };
 
   return (
     <div className="chat-history">
       <div className="chat-header clearfix card text-light" style={{ backgroundColor: '#12A98E' }}>
-        
-          <div >
-            <Row>
-              <Col sm={11}>
-                <div  className='px-5 pt-2 d-flex'>
-                  <a href="javascript:void(0);" className="mx-2 mt-2 " data-toggle="modal" data-target="#view_info">
-                    <Avatar />
-                  </a>
-                  <div className="chat-about">
-                    <h5>{username ? username : 'user'}</h5>
-                    <Badge status="success" /> online
-                  </div>
-                </div>
-              </Col>
-              <Col sm={1} >
-              <Button className='text-light rounded-circle mt-3' variant='' onClick={handleVcall}>
-
+        <Row>
+          <Col sm={11}>
+            <div className='px-5 pt-2 d-flex'>
+              <a href="javascript:void(0);" className="mx-2 mt-2" data-toggle="modal" data-target="#view_info">
+                <Avatar />
+              </a>
+              <div className="chat-about">
+                <h5>{username || 'user'}</h5>
+                <Badge status="success" /> online
+              </div>
+            </div>
+          </Col>
+          <Col sm={1}>
+            <Button className='text-light rounded-circle mt-3' variant='' onClick={handleVcall}>
               <h5 className='pt-2 px-2'>
                 <i className="fa-solid fa-video"></i>
               </h5>
-              </Button>
-              </Col>
-            </Row>
-
-          </div>
+            </Button>
+          </Col>
+        </Row>
       </div>
       <div ref={chatContainerRef} className="chat-area">
         <div className="mx-4 mt-1">

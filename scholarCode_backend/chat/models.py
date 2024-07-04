@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from main.models import CustomUser
 # Create your models here.
 
@@ -9,8 +10,18 @@ class ChatRooms(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user1', 'user2'], name='unique_chatroom_users')
+            models.UniqueConstraint(
+                fields=['user1', 'user2'],
+                name='unique_chat_room',
+                condition=Q(user1__lt=models.F('user2'))
+            )
         ]
+
+    def save(self, *args, **kwargs):
+        if self.user1.id > self.user2.id:
+            self.user1, self.user2 = self.user2, self.user1
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.user1.username} - {self.user2.username} chatroom"
     
