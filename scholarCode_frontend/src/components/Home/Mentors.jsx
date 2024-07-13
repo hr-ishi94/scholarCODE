@@ -13,7 +13,7 @@ const Mentors = () => {
     const {mentors,status, error} = useSelector((state)=>state.Mentors)
     
     useEffect(() => {
-    dispatch(fetchMentors)
+    dispatch(fetchMentors())
     if(mentors?.length!==0){
 
       setMentorsList(mentors)

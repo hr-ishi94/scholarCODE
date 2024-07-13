@@ -29,7 +29,7 @@ def EnrolledCoursesList(request):
             enrolls = EnrolledCourse.objects.all()
             if not enrolls:
                 return Response({'message':'No courses for this mentor'})
-            serializer = EnrollSerializer(enrolls, many = True)
+            serializer = AllEnrollSerializer(enrolls, many = True)
             return Response(serializer.data)
         except Exception as e:
             return Response({'message':str(e)},status= status.HTTP_500_INTERNAL_SERVER_ERROR)

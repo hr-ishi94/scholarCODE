@@ -25,7 +25,7 @@ const MentorReviewDetails = () => {
   const dispatch = useDispatch()
   const UserSelector = useSelector((state)=>state.userList)
   const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
-  const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
+  const EnrolledCourseSelector = useSelector((state)=>state.AllEnrolls)
   const CourseSelector = useSelector((state)=>state.Courses)
   const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
 
@@ -71,16 +71,16 @@ const MentorReviewDetails = () => {
   },[dispatch])
   
   const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
-  const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course)
+  const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course.id)
   
   const CourseName = ()=>{
-    const res = MentorCourseSelector.courses.find((course)=> course.id === CurrCourse.course)
+    const res = MentorCourseSelector.courses.find((course)=> course.id === CurrCourse.course.id)
     const course = CourseSelector.courses.find((crs)=>crs.id === res.course)
     return course.name
   }
   const course = CourseName()
 
-  const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user)
+  const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user.id)
   
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);

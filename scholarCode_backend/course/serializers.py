@@ -23,6 +23,14 @@ class EnrollSerializer(serializers.ModelSerializer):
         model = EnrolledCourse
         fields='__all__'
 
+class AllEnrollSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    course = MentorCourseSerializer()
+
+    class Meta:
+        model = EnrolledCourse
+        fields = '__all__'
+
 
 class ReviewMarkSerializer(serializers.ModelSerializer):
     class Meta:

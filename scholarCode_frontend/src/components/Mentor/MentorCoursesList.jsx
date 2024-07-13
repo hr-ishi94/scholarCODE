@@ -13,12 +13,14 @@ import { Form } from 'react-bootstrap';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { MentorCourseAssign } from '../../Axios/MentorServer/MentorServer';
 import { toast } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode';
 
 
 const MentorCoursesList = () => {
     const mentorSelector = useSelector((state)=>state.Mentor)
     const categorySelector = useSelector((state)=> state.Categories)
     const courseSelector = useSelector((state)=>state.Courses)
+    const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
     
 
     const [showModal ,setShowModal] =useState(false)
@@ -28,6 +30,10 @@ const MentorCoursesList = () => {
     const id = mentorSelector.mentor.id
     const dispatch = useDispatch()
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
+
+    const MentorCourseSet = new Set()
+    MentorCourseSelector.courses.filter((course)=>course.mentor === id).map((course)=>MentorCourseSet.add(course.course))
+    console.log(MentorCourseSet,'hiiii')
 
     useEffect(()=>{
         dispatch(fetchMentorCourse())
@@ -75,7 +81,7 @@ const MentorCoursesList = () => {
             style={{backgroundColor:'#12A98E'}} onClick={handleShow}>Assign new Course</Button>
         </Col>
     </Row>
-    <AddCourseModal show={showModal} handleClose={handleClose} mentorId = {id}/>
+    <AddCourseModal show={showModal} handleClose={handleClose} mentorId = {id} courseSet ={MentorCourseSet}/>
     <br />
 
     <Table striped bordered hover>
@@ -115,7 +121,7 @@ export default MentorCoursesList
 
 
 
-const AddCourseModal = ({handleClose,show,mentorId})=> {
+const AddCourseModal = ({handleClose,show,mentorId,courseSet})=> {
 
     const [formData,setFormData] = useState({
         course:'',
@@ -139,18 +145,26 @@ const AddCourseModal = ({handleClose,show,mentorId})=> {
         e.preventDefault()
         try{
             const res = await MentorCourseAssign(formData)
-            if(res.status === 200){
+            if(res.status === 200 || res.status === 201){
                 toast.success("Successfully assigned new course")
                 dispatch(addCourse(res.data))
                 handleClose()
             }
-            console.log(res,'sfo')
-            if (res.data){
-                toast.error(res.data.course[0])
+            else{
+                if (res.data.non_field_errors){
+
+                    toast.error('You cannot assign the same course again ')
+                }
+                else{
+                    toast.error(res.data.course[0])
+
+                }
             }
+            
 
             
         }catch(error){
+            console.log(error,'error')
 
         }
     }
@@ -169,9 +183,11 @@ const AddCourseModal = ({handleClose,show,mentorId})=> {
                 <Form.Group className="mb-3 p-3">
                     <Form.Label>Course</Form.Label>
                     <Form.Select  name='course' value={formData.course} onChange={handleChange}>
-                        <option className='text-secondary'>Choose the Course that you can Mentor</option>
+                        <option>----- Choose the Course that you can Mentor -----</option>
 
-                        {courses.map((course)=>
+                        {courses
+                        .filter((course)=> !courseSet.has(course.id))
+                        .map((course)=>
                             <option key={course.id  } value={course.id} >{course.name}</option>
                         )}
 

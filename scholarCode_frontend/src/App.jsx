@@ -38,6 +38,8 @@ import MentorUser from './components/Mentor/MentorUser';
 import Chat from './components/Mentor/Chat';
 import ZegoCall from './components/Mentor/utils/ZegoCall';
 import ChatScreenLayout from './Pages/HomePage/ChatScreenLayout';
+import AdminReviewsList from './components/Admin/AdminReviewsList';
+import AdminReviewDetails from './components/Admin/AdminReviewDetails';
 
 
 
@@ -65,6 +67,10 @@ function App() {
             <Route path='/admin/course/:id/' element={<AdminCourse/>}></Route>
             <Route path='/admin/category/' element={<AdminCategoryList/>}></Route>
             <Route path='/admin/category/:id/' element={<AdminCategory/>}></Route>
+            <Route path='/admin/list-of-reviews/' element={<AdminReviewsList/>}></Route>
+            <Route path='/admin/review-details/:id' element={<AdminReviewDetails/>}></Route>
+
+
           </Route>
 
           {/* Mentor side layout */}

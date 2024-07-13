@@ -13,7 +13,7 @@ import Loader from '../Utils/Loader';
 import { jwtDecode } from 'jwt-decode';
 
 const MentorReviewList = () => {
-    const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
+    const EnrolledCourseSelector = useSelector((state)=>state.AllEnrolls)
     const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
     const MentorId = jwtDecode(localStorage.getItem('access')).user_id
     console.log('mentor,',MentorId)
@@ -26,6 +26,7 @@ const MentorReviewList = () => {
         dispatch(fetchCoursesList())
         dispatch(fetchMentorCourse())
         dispatch(fetchAllEnrolledCourses())
+        
 
     },[dispatch])
 
@@ -47,7 +48,7 @@ const MentorReviewList = () => {
     }
     console.log(CoursesObject,'sed')
 
-    const MentorCoursesList = EnrolledCourseSelector && EnrolledCourseSelector.enrolls.filter((enroll)=>MentorCourseSet.has(enroll.course))
+    const MentorCoursesList = EnrolledCourseSelector && EnrolledCourseSelector.enrolls.filter((enroll)=>MentorCourseSet.has(enroll.course.id))
 
     if(EnrolledCourseSelector.status === 'loading'){
         return <Loader/>
@@ -81,11 +82,11 @@ const MentorReviewList = () => {
 
                 <tr key={index}>
                 <td>{index+1}</td>
-                {UserSelector.users.filter((user)=>user.id === course.user).map((n)=>
+                {UserSelector.users.filter((user)=>user.id === course.user.id).map((n)=>
                 <td>{n.first_name}</td>
                 )
                 }
-                <td>{CoursesObject[course.course]}</td>
+                <td>{CoursesObject[course.course.id]}</td>
                 
                 {course.is_completed?<>
                 

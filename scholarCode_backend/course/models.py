@@ -11,6 +11,9 @@ class MentorCourses(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
     courseStatus = models.BooleanField(default=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=['mentor','course'],name='unique_mentor_courses')]
     
     def __str__(self):
         return self.course.name+" - "+self.mentor.first_name
