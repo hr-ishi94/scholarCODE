@@ -128,7 +128,7 @@ function TimeSlots({show,handleClose}) {
     const DateMap = {}
 
     EnrolledCourses.enrolls
-  .filter((enroll) => mentorCourseSet.has(enroll.course))
+  .filter((enroll) => mentorCourseSet.has(enroll.course.id))
   .forEach((course) => {
     DateMap[course.id] = course.next_review_date;
   });

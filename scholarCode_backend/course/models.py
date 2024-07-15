@@ -44,7 +44,8 @@ class EnrolledCourse(models.Model):
     
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['course', 'user'], name='user_enrolled_course')
+            models.UniqueConstraint(fields=['course', 'user'], name='user_enrolled_course'),
+            models.UniqueConstraint(fields=['course', 'review_time','next_review_date'], name='review_time_unique')
         ]
     
     def generate_enroll_id(self):
