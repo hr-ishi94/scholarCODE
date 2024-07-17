@@ -23,11 +23,13 @@ const EnrolledCoursesSlice = createSlice({
         }, 
         enrollPut: (state, action) => {
             const { enroll_id, formData } = action.payload;
-            console.log('hrishi',enroll_id,formData)
             const index = state.enrolls.findIndex((enroll )=> enroll.id === enroll_id);
+            console.log('hrishi1',state.enrolls[index])
+            
             if (index !== -1) {
                 state.enrolls[index] = formData;
             }
+            console.log('hrishi2',state.enrolls)
         }
         
 

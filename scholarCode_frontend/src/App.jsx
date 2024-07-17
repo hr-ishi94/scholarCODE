@@ -40,6 +40,9 @@ import ZegoCall from './components/Mentor/utils/ZegoCall';
 import ChatScreenLayout from './Pages/HomePage/ChatScreenLayout';
 import AdminReviewsList from './components/Admin/AdminReviewsList';
 import AdminReviewDetails from './components/Admin/AdminReviewDetails';
+import { Tooltip } from 'react-tooltip';
+import AdminDashboard from './components/Admin/AdminDashboard';
+import MentorDashboard from './components/Mentor/MentorDashboard';
 
 
 
@@ -58,6 +61,8 @@ function App() {
           
           {/* Admin Root Layout */}
           <Route element={<AdminRootLayoot/>}>
+
+            <Route path='/admin/dashboard/' element={<AdminDashboard/>}></Route>
             <Route path='/admin/users/' element={<AdminUserList/>}></Route>
             <Route path='/admin/user/:id/' element={<AdminUser/>}></Route>
             <Route path='/admin/mentors/' element={<AdminMentorList/>}></Route>
@@ -75,6 +80,8 @@ function App() {
 
           {/* Mentor side layout */}
           <Route element={<MentorRootLayout/>}>
+
+            <Route path='/mentor/dashboard/' element={<MentorDashboard/>}></Route>
             <Route path='/mentor/reviews/' element={<MentorReviewList/>}></Route>
             <Route path='/mentor/review/:id/' element={<MentorReviewDetails/>}></Route>
             <Route path='/mentor/users/' element={<MentorUserList/>}></Route>
@@ -110,6 +117,8 @@ function App() {
 
           
         </Routes>
+
+        <Tooltip id = 'my-tooltip'/>
 
         
         <ToastContainer

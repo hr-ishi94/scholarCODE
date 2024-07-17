@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Card, Col, Row } from 'react-bootstrap'
 
 const TaskList = ({module,tasks,reviewDate,currentDate}) => {
     const [checkedItems, setCheckedItems] = useState({})
@@ -16,11 +17,11 @@ const TaskList = ({module,tasks,reviewDate,currentDate}) => {
     console.log(areAllChecked(),'s')
   return (
     <>
+
          {
             
             tasks.filter((task)=>task.task_module === module).map((task,index)=>(
                 <ul>
-        
             <li className=''>
               <h4 key={index}> {task.name}
               <input 
@@ -32,6 +33,7 @@ const TaskList = ({module,tasks,reviewDate,currentDate}) => {
               </h4>
               
             </li> 
+                  
           </ul>
           
               

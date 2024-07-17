@@ -32,8 +32,7 @@ const MentorRootLayout = () => {
                     const access = selector.access
                     const decodedToken = jwtDecode(selector.access)
                     const mentorId = decodedToken.user_id
-                    dispatch(fetchMentor(mentorId))
-                
+                    dispatch(fetchMentor(mentorId))  
             }
             
         }catch(error){
@@ -72,11 +71,38 @@ const MentorRootLayout = () => {
                 </Col>
                 <Col sm = {3} className='d-flex '>
                 
-                    <Link    className=' text-light react-router-link px-2 mt-3' onClick={handleShow}>Time Slots</Link>
+                    <Link 
+                      className=' text-light react-router-link px-3 mt-3'
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content=" Wallet "
+                      data-tooltip-place="top">
+                      <i className="fa-solid fa-wallet"></i>
+                    </Link>
+                    <Link 
+                      className=' text-light react-router-link px-3 mt-3'
+                      onClick={handleShow}
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content="Time slots"
+                      data-tooltip-place="top">
+                      <i className="fa-solid fa-clock"></i>
+                    </Link>
                     <TimeSlots show={timeSlotModal} handleClose={handleClose}/>
-                    <Link to={'/chat/'} className=' text-light react-router-link px-2 mt-3'>Messages</Link>
-                    <button className='noti-mentor text-center px-2 '><  i className="fa-regular fa-bell mentor-drop"></i></button>
-                    <Dropdown className='mt-3 px-1  ' >
+                    <Link to={'/chat/'} 
+                      className=' text-light react-router-link px-3 mt-3' 
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content="Messages"
+                      data-tooltip-place="top">
+                      <i className="fa-solid fa-message"></i>
+                    </Link>
+
+                    <Link  
+                      className=' text-light react-router-link px-3 mt-3'
+                      data-tooltip-id="my-tooltip"
+                      data-tooltip-content="Notification"
+                      data-tooltip-place="top">
+                      <i className="fa-solid fa-bell"></i>
+                      </Link>
+                    <Dropdown className='mt-3 px-3  ' >
                         <Dropdown.Toggle variant="success" style={{backgroundColor:'#12A98E',border:'none'}} id="dropdown-basic">
                            Mentor: {mentor.first_name}
                         </Dropdown.Toggle>
@@ -93,10 +119,10 @@ const MentorRootLayout = () => {
         </div>
         <Outlet/>
         <div className='aside-mentor py-1'>
-        <Link  className="react-router-link text-dark"><h2 className='aside-content'>Dashboard</h2></Link>
-        <Link to={'mentor/reviews/'} className="react-router-link text-dark"><h2 className='aside-content'>Reviews List</h2></Link>
-        <Link to={'mentor/courses/'} className="react-router-link text-dark"><h2 className='aside-content'>Courses Assigned</h2></Link>
-        <Link to={'mentor/users/'} className="react-router-link text-dark"><h2 className='aside-content'>Users Assigned</h2></Link>
+        <Link to={'/mentor/dashboard/'} className="react-router-link text-dark"><h2 className='aside-content'>Dashboard</h2></Link>
+        <Link to={'/mentor/reviews/'} className="react-router-link text-dark"><h2 className='aside-content'>Reviews List</h2></Link>
+        <Link to={'/mentor/courses/'} className="react-router-link text-dark"><h2 className='aside-content'>Courses Assigned</h2></Link>
+        <Link to={'/mentor/users/'} className="react-router-link text-dark"><h2 className='aside-content'>Users Assigned</h2></Link>
     </div>
     </>
     }
@@ -166,15 +192,18 @@ return (
                     </Form.Select>
               </Form.Group>
               <Form.Group>
-                <Form.Label>Review Times</Form.Label>
-                {dates.map((date)=>(
-
-                <h4>
+                <h6>{(dates.length>0)?`${dates.length} review(s) have been scheduled on this date`:''}</h6>
+                {dates.map((date,index)=>(
+                  
+                  
+                <h4 key={index}>
+                    <span>{index + 1}. </span> 
                     {date?
                    <Badge bg="" style={{backgroundColor:'#12A98E'}} className='p-1'>{date}</Badge>:
                    <Badge bg="secondary"  className='p-1'>Time not Scheduled</Badge>
-                    }
+                  }
                 </h4>
+                  
                 ))}
                 
                 

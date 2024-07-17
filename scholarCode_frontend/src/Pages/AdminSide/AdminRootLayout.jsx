@@ -53,7 +53,7 @@ const AdminRootLayout = () => {
             </div>
             <Outlet/>
             <div className='aside-admin py-1'>
-            <Link className="react-router-link text-dark"><h2 className='aside-content'>Dashboard</h2></Link>
+            <Link to={'/admin/dashboard/'} className="react-router-link text-dark"><h2 className='aside-content'>Dashboard</h2></Link>
             <Link to={'/admin/users/'} className="react-router-link text-dark"><h2 className='aside-content'>Users</h2></Link>
             <Link to={'/admin/mentors/'} className="react-router-link text-dark"><h2 className='aside-content'>Mentors</h2></Link>
             <Link to={'/admin/courses/'} className="react-router-link text-dark"><h2 className='aside-content'>Courses</h2></Link>

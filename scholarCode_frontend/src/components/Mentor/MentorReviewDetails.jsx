@@ -11,9 +11,9 @@ import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { enrollPut, fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
 import { ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
-import { EnrollCourse, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
+import { EnrollCourse, EnrollPatch, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
 import { toast } from 'react-toastify';
-import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
+import { enrollPatch, fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 import { Vurl } from '../../Axios/Urls/EndPoints';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import Loader from '../Utils/Loader';
@@ -73,13 +73,6 @@ const MentorReviewDetails = () => {
   const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
   const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course.id)
   
-  const CourseName = ()=>{
-    const res = MentorCourseSelector.courses.find((course)=> course.id === CurrCourse.course.id)
-    const course = CourseSelector.courses.find((crs)=>crs.id === res.course)
-    return course.name
-  }
-  const course = CourseName()
-
   const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user.id)
   
   const [show, setShow] = useState(false);
@@ -118,14 +111,28 @@ const MentorReviewDetails = () => {
     const handleTimeSubmit = async()=>{
       try {
         const time = {
-          ...CurrCourse,
-          review_time:currTime
+          id:CurrCourse.id,
+          review_time:currTime,
+          mentor:CurrCourse.course.mentor,
+          next_review_date:CurrCourse.next_review_date
         }
-        const ne = await EnrollPut(CurrCourse.user,time)
-        console.log(ne.data,CurrCourse.id,'kiii')
-        const payload = { enroll_id: CurrCourse.id, formData: ne.data };
-        dispatch(enrollPut(payload));
-        toast.success('Review Time has been scheduled')
+
+        const ne = await EnrollPatch(CurrCourse.user.id,time)
+        console.log(ne,'resss')
+        if (ne.status == 'success'){
+
+          const payload = { enroll_id: CurrCourse.id, formData: {
+            ...CurrCourse,
+            review_time:ne.data.review_time
+          } };
+          console.log(ne.data,CurrCourse.id,payload ,'kiii')
+          dispatch(enrollPatch(payload));
+          toast.success('Review Time has been scheduled')
+        }else{
+          if (ne.data.message){
+            toast.error(ne.data.message)
+          }
+        }
 
       }catch(error){
         console.log(error,'error')
@@ -147,19 +154,24 @@ const MentorReviewDetails = () => {
     <div style={style}>
       <h1>Review Details</h1>
       <Row>
-        <Col>
+        <Col sm={5}>
         
       <br />
-      {UserSelector.users.filter((user)=>user.id === CurrCourse.user).map((user)=><>
-      <h5>Student Name:  <strong>  {user.first_name} {user.last_name}</strong></h5>
+      {UserSelector.users.filter((user)=>user.id === CurrCourse.user.id).map((user)=><>
+      <h5>Student Name:  <strong>  {user.first_name?user.first_name + " " +user.last_name:<span className='text-danger' style={{fontSize:'15px',fontWeight:'lighter'}}>Please ask the candidate to update the profile </span>}</strong></h5>
       <Link to={`/mentor/user/${user.id}/`}><Button className='pb-2 text-primary' variant=''>View User Details</Button></Link>
       </>
       )}
       <h6>Course Enroll ID:  <strong>  {CurrCourse.enroll_id}</strong></h6>
       <br />
-      <h5>Course Name:  <strong>  {course}</strong></h5>
-      {/* {CourseSelector.courses.filter((crs)=>crs.id === CurrCourse.course).map((n)=>
-      )} */}
+      {CourseSelector.courses.filter((crs)=>crs.id == CurrCourse.course.course).map((course)=>(
+      <>
+      <h5>Course Name:  <strong>  {course.name}</strong></h5>
+      <Link to={`/mentor/course/${course.id}/`} className='react-router-link'>View Course Details</Link>
+            
+      </>
+      
+      ))}
       <br />
       {!CurrCourse.is_completed ?
     <>
@@ -185,7 +197,7 @@ const MentorReviewDetails = () => {
       {
         button &&
         <>
-        <Button className='p-2 text-light' style={{backgroundColor:"#12A98E"}} variant='' onClick={handleConfirmShow} disabled={isDisabled}>Conduct Review</Button>
+        <Button className='py-2 px-1 text-light' style={{backgroundColor:"#12A98E"}} variant='' onClick={handleConfirmShow} disabled={isDisabled}>Conduct Review</Button>
         {/* {!isDisabled && <p className='text-danger'><i className="fa-solid fa-circle-exclamation"></i> Please Conduct the review now!</p>} */}
         </>
         
@@ -218,7 +230,9 @@ const MentorReviewDetails = () => {
       }
       </Col>
 
-      <Col>
+
+
+      <Col sm={7}>
       <Row className='m-1'>
         <Col sm={10}>
           <h5><strong> Review Marks</strong></h5>        
@@ -227,20 +241,25 @@ const MentorReviewDetails = () => {
         <Col sm={2}>
        </Col>
       </Row>
-      <Table striped bordered hover>
+      <Table striped bordered hover className='text-center'>
         <thead>
           <tr>
             <th>No.</th>
             <th>Module </th>
-            <th>Mark Scored (Out of 50)</th>
+            <th>Marks</th>
+            <th>Pending Topics</th>
+
           </tr>
         </thead>
         <tbody>
-        {ReviewMarksList && ReviewMarksList.map((n,index)=>
+        {ReviewMarksList && ReviewMarksList
+        .sort((a,b)=>a.module-b.module)
+        .map((n,index)=>
           <tr key={index}>
             <td>{index + 1}</td>
             <td>Module  {n.module}</td>
             <td>{n.mark}</td>
+            <td>{n.pendings}</td>
           </tr>
         )}
         
@@ -260,26 +279,27 @@ export default MentorReviewDetails
 function ReviewMarkModal({handleClose,show,CurrCourse}) {
   const CourseSelector = useSelector((state) =>state.Course)
   const [formData,setFormData] =useState({
-    module:CurrCourse.curr_module,
-    user:CurrCourse.user,
+    module:CurrCourse.current_module,
+    user:CurrCourse.user.id,
     course:CurrCourse.id,
+    pendings:'',
     mark:null
+
 
   })
 
   let current_module = CurrCourse.current_module 
-  console.log(current_module,'kiho')
   let is_completed = CurrCourse.is_completed
 
-  for(let i = 1 ; i<=CurrCourse.total_modules +1; i++){
+  for(let i = 1 ; i<=CurrCourse.total_modules + 1; i++){
 
-    if (current_module == CurrCourse.total_modules+1){
+    if (current_module == CurrCourse.total_modules){
       is_completed = true
       break
     } 
 
   }
-  // console.log(is_completed?'sd':'sfffffffff')
+
   const dispatch = useDispatch()
   const addDays = (dateString, days) => {
   const date = new Date(dateString);
@@ -296,7 +316,7 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
 
 
   const  enrollForm={
-    ...CurrCourse,
+    id:CurrCourse.id,
     current_module:current_module + 1,
     is_completed,
     next_review_date: addDays(CurrCourse.next_review_date,7),
@@ -308,15 +328,22 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
   const handleSubmit = async()=>{
     try{
       const res = await ReviewMarkPost(formData)
-      const ne = await EnrollPut(CurrCourse.user,enrollForm)
-      // console.log(res,'s.ll')
+      const ne = await EnrollPatch(CurrCourse.user.id,enrollForm)
+      console.log(ne,'s.ll')
       
       if (res.id){
         const payload = { 
           enroll_id: CurrCourse.id,
-          formData: ne.data 
+          formData: {
+            ...CurrCourse,
+            current_module:ne.data.current_module,
+            is_completed,
+            next_review_date: ne.data.next_review_date,
+            review_time: null,
+            vcall_link:null
+          } 
         };
-        dispatch(enrollPut(payload));
+        dispatch(enrollPatch(payload));
         toast.success('Mark added successfully')
       }else {  
         toast.error('Enter mark in between 0 and 50')
@@ -327,20 +354,27 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
             }
       
             handleClose()
-            dispatch(fetchReviewMarks())
+            dispatch(fetchReviewMarks())      
+          }
 
-            
-
-            
-  }
-
-  const handleChange = (e)=>{
+    const handleChange = (e)=>{
     const {name, value} = e.target
-    setFormData((prevData)=>
-      ({
-        ...prevData,
-      [name] : Number(value) 
-   }) )
+    if(name == 'mark'){
+
+      setFormData((prevData)=>
+        ({
+          ...prevData,
+        [name] : Number(value) 
+     }) )
+    }else{
+      setFormData((prevData)=>(
+        {
+          ...prevData,
+          [name]:value
+        }
+      ))
+    }
+   console.log(formData,'555')
   }
 
   return (
@@ -371,6 +405,16 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
                 autoFocus
                 max={50}
                 min={0}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Pending topics</Form.Label>
+              <Form.Control
+                as="textarea"
+                onChange={handleChange}
+                name='pendings'
+                value={formData.pendings}
+                
               />
             </Form.Group>
             

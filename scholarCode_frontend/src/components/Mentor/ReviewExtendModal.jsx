@@ -2,9 +2,10 @@ import { useState ,React, useCallback} from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import { enrollPut } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
-import { EnrollPut } from '../../Axios/UserServer/UserServer';
+import { EnrollPatch, EnrollPut } from '../../Axios/UserServer/UserServer';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import { enrollPatch } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 
 const ReviewExtendModal = ({show,handleClose,course}) => {
     const [currDate, setcurrDate] = useState(course.next_review_date)
@@ -16,17 +17,21 @@ const ReviewExtendModal = ({show,handleClose,course}) => {
     const handleSubmit = async()=>{
         try {
             const formdata = {
-                ...course,
-                next_review_date : currDate
+              id:course.id,
+              next_review_date : currDate
             }
-            const res = await EnrollPut(course.user,formdata)
+            const res = await EnrollPatch(course.user.id,formdata)
             
             const payload = {
                 enroll_id : course.id,
-                formData: res.data
+                formData: {
+                  ...course,
+                  next_review_date : currDate
+                }
             }
-            console.log(res)
-            dispatch(enrollPut(payload))
+
+            console.log(res.data,'loooo')
+            dispatch(enrollPatch(payload))
             toast.success('Review extended Successfully')
             handleClose()
 

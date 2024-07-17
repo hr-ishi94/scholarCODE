@@ -113,6 +113,7 @@ const SingleCourse = () => {
   const newModules = new Set()
   tasks && tasks.map((task)=>{
       newModules.add(task.task_module)
+
       
   })
   const modulesList = [...newModules]
@@ -304,7 +305,7 @@ const SingleCourse = () => {
       <br />
       
       </Col>} 
-      {!(EnrolledCourse?.is_completed)?
+     
         <Col sm={8}>
       <h2><strong>Syllabus</strong></h2>
       <TaskSection EnrolledCourse = {EnrolledCourse} modulesList = {modulesList} tasks = {tasks} current_module = {current_module} AttendReview={AttendReview}/>
@@ -312,21 +313,8 @@ const SingleCourse = () => {
       
 
       </Col>
-      :
-      <Col sm={8}>
-        <h4>You have successfully completed this course 
-          <br />
-          <br />
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-        </h4>
-        
-        <Button className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
+     
       
-      </Col>}
     </Row>
 
 

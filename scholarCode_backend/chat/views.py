@@ -26,12 +26,6 @@ class MessageListView(generics.ListCreateAPIView):
             return Messages.objects.filter(chat_room__in = chat_room).order_by('-timestamp')
         except ChatRooms.DoesNotExist:
             return Messages.objects.none()
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.db.models import Q
-from .models import ChatRooms  # Adjust import based on your actual model
-from .serializers import ChatroomSerializer  # Adjust import based on your actual serializer
 
 @api_view(['POST'])
 def AddChatRoom(request):

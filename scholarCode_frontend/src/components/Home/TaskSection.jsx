@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { Button } from 'react-bootstrap';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import TaskList from './TaskList';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
 
 const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendReview}) => {
+
+  const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
+  
     
 
   function getFormattedDate() {
@@ -23,8 +28,10 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
   }
   const [currentDate, setCurrentDate] = useState(getFormattedDate());
   const [currentTime, setCurrentTime] = useState(getFormattedTime());
-   
+  const dispatch = useDispatch()
+  
   useEffect(()=>{
+    dispatch(fetchReviewMarks())
     const dateInterval = setInterval(() => {
         setCurrentDate(getFormattedDate());
       }, 24 * 60 * 60 * 1000); // Update the date every 24 hours
@@ -38,12 +45,20 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         clearInterval(dateInterval);
         clearInterval(timeInterval);
       };
-  },[])
+  },[dispatch])
 
+  const review_marks= EnrolledCourse && ReviewMarkSelector.marks.filter((review)=>review.course === EnrolledCourse.id)
+
+  // const [score,setScore] = useState(0) 
+  // useEffect(()=>{
+  //     review_marks && review_marks.map((review)=>{
     
+  //       setScore((prevData)=>prevData+review.mark)
+  //     }
+  //   )
 
-    
-
+  // },[score])
+  // console.log(score,'score')
     return (
     <>
     {
@@ -51,8 +66,9 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         <div key={index}>
         {module < current_module &&
         <>
-        
-        <h2 >Module {module}  <i className="fa-solid fa-circle-check text-success"></i></h2>
+        <Row>
+                <Col sm={9}>
+                <h2 >Module {module}  <i className="fa-solid fa-circle-check text-success"></i></h2>
         
         {tasks.filter((task)=>task.task_module === module).map((task,index)=>(
           <ul>
@@ -67,6 +83,29 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         </ul>
           
         ))}
+           
+                </Col>
+                <Col sm = {3}>
+                {review_marks.filter((review)=>review.module == module).map((review)=>(
+
+                  <Card style={{ width: '18rem',backgroundColor:'#12A98E' }} className='text-center bg- text-light'>
+                    <Card.Body className='p-2'>
+                      <Card.Title>Module {module} Remarks</Card.Title>
+                      <Card.Subtitle className="mb-2 ">Mark scored: {review.mark}/50</Card.Subtitle>
+                      <Card.Subtitle className="mb-2 text-muted">
+                        <strong>Pending Topics</strong>
+                        </Card.Subtitle>
+                          
+                      <Card.Text >
+                        {review.pendings?review.pendings:'-No Pendings-'}
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                ))}
+                </Col>
+            </Row>
+        
+        
         </>
         }
         </div>
@@ -77,10 +116,12 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         <div key={index}>
         {module === current_module &&
         <>
-        
-            <h2>Module {module}</h2>
+                <h2>Module {module}</h2>
             <TaskList module = {module} tasks = {tasks} reviewDate ={EnrolledCourse.next_review_date} currentDate = {currentDate}/>
-           
+            
+
+        
+            
             {
             ((currentDate === EnrolledCourse.next_review_date) && (currentTime >= EnrolledCourse.review_time))?
             <Button className='p-1 m-1 text-light' onClick= {AttendReview} style={{backgroundColor:"#12A98E"}} variant=''>Attend Review </Button>:
@@ -118,9 +159,24 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         </div>
         
       ))}
+      {EnrolledCourse && EnrolledCourse.is_completed?
+      <Col sm={8}>
+        <h4>You have successfully completed this course with overall score of ___
+          <br />
+          <br />
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
+        </h4>
+        
+        <Button className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
       
+      </Col>:
       <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
-    
+      
+    }
     
     </>
   )

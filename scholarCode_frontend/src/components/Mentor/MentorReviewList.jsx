@@ -64,13 +64,14 @@ const MentorReviewList = () => {
     <div style={style}>
         
             <h1>Upcoming Reviews</h1>
-            <br />
-        <Table striped bordered hover>
+            
+        <Table striped bordered hover className='text-center'>
         <thead>
             <tr>
             <th>id</th>
             <th>Name</th>
             <th>Course</th>
+            <th>Enroll ID</th>
             <th>Next Review date</th>
             <th>Time</th>
             <th>Action</th>
@@ -78,15 +79,18 @@ const MentorReviewList = () => {
         </thead>
         <tbody >
             {MentorCoursesList
+            .sort((a,b)=>  a.next_review_date - b.next_review_date)
+            .filter((course)=>!course.is_completed)
             .map((course,index)=>(
 
                 <tr key={index}>
                 <td>{index+1}</td>
                 {UserSelector.users.filter((user)=>user.id === course.user.id).map((n)=>
-                <td>{n.first_name}</td>
+                <td>{n.first_name?n.first_name: <span className='text-secondary'> - NA - </span>}</td>
                 )
                 }
                 <td>{CoursesObject[course.course.id]}</td>
+                <td>{course.enroll_id}</td>
                 
                 {course.is_completed?<>
                 
@@ -105,14 +109,58 @@ const MentorReviewList = () => {
             
         </tbody>
         </Table>
+        <br />
+        <br />
+        <br />
+        <h1>Course Completed </h1>
+            <br />
+        <Table striped bordered hover className='text-center'>
+        <thead>
+            <tr>
+            <th>id</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Enroll ID</th>
+            <th>Certificate status</th>
+            <th>Course status</th>
+            <th>Action</th>
+            </tr>
+        </thead>
+        <tbody >
+            {MentorCoursesList
+            .sort((a,b)=>a.next_review_date-b.next_review_date)
+            .filter((course)=>course.is_completed)
+            .map((course,index)=>(
+
+                <tr key={index}>
+                <td>{index+1}</td>
+                {UserSelector.users.filter((user)=>user.id === course.user.id).map((n)=>
+                <td>{n.first_name?n.first_name: <span className='text-secondary'> - NA - </span>}</td>
+                )
+                }
+                <td>{CoursesObject[course.course.id]}</td>
+                <td>{course.enroll_id}</td>
+                <td className='text-success'>Course Completed  <i className="fa-solid fa-circle-check"></i></td>
+                {course.certificate?
+                <td className='text-success'>Certificate issued  <i className="fa-solid fa-circle-check"></i></td>
+                :
+                <td className='text-danger'>Certificate Not issued  <i className="fa-solid fa-circle-xmark"></i></td>
+                }
+                
+                
+                
+                    
+              
+                
+                <td><Link to={`/mentor/review/${course.id}/`}><Button variant='' style={{backgroundColor:"#12A98E"}} className='text-light p-1'>view</Button></Link></td>
+            </tr>
+            ))}
+            
+            
+        </tbody>
+        </Table>
         
             
-        
-
-        <br />
-        <br />
-        <br />
-        <br />
        
 
     </div>

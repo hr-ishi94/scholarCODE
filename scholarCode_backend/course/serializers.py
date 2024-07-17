@@ -33,6 +33,8 @@ class AllEnrollSerializer(serializers.ModelSerializer):
 
 
 class ReviewMarkSerializer(serializers.ModelSerializer):
+    # user = UserSerializer()
+
     class Meta:
         model = ReviewMarks
         fields = '__all__'

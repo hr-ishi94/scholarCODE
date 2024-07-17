@@ -45,8 +45,11 @@ class EnrolledCourse(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['course', 'user'], name='user_enrolled_course'),
-            models.UniqueConstraint(fields=['course', 'review_time','next_review_date'], name='review_time_unique')
+            # models.UniqueConstraint(fields=['course', 'review_time','next_review_date'], name='review_time_unique')
         ]
+    
+    
+
     
     def generate_enroll_id(self):
         self.enroll_id =  ''.join(random.choices(string.ascii_uppercase +
@@ -88,6 +91,7 @@ class ReviewMarks(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     course = models.ForeignKey(EnrolledCourse,on_delete=models.CASCADE)
     module = models.CharField(max_length=100)
+    pendings = models.CharField(max_length=500,blank=True)
     mark = models.IntegerField(
         validators = [
             MinValueValidator(0),MaxValueValidator(50)

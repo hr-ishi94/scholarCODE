@@ -10,8 +10,9 @@ import Loader from '../Utils/Loader';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { jwtDecode } from 'jwt-decode';
 import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
+import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 
-const CourseCard = ({course})=>(
+const CourseCard = ({course,enrolledset})=>(
 
 
     <Card style={{ width: '22rem' }} className='m-3 p-3'>
@@ -23,9 +24,12 @@ const CourseCard = ({course})=>(
           <strong>{course.name}</strong>
         </Card.Title>
         <Card.Text>{course.description}</Card.Text>
-        
+      
         <Link to={`/course/${course.id}/`}>
-          <Button variant="" style={{ backgroundColor: '#12A98E' }} className='p-1 text-light'>Enroll Now</Button>
+        {enrolledset.has(course.id)?
+          <Button variant="secondary"  className='p-1 text-light'>Continue learning</Button>
+          :<Button variant="" style={{ backgroundColor: '#12A98E' }} className='p-1 text-light'>Enroll Now</Button>
+        }
         </Link>
 
       </Card.Body>
@@ -37,7 +41,7 @@ const CourseCard = ({course})=>(
 const Courses = () => {
   const {courses,status,error} = useSelector((state)=>state.Courses)
   const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
-  const EnrolledCourseSelector = useSelector((state) => state.EnrolledCourses)
+  const EnrolledCourseSelector = useSelector((state) => state.AllEnrolls)
   
   const access_token = localStorage.getItem('access')
   const user = access_token?jwtDecode(access_token):null
@@ -48,7 +52,7 @@ const Courses = () => {
   useEffect(()=>{
     dispatch(fetchMentorCourse())
     dispatch(fetchCoursesList())
-    dispatch(fetchEnrolledCourses(user_id))
+    dispatch(fetchAllEnrolledCourses())
   },[dispatch])
 
   const CourseIdSet = new Set()
@@ -61,8 +65,7 @@ const Courses = () => {
     MentorCourseSet.add(course.id)
   })
  
-  EnrolledCourseSelector.enrolls.filter((enroll) => MentorCourseSet.has(enroll.course))
-  .map((course)=>EnrolledSet.add(course.course))
+  EnrolledCourseSelector.enrolls.map((course)=>EnrolledSet.add(course.course.course))
   
   
   const activeCourses = courses.filter((course)=>course.status === true && CourseIdSet.has(course.id))
@@ -74,7 +77,7 @@ const Courses = () => {
       rows.push(
         <Row key={i} className="justify-content-center">
           {courseRow.map(course => (
-            <CourseCard key={course.id} course={course} />
+            <CourseCard key={course.id} course={course} enrolledset = {EnrolledSet} />
           ))}
         </Row>
       );

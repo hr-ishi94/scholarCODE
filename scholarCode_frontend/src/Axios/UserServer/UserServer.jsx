@@ -77,6 +77,18 @@ export const EnrollPut = async (userid,enrollForm) =>{
         }
     }
 }
+export const EnrollPatch = async (userid,enrollForm) =>{
+    console.log(enrollForm)
+    try{
+        const res = await axiosCourseInstance.patch(`/enroll/${userid}/`,enrollForm)
+        return res.data
+    }catch(error){
+        if(error.response){
+            console.log('user server error: ',error)
+            return error.response
+        }
+    }
+}
 
 export const getChat = async (id)=>{
     const user_id1 = id.user_id1

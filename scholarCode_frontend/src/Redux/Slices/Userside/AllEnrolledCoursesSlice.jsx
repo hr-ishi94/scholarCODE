@@ -20,8 +20,17 @@ const AllEnrolledCoursesSlice = createSlice({
     reducers:{
         newEnroll:(state,action)=>{
             state.enrolls =[...state.enrolls,action.payload]
+        },
+        enrollPatch: (state, action) => {
+            const { enroll_id, formData } = action.payload;
+            const index = state.enrolls.findIndex((enroll )=> enroll.id === enroll_id);
+            console.log('hrishi1',state.enrolls[index])
+            
+            if (index !== -1) {
+                state.enrolls[index] = formData;
+            }
+            console.log('hrishi2',state.enrolls)
         }
-
     },
     extraReducers:(builder)=>{
         builder
@@ -38,11 +47,11 @@ const AllEnrolledCoursesSlice = createSlice({
         })
         .addCase(fetchAllEnrolledCourses.rejected,(state,action)=>{
             state.status = 'failed'
-            state.enrolls=''
+            state.enrolls= ''
             state.error = action.error.message
         })
     }
 })
 
-export const { newEnroll } = AllEnrolledCoursesSlice.actions
+export const { newEnroll ,enrollPatch} = AllEnrolledCoursesSlice.actions
 export default AllEnrolledCoursesSlice.reducer
