@@ -32,6 +32,20 @@ class AllEnrollSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class RazorpaySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RazorpayPayment
+        fields = '__all__'
+
+
+class TransactionSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    payment = RazorpaySerializer()
+    class Meta:
+        model = Transaction
+        fields = '__all__'
+
+
 class ReviewMarkSerializer(serializers.ModelSerializer):
     # user = UserSerializer()
 

@@ -19,6 +19,7 @@ import ChatSlice from "../Slices/Userside/ChatSlice";
 import ReviewMarkSlice from "../Slices/mentorSide/ReviewMarkSlice";
 import ZegoCallSlice from "../Slices/ZegoCallSlice";
 import AllEnrolledCoursesSlice from "../Slices/Userside/AllEnrolledCoursesSlice";
+import AdminTransactionSlice from "../Slices/AdminTransactionSlice";
 
 const rootReducer = combineReducers({
     userList :usersListSlice,
@@ -40,6 +41,7 @@ const rootReducer = combineReducers({
     Chat:ChatSlice,
     ReviewMarks:ReviewMarkSlice,
     ZegoCall:ZegoCallSlice,
+    AdminTransactions:AdminTransactionSlice
 
     
 

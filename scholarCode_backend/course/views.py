@@ -94,9 +94,26 @@ def EnrolledCoursesUser(request,user_id):
         except Exception as e:
             # Handle exceptions and return an error response
             return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
 
 
+class Transactions(generics.ListCreateAPIView):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+
+        superuser = CustomUser.objects.filter(is_superuser=True).first()
+        if superuser is None:
+            return Response({"error": "No superuser found"}, status=status.HTTP_400_BAD_REQUEST)
+
+        data['admin'] = superuser.id
+        print(data)
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET','POST'])

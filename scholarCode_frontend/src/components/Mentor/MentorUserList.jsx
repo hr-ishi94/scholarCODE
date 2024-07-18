@@ -42,8 +42,8 @@ const MentorUserList = () => {
     })
     console.log(mentorCourseSet,'mcourse')
 
-    allEnrolledCourses.enrolls.filter((enroll)=>mentorCourseSet.has(enroll.course)).map((enroll)=>{
-        enrollUserSet.add(enroll.user)
+    allEnrolledCourses.enrolls.filter((enroll)=>mentorCourseSet.has(enroll.course.id)).map((enroll)=>{
+        enrollUserSet.add(enroll.user.id)
     })
     const users = userSelector.users.filter((user)=>enrollUserSet.has(user.id))
     console.log(users,'sedi')

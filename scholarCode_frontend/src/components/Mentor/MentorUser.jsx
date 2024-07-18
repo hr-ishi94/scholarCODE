@@ -11,6 +11,8 @@ import { Vurl, course } from '../../Axios/Urls/EndPoints';
 import  avatar  from '../../assets/avatar.jpg';
 import { jwtDecode } from 'jwt-decode';
 import { addChatRoom } from '../../Axios/UserServer/UserServer';
+import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 
 
 
@@ -20,16 +22,21 @@ const MentorUser = () => {
     const dispatch = useDispatch()
     const {user,status,error} = useSelector((state)=>state.User)
     const MentorCourseSelector =  useSelector((state)=>state.MentorCourses)
-    const EnrollCourseSelector = useSelector((state)=>state.EnrolledCourses)
+    const EnrollCourseSelector = useSelector((state)=>state.AllEnrolls)
     const CoursesSelector = useSelector((state)=>state.Courses)
     const Token = jwtDecode(localStorage.getItem('access'))
     const mentorId = Token.user_id
     const navigate = useNavigate()
 
     console.log(CoursesSelector.courses )
-    useEffect(()=>{
-        dispatch(fetchUser(params.id))},
-        [dispatch])
+    
+    useEffect(() => {
+        if (status === 'idle') {
+            dispatch(fetchUser(params.id));
+            dispatch(fetchAllEnrolledCourses());
+            dispatch(fetchCoursesList());
+        }
+    }, [dispatch, params.id, status]);
         
         const mentorCourseSet = new Set()
         MentorCourseSelector.courses.map((course)=>{
@@ -38,7 +45,7 @@ const MentorUser = () => {
 
     
     console.log(params.id)
-    const UserEnrolledCourses= EnrollCourseSelector.enrolls.filter((enroll)=>enroll.user == params.id && mentorCourseSet.has(enroll.course))
+    const UserEnrolledCourses= EnrollCourseSelector.enrolls.filter((enroll)=>enroll.user.id == params.id && mentorCourseSet.has(enroll.course.id))
     const handleChat=useCallback(async()=>{
         const ids = {
             "user_id1":user.id,
@@ -95,7 +102,7 @@ const MentorUser = () => {
         </Row>
         <h3>Enrolled Courses</h3>
         <br />
-        <Table striped bordered hover>
+        <Table striped bordered hover className='text-center'>
     <thead>
         <tr>
         <th>id</th>
@@ -114,9 +121,11 @@ const MentorUser = () => {
             <tr key={index}>
             <td>{index + 1}</td>
             
-            <td>course.name</td>
+                {CoursesSelector.courses.filter((course)=> course.id == enroll.course.course).map((course)=>
+                <td>{course.name}</td>
+                )}
             <td>{enroll.curr_module}</td>
-            <td>{!enroll.Is_completed?<span className='text-primary'>Ongoing</span>:<span className='text-success'>Completed</span>}</td>
+            <td>{!enroll.is_completed?<span className='text-primary'>Ongoing</span>:<span className='text-success'>Completed <i className="fa-solid fa-check "></i></span>}</td>
             {/* <td>sddd</td> */}
             {/* <td><Link to={`/mentor/user/${user.id}/`}><Button className='p-1 text-light' variant='' style={{backgroundColor:'#12A98E'}}>View</Button></Link></td> */}
         </tr>

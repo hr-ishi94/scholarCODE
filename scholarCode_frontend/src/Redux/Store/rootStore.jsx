@@ -112,5 +112,10 @@ export const initialstate = {
     },
     ZegoCalls:{
         links:[]
+    },
+    Transactions:{
+        transactions :[],
+        status:'idle',
+        error:null
     }
 }

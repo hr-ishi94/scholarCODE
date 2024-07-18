@@ -1,4 +1,4 @@
-import { axiosFormInstance, axiosInstance } from "../Utils/AxiosInstances";
+import { axiosCourseInstance, axiosFormInstance, axiosInstance } from "../Utils/AxiosInstances";
 
 export const userDetailsInstance = async(id) =>{
     const res = await axiosInstance.get(`user/${id}/`)
@@ -185,6 +185,13 @@ export const addTaskInstance = async(courseId,taskData)=>{
 
     const res = await axiosInstance.post(`tasks/${courseId}/`,taskData)
     if (res.status === 200 || res.status ==201){
+        return res.data
+    }
+}
+
+export const adminTransactions = async () =>{
+    const res = await axiosCourseInstance.get('transactions/')
+    if (res.status === 200){
         return res.data
     }
 }
