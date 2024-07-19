@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .constants import PaymentStatus
 from django.conf import settings
-
+from .serializers import RazorpaySerializer
 from .models import RazorpayPayment
 
 RAZOR_KEY = settings.RAZORPAY_KEY
@@ -87,7 +87,8 @@ class CallbackView(APIView):
                     payment_object.payment_id = response['razorpay_payment_id']
                     payment_object.signature_id = response['razorpay_signature']
                     payment_object.save()
-                    return Response({'status': 'Payment Done'}, status=status.HTTP_200_OK)
+                    serializer = RazorpaySerializer(payment_object)
+                    return Response({'status': 'Payment Done','payment':serializer.data}, status=status.HTTP_200_OK)
                 except RazorpayPayment.DoesNotExist:
                     return Response({'status': 'RazorpayPayment does not exist'}, status=status.HTTP_404_NOT_FOUND)
             else:

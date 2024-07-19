@@ -29,6 +29,9 @@ const AdminDashboard = () => {
         // setTrans((prevData)=>prevData + Number(rate.amount))
         trans += Number(rate.amount)    
     })
+
+    const sortedTransactions = [...TransactionSelector.transactions].sort((a, b) => b.timestamp - a.timestamp);
+
     console.log(trans,'ll')
 
     const style = {
@@ -71,18 +74,19 @@ const AdminDashboard = () => {
             </tr>
         </thead>
         <tbody>
-        {TransactionSelector.transactions
-        // .sort((a,b)=>b.timestamp - a.timestamp )
+        {/* {sortedTransactions
         .map((trans)=>(
             <tr>
                 <td>{trans.id}</td>
-                <td>{trans.user.first_name}</td>
-                <td>{trans.payment.id}</td>
-                <td>{trans.payment.provider_order_id}</td>
+
+                <td>{trans.user}</td>
+
+                <td>{trans.payment}</td>
+                <td>{trans.payment}</td>
                 <td>{trans.timestamp}</td>
             </tr>
 
-        ))}
+        ))} */}
         </tbody>
         </Table>     
     </div>

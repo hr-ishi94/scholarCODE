@@ -196,6 +196,17 @@ export const adminTransactions = async () =>{
     }
 }
 
+export const adminTransactionPost = async (formdata) =>{
+    try{
+
+        const res = await axiosCourseInstance.post('transactions/',formdata) 
+        return res
+    }
+    catch(error){
+        console.log(error)
+    }
+}
+
 export const updateTaskInstance = async(taskId,taskData)=>{
     try{
 

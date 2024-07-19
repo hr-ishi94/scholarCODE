@@ -108,7 +108,9 @@ class Transactions(generics.ListCreateAPIView):
             return Response({"error": "No superuser found"}, status=status.HTTP_400_BAD_REQUEST)
 
         data['admin'] = superuser.id
-        print(data)
+        # data['user'] = User.objects.get(id = data['user'])
+        # data['payment'] = RazorpayPayment.objects.get(id = data['payment'])
+        print(data,'keli')
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
             serializer.save()

@@ -39,7 +39,7 @@ class RazorpaySerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
+    # user = UserSerializer()
     payment = RazorpaySerializer()
     class Meta:
         model = Transaction

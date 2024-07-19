@@ -23,6 +23,7 @@ import { clearLinks } from '../../Redux/Slices/ZegoCallSlice'
 import ReactStars from 'react-stars'
 import { Vurl } from '../../Axios/Urls/EndPoints'
 import TaskSection from './TaskSection'
+import { adminTransactionPost } from '../../Axios/AdminServer/AdminServer'
 
 const SingleCourse = () => {
 
@@ -164,6 +165,7 @@ const SingleCourse = () => {
     const res = await loadRazorpayScript(
         "https://checkout.razorpay.com/v1/checkout.js"
     );
+    console.log(res,'resssoi')
   
     if (!res) {
         alert("Razorpay SDK failed to load. please check are you online?");
@@ -176,6 +178,8 @@ const SingleCourse = () => {
         'course_id':course.id,
         'amount':course.price
     });
+    
+    console.log(result.data,'resultoi')
   
     if (!result) {
         alert("Server error. please check are you online?");
@@ -205,8 +209,16 @@ const SingleCourse = () => {
         },
         handler: async function (response) {
           const verificationResult = await axios.post("http://127.0.0.1:8000/course/razorpay_callback/", response);
+          console.log(verificationResult.data.payment,'verifyio')
           if (verificationResult.data.status === 'Payment Done') {
             enrollCourse(user_id)
+            // const transactionForm = {
+            //   user : userSelector.user.id,
+            //   payment : verificationResult.data.payment,
+            //   amount : course.price 
+            // }
+            // const trans = await adminTransactionPost(transactionForm)
+            // console.log(trans,'klo')
             toast.success('Course Enrolled successfully!')
           } else {
             toast.error('Payment verification failed. Please try again.')
