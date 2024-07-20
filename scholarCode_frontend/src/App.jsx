@@ -55,8 +55,10 @@ function App() {
 
           {/* AuthLayout  */}
           <Route element={<AuthLayout/>}>
+
             <Route path='admin/login/' element={<AdminLogin/>}></Route>
             <Route path='mentor/login/' element={<LoginMentor/>}></Route>
+          
           </Route>
           
           {/* Admin Root Layout */}
@@ -75,7 +77,6 @@ function App() {
             <Route path='/admin/list-of-reviews/' element={<AdminReviewsList/>}></Route>
             <Route path='/admin/review-details/:id' element={<AdminReviewDetails/>}></Route>
 
-
           </Route>
 
           {/* Mentor side layout */}
@@ -89,6 +90,7 @@ function App() {
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
+          
           </Route>
 
           <Route element={<ChatScreenLayout/>}>
@@ -99,6 +101,7 @@ function App() {
 
           {/* Home page layout */}
           <Route element={<Homelayout/>}>
+
             <Route path='/' element={<Home/>}></Route>
             <Route path='/mentors/' element={<Mentors/>}></Route>
             <Route path='/courses/' element={<Courses/>}></Route>
@@ -110,7 +113,6 @@ function App() {
             <Route path='/payment/' element={<Payment/>}></Route>
             <Route path='/sample/' element={<Sample/>}></Route>
            
-            
           </Route>
           
 

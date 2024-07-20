@@ -24,6 +24,7 @@ import ReactStars from 'react-stars'
 import { Vurl } from '../../Axios/Urls/EndPoints'
 import TaskSection from './TaskSection'
 import { adminTransactionPost } from '../../Axios/AdminServer/AdminServer'
+import { jwtDecode } from 'jwt-decode'
 
 const SingleCourse = () => {
 
@@ -39,7 +40,10 @@ const SingleCourse = () => {
   const userSelector = useSelector((state)=>state.User)
   const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const MentorSelector = useSelector((state)=>state.Mentors)
-  const user_id = userSelector.user.id
+  const UserToken = useSelector((state)=>state.UserToken)
+  const access = jwtDecode(UserToken.access)
+  const user_id = access.user_id
+  // console.log('esf',user_id)
 
   
   useEffect(()=>{
@@ -212,13 +216,13 @@ const SingleCourse = () => {
           console.log(verificationResult.data.payment,'verifyio')
           if (verificationResult.data.status === 'Payment Done') {
             enrollCourse(user_id)
-            // const transactionForm = {
-            //   user : userSelector.user.id,
-            //   payment : verificationResult.data.payment,
-            //   amount : course.price 
-            // }
-            // const trans = await adminTransactionPost(transactionForm)
-            // console.log(trans,'klo')
+            const transactionForm = {
+              user : userSelector.user.id,
+              payment : verificationResult.data.payment_id,
+              amount : course.price
+            }
+            const trans = await adminTransactionPost(transactionForm)
+            console.log(trans,'klo')
             toast.success('Course Enrolled successfully!')
           } else {
             toast.error('Payment verification failed. Please try again.')

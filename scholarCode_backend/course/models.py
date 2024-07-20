@@ -71,7 +71,7 @@ class EnrolledCourse(models.Model):
     current_module = models.IntegerField(default=1)
     enroll_id= models.CharField(max_length=100, unique=True,blank=True)
     is_completed =models.BooleanField(default=False)
-    certificate = models.CharField(blank=True)
+    certificate = models.FileField(upload_to='pdfs/',null=True, blank=True)
     next_review_date =  models.DateField(default = default_review_date)
     review_time = models.TimeField(blank=True,null=True)
     vcall_link = models.CharField(max_length=300,null=True, blank=True)
@@ -94,7 +94,7 @@ class EnrolledCourse(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.enroll_id
+        return f'{self.id}-{self.enroll_id}'
 
 class ReviewMarks(models.Model):
 

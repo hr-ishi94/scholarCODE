@@ -63,6 +63,9 @@ class UserLoginSerializer(serializers.ModelSerializer):
         if user.is_superuser:
             raise AuthenticationFailed("You are not authorized to login as user")
         
+        if user.is_staff:
+            raise AuthenticationFailed("You are not authorized to login as user")
+        
         if not user.is_active:
             raise AuthenticationFailed("Either check your mail for activation link or kindly contact the admin")
         

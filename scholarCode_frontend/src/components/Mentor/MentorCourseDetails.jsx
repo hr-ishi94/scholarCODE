@@ -14,6 +14,7 @@ import Loader from '../Utils/Loader'
 import { mentorCourseDelete } from '../../Axios/MentorServer/MentorServer'
 import { toast } from 'react-toastify'
 import { clearCourse, fetchMentorCourse, relieveCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
+import { jwtDecode } from 'jwt-decode'
 
 
 
@@ -23,7 +24,10 @@ const MentorCourseDetails = () => {
     const {course,status,error} = useSelector((state)=>state.Course)
     const taskSelector = useSelector((state)=>state.Tasks)
     const mentorSelector= useSelector((state)=>state.Mentor)
-    const mentorId =  mentorSelector.mentor.id
+    const MentorToken = useSelector((state)=>state.MentorToken)
+    const access = jwtDecode(MentorToken.access)
+    const mentorId =  access.user_id
+    
     
     useEffect(()=>{
         dispatch(fetchCourseDetails(params.id))

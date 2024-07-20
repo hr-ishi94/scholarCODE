@@ -23,6 +23,11 @@ class EnrollSerializer(serializers.ModelSerializer):
         model = EnrolledCourse
         fields='__all__'
 
+    def update(self, instance, validated_data):
+        instance.certificate = validated_data.get('certificate', instance.certificate)
+        instance.save()
+        return instance
+
 class AllEnrollSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     course = MentorCourseSerializer()
@@ -40,7 +45,7 @@ class RazorpaySerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
     # user = UserSerializer()
-    payment = RazorpaySerializer()
+    # payment = RazorpaySerializer()
     class Meta:
         model = Transaction
         fields = '__all__'

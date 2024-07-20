@@ -1,5 +1,5 @@
 
-import React, { useCallback, useReducer ,useState} from 'react'
+import React, { useCallback, useEffect, useReducer ,useState} from 'react'
 import Col from 'react-bootstrap/Col'
 import Row from 'react-bootstrap/Row'
 import Image from 'react-bootstrap/Image'
@@ -12,14 +12,25 @@ import  Form  from 'react-bootstrap/Form'
 import { mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
 import { fetchMentor } from '../../Redux/Slices/MentorDetailSlice'
 import { toast } from 'react-toastify'
+import { jwtDecode } from 'jwt-decode'
 
 
 const MentorProfile = () => {
+    
+    const MentorToken = useSelector((state)=>state.MentorToken)
+    const access = jwtDecode(MentorToken.access)
+    const user_id = access.user_id
     const {mentor,status,error} = useSelector((state)=>state.Mentor)
     const [showModal, setShowModal] = useState(false);
+    const dispatch = useDispatch()
+    console.log(user_id)
 
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
+    
+    useEffect(()=>{
+        dispatch(fetchMentor(user_id))
+    },[dispatch])
     
     
     console.log(mentor,"meon")

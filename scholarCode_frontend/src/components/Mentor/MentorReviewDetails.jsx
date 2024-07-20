@@ -14,10 +14,14 @@ import { ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
 import { EnrollCourse, EnrollPatch, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
 import { toast } from 'react-toastify';
 import { enrollPatch, fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
-import { Vurl } from '../../Axios/Urls/EndPoints';
+import { course, Vurl } from '../../Axios/Urls/EndPoints';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import Loader from '../Utils/Loader';
 import ReviewExtendModal from './ReviewExtendModal';
+import jsPDF from 'jspdf';
+import axios from 'axios';
+import logo from '../../assets/logo.png'
+import signature from '../../assets/signature.png'
 
 const MentorReviewDetails = () => {
   
@@ -140,9 +144,118 @@ const MentorReviewDetails = () => {
 
     }
 
+    const [user] = UserSelector.users.filter((user)=>user.id === CurrCourse.user.id)
+    const [courseDetails ]= CourseSelector.courses.filter((crs)=>crs.id == CurrCourse.course.course)
+    console.log(course,'loi')
+
     if(EnrolledCourseSelector.status === 'loading'){
       return <Loader/>
     }
+
+    const handleIssueCertificate = async () => {
+      if(!user.first_name || !user.last_name){
+        toast.error('Please ask the candidate to update the profile!')
+        return
+      }
+      // Create a new instance of jsPDF with custom dimensions
+      const customWidth = 210; // mm
+      const customHeight = 297; // mm
+      const doc = new jsPDF({
+        unit: 'mm',
+        format: [customWidth, customHeight]
+      });
+    
+      const logoImg = new Image();
+      logoImg.src = logo; // Ensure logo is correctly defined
+    
+      const signatureImg = new Image();
+      signatureImg.src = signature; // Ensure signature is correctly defined
+    
+      logoImg.onload = async () => {
+        // Add the logo image to the PDF
+        doc.addImage(logoImg, 'PNG', 85, 15, 40, 20); // Position and size of the logo image
+    
+        // Set font size and style
+        doc.setFontSize(25);
+        doc.setFont('times', 'bold');
+    
+        // Add title
+        doc.text('Certificate of Achievement', 105, 50, { align: 'center' });
+    
+        // Add border around the entire page
+        const borderWidth = 2; // Border width in mm
+        doc.setLineWidth(borderWidth);
+        doc.rect(borderWidth / 2, borderWidth / 2, customWidth - borderWidth, customHeight - borderWidth);
+    
+        // Set font size and style for the body
+        doc.setFontSize(16);
+        doc.setFont('times', 'normal');
+    
+        // Add certificate text
+        doc.text('This is to certify that', 105, 70, { align: 'center' });
+        
+        doc.setFontSize(22);
+        doc.setFont('times', 'bold');
+        doc.text(`${user.first_name} ${user.last_name}`, 105, 90, { align: 'center' });
+        
+        doc.setFontSize(16);
+        doc.setFont('times', 'normal');
+        doc.text('has successfully completed', 105, 110, { align: 'center' });
+        
+        doc.setFontSize(25);
+        doc.setFont('times', 'bold');
+        doc.text(courseDetails.name, 105, 130, { align: 'center' });
+        
+        doc.setFontSize(16);
+        doc.setFont('times', 'normal');
+        
+        doc.text(`Enroll ID: ${CurrCourse.enroll_id}`, 105, 140, { align: 'center' });
+        
+        
+        // Add date
+        const currentDate = new Date().toLocaleDateString(); // Adjust the date format as needed
+        doc.text(`Date: ${currentDate}`, 105, 170, { align: 'center' });
+    
+        // Load the signature image and add it to the PDF
+        signatureImg.onload = async () => {
+          // Add the signature image
+          doc.addImage(signatureImg, 'PNG', 75, 180, 60, 30); // Position and size of the signature image
+          
+          // Add the signature text
+          doc.text('Signature', 105, 215, { align: 'center' });
+    
+          // Convert the PDF to a blob
+          const pdfBlob = doc.output('blob');
+    
+          // Create form data to send the PDF to the backend
+          const formData = new FormData();
+          formData.append('enroll_id', CurrCourse.id);
+          formData.append('certificate', pdfBlob, 'certificate.pdf');
+    
+          try {
+            // Upload the PDF to the backend
+            const response = await axios.patch(`${course}upload/`, formData);
+            
+            // Handle the response from the backend
+            console.log('PDF uploaded successfully:', response.data);
+            toast.success('Certificate issued and uploaded successfully!');
+          } catch (error) {
+            console.error('Error uploading PDF:', error);
+            toast.error('Failed to issue certificate. Please try again.');
+          }
+        };
+    
+        signatureImg.onerror = () => {
+          toast.error('Failed to load the signature image.');
+        };
+      };
+    
+      logoImg.onerror = () => {
+        toast.error('Failed to load the logo image.');
+      };
+    };
+    
+  
 
   const style = {
     position: "absolute",
@@ -157,21 +270,16 @@ const MentorReviewDetails = () => {
         <Col sm={5}>
         
       <br />
-      {UserSelector.users.filter((user)=>user.id === CurrCourse.user.id).map((user)=><>
+     
+      <>
       <h5>Student Name:  <strong>  {user.first_name?user.first_name + " " +user.last_name:<span className='text-danger' style={{fontSize:'15px',fontWeight:'lighter'}}>Please ask the candidate to update the profile </span>}</strong></h5>
       <Link to={`/mentor/user/${user.id}/`}><Button className='pb-2 text-primary' variant=''>View User Details</Button></Link>
       </>
-      )}
       <h6>Course Enroll ID:  <strong>  {CurrCourse.enroll_id}</strong></h6>
       <br />
-      {CourseSelector.courses.filter((crs)=>crs.id == CurrCourse.course.course).map((course)=>(
-      <>
-      <h5>Course Name:  <strong>  {course.name}</strong></h5>
-      <Link to={`/mentor/course/${course.id}/`} className='react-router-link'>View Course Details</Link>
-            
-      </>
+      <h5>Course Name:  <strong>  {courseDetails.name}</strong></h5>
+      <Link to={`/mentor/course/${courseDetails.id}/`} className='react-router-link'>View Course Details</Link>
       
-      ))}
       <br />
       {!CurrCourse.is_completed ?
     <>
@@ -222,9 +330,12 @@ const MentorReviewDetails = () => {
   </>
   :
       <>
+      <br />
       <p style={{color:"#12A98E"}}>Candidate Completed the course please Issue the Certificate. <i className="fa-solid fa-circle-check"></i></p>
       <Col sm={4}>
-      <Button className='p-2 text-light' style={{backgroundColor:'#12A98E'}} variant='' >Issue Certificate</Button>
+      <Button className='p-2 text-light' style={{backgroundColor:'#12A98E'}} onClick={handleIssueCertificate} variant='' >Issue Certificate</Button>
+      {/* {!CurrCourse.certificate?
+    : <p style={{color:"#12A98E"}}>Certificate issued <i className="fa-solid fa-circle-check"></i></p> } */}
       </Col>
       </>
       }

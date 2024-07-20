@@ -3,6 +3,7 @@ import { Button, Card, Col, Row } from 'react-bootstrap';
 import TaskList from './TaskList';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
+import { base_url, course, course_url } from '../../Axios/Urls/EndPoints';
 
 const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendReview}) => {
 
@@ -171,8 +172,17 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
           <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
         </h4>
         
-        <Button className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
-      
+        <Button
+          className='p-2 my-3 text-light'
+          variant=''
+          style={{ backgroundColor: "#12A98E" }}
+          href={EnrolledCourse?.certificate ? `${base_url}${EnrolledCourse.certificate}` : '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Download your certificate
+        </Button>
+
       </Col>:
       <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
       

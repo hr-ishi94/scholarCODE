@@ -15,7 +15,9 @@ import { jwtDecode } from 'jwt-decode';
 const MentorReviewList = () => {
     const EnrolledCourseSelector = useSelector((state)=>state.AllEnrolls)
     const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
-    const MentorId = jwtDecode(localStorage.getItem('access')).user_id
+    const MentorToken = useSelector((state)=>state.MentorToken)
+    const access = jwtDecode(MentorToken.access)
+    const MentorId = access.user_id
     console.log('mentor,',MentorId)
     const UserSelector = useSelector((state)=>state.userList)
     const CourseSelector = useSelector((state)=>state.Courses)

@@ -24,8 +24,10 @@ const MentorUser = () => {
     const MentorCourseSelector =  useSelector((state)=>state.MentorCourses)
     const EnrollCourseSelector = useSelector((state)=>state.AllEnrolls)
     const CoursesSelector = useSelector((state)=>state.Courses)
-    const Token = jwtDecode(localStorage.getItem('access'))
-    const mentorId = Token.user_id
+    const MentorToken = useSelector((state)=>state.MentorToken)
+    const access = jwtDecode(MentorToken.access)
+    const mentorId = access.user_id
+    console.log(mentorId,'klo')
     const navigate = useNavigate()
 
     console.log(CoursesSelector.courses )

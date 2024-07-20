@@ -242,3 +242,16 @@ export const taskDeleteInstance = async (id)=>{
     }
 
 }
+
+export const payment_ids = async () =>{
+    try{
+        const res = await axiosCourseInstance.get('razorpay_tran_ids/')
+        if (res.status === 200  || res.status === 201){
+
+            return res
+        }
+    }
+    catch(error){
+        console.log(error)
+    }
+} 

@@ -6,6 +6,7 @@ import { fetchUsers } from '../../Redux/Slices/UserListSlice'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
 import { fetchadminTransactions } from '../../Redux/Slices/AdminTransactionSlice'
+import { payment_ids } from '../../Axios/AdminServer/AdminServer'
 
 const AdminDashboard = () => {
     const UserSelector = useSelector((state)=>state.userList)
@@ -14,12 +15,28 @@ const AdminDashboard = () => {
     const TransactionSelector = useSelector((state)=>state.AdminTransactions)
     const dispatch = useDispatch()
     const activeMentors = MentorsSelector.mentors.filter((course)=> course.is_active === true )
-    
+    const [paymentIds,setPaymentIds ] = useState([])
+ 
     console.log(TransactionSelector,'sloi')
     useEffect(()=>{
         dispatch(fetchUsers())
         dispatch(fetchCoursesList())
         dispatch(fetchadminTransactions())
+
+        const fetchPaymentIds = async () =>{
+            try{
+                const res = await payment_ids()
+                console.log(res.data,'lo')
+                if (res){
+                    setPaymentIds(res.data)
+                }
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+        fetchPaymentIds()
+
     },[dispatch])
 
     // const [trans, setTrans] = useState(0)
@@ -32,7 +49,7 @@ const AdminDashboard = () => {
 
     const sortedTransactions = [...TransactionSelector.transactions].sort((a, b) => b.timestamp - a.timestamp);
 
-    console.log(trans,'ll')
+    console.log(paymentIds,'ll')
 
     const style = {
         position: "absolute",
@@ -74,19 +91,31 @@ const AdminDashboard = () => {
             </tr>
         </thead>
         <tbody>
-        {/* {sortedTransactions
+        
+        {sortedTransactions
         .map((trans)=>(
             <tr>
                 <td>{trans.id}</td>
+                
+                
+                {paymentIds
+                .filter((payment)=>payment.id === trans.payment)
+                .map((payment)=>
+                <>
+                <td>{payment.email}</td>
+                {CourseSelector.courses.filter((course)=>course.id == payment.course_id)
+                .map((course)=>
+                    <td >{course.name}</td>
+                )}
+                
 
-                <td>{trans.user}</td>
-
-                <td>{trans.payment}</td>
-                <td>{trans.payment}</td>
+                <td>{payment.provider_order_id}</td>
+                </>
+                )}
                 <td>{trans.timestamp}</td>
             </tr>
 
-        ))} */}
+        ))}
         </tbody>
         </Table>     
     </div>

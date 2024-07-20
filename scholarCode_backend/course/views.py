@@ -3,8 +3,10 @@ from datetime import datetime
 from .models import *
 from .serializers import *
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics,status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 
 class EnrollCourseView(generics.ListCreateAPIView):
     queryset = EnrolledCourse.objects.all()
@@ -146,3 +148,43 @@ class ReviewMarkView(generics.ListCreateAPIView):
             serializer.save()
             return Response(serializer.data,status = status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['GET'])
+def razorpay_order_id(request):
+    if request.method == 'GET':
+        try:
+                
+            payments = RazorpayPayment.objects.all()
+            if not payments:
+                    return Response({'message':'Transactions found'})
+            serializer = RazorpaySerializer(payments, many= True)
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error':'server error'})
+        
+class IssueCertificate(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def patch(self, request, *args, **kwargs):
+        enrollId = request.data.get('enroll_id')
+        certificate = request.FILES.get('certificate')  # Use request.FILES to get the uploaded file
+        print(request.data, enrollId)
+        print(certificate,'lp')
+
+        if not enrollId or not certificate:
+            return Response({'error': 'Enroll ID or certificate file not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            course = EnrolledCourse.objects.get(pk=int(enrollId))
+            print(course,'lo')
+
+            serializer = EnrollSerializer(course, data={'certificate': certificate}, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+            return Response({'error': 'Invalid data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        except EnrolledCourse.DoesNotExist:
+            return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
