@@ -147,18 +147,21 @@ const RejectModal=(props)=> {
   const navigate = useNavigate()
 
   const handleRejection = async ()=>{
+
     try{
+
       const id = props.id 
       const res = await mentorDeleteInstance(id)
-      console.log("mentor deleted successfully!")
-      
       dispatch(mentorReject())
       navigate('/admin/mentors/')
       toast.success(`${props.mentor.first_name} have been rejected successfully`)
 
     }catch(error){
+
       toast.error('Failed to delete the mentor')
+      
     }
+    
   }
 
 

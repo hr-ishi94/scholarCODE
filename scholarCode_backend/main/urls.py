@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # admin login
     path('admin/login/',views.AdminLogin.as_view(),name="admin_login"),
-    path('admin/mentor/<int:pk>',views.AdminMentorApproval.as_view(),name="admin_mentor_approval"),
+    path('admin/mentor/<int:pk>/',views.AdminMentorApproval.as_view(),name="admin_mentor_approval"),
     # mentors
     path('mentor/login/', views.MentorLogin.as_view(),name='mentor_login'),
     path('mentors/', views.MentorList.as_view(),name='mentor_list'),

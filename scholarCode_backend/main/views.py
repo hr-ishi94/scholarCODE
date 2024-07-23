@@ -106,6 +106,8 @@ class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
     
     def put (self,request, *args, **kwargs):
         data = request.data
+        print(data,'loi')
+
         try:
             Mentor.objects.filter(pk = kwargs['pk']).update(is_staff = data['is_staff'])
             mentor = Mentor.objects.get(pk=kwargs['pk'])
@@ -127,6 +129,26 @@ class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
             message = {'details':e}
             print(e)
             return Response(message,status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request, *args, **kwargs):
+        try:
+            mentor = Mentor.objects.get(pk=kwargs['pk'])
+            mentor.delete()
+            print(mentor)
+            email_subject = 'Mentor Request Rejected'
+            message = render_to_string("mentor_reject.html", {
+                'mentor': mentor,
+                'domain': '127.0.0.1:8000',
+                'uid': urlsafe_base64_encode(force_bytes(mentor.pk)),
+                'token': generate_token.make_token(mentor)
+            })
+            print(message,'klo')
+            email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [mentor.email])
+            email_message.send()
+            return Response({'message': 'Mentor rejected email sent successfully'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            message = {'details': str(e)}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 class MentorActivateAccountView(View):
     def get(self,request,uidb64,token):

@@ -69,7 +69,7 @@ export const mentorStatusInstance = async (id,updateMentor)=>{
 
 export const mentorApprovalInstance = async(id,updateMentor)=>{
     try{
-        const res = await axiosInstance.put(`admin/mentor/${id}`,updateMentor)
+        const res = await axiosInstance.put(`admin/mentor/${id}/`,updateMentor)
         if (res.status === 200 || res.status ===201){
             return res.data
         }else{
@@ -84,8 +84,8 @@ export const mentorApprovalInstance = async(id,updateMentor)=>{
 
 export const mentorDeleteInstance = async (id)=>{
     try{
-        const res = await axiosInstance.delete(`mentor/${id}`)
-        if (res.status === 204){
+        const res = await axiosInstance.delete(`admin/mentor/${id}/`)
+        if (res.status === 200){
             return true
         }else{
             throw new Error("Failed to delete mentor")
