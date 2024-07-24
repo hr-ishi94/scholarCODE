@@ -117,5 +117,10 @@ export const initialstate = {
         transactions :[],
         status:'idle',
         error:null
+    },
+    Mentor_timings:{
+        timings:[],
+        status:'idle',
+        error:null
     }
 }

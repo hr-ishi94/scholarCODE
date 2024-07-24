@@ -9,7 +9,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import './MentorRootLayout.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { mentorLogout } from '../../Redux/Slices/MentorAuthSlice';
+import { MentorLogin, mentorLogout } from '../../Redux/Slices/MentorAuthSlice';
 import { jwtDecode } from 'jwt-decode';
 import { clearMentor, fetchMentor } from '../../Redux/Slices/MentorDetailSlice';
 import { TimePicker } from '@mui/x-date-pickers';
@@ -17,6 +17,10 @@ import Badge from 'react-bootstrap/Badge';
 import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice';
+import { addTime, fetchMentortimings } from '../../Redux/Slices/MentorTimingSlice';
+import { FastForward } from '@mui/icons-material';
+import { MentorPostReviewTimings } from '../../Axios/MentorServer/MentorServer';
+import { toast } from 'react-toastify';
 
 const MentorRootLayout = () => {
     const dispatch = useDispatch()
@@ -132,94 +136,139 @@ const MentorRootLayout = () => {
 
 export default MentorRootLayout
 
+function TimeSlots({ show, handleClose }) {
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.MentorToken);
+  const access = jwtDecode(token.access);
+  const mentorId = access.user_id;
+  const TimingSelector = useSelector((state) => state.MentorTimings);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [createSlot,setCreateSlot] = useState(false)
 
-function TimeSlots({show,handleClose}) {
-    const EnrolledCourses = useSelector((state)=>state.AllEnrolls)
-    const MentorCourses = useSelector((state)=>state.MentorCourses)
-    const mentorId = jwtDecode(localStorage.getItem('access')).user_id
-    const dispatch = useDispatch()
-    console.log(mentorId)
+  const OpenCreateSlot = ()=> setCreateSlot(true)
+  const CloseCreateSlot = ()=> setCreateSlot(false)
 
-    useEffect(()=>{
-        dispatch(fetchAllEnrolledCourses())
-        dispatch(fetchMentorCourse())
-    },[dispatch])
 
-    const mentorCourseSet = new Set()
-    MentorCourses.courses.filter((course)=>course.mentor === mentorId).map((course)=>{
-        if (!mentorCourseSet.has(course.id)){
-            mentorCourseSet.add(course.id)
-        }
-    })
-    const DateMap = {}
-
-    EnrolledCourses.enrolls
-  .filter((enroll) => mentorCourseSet.has(enroll.course.id))
-  .forEach((course) => {
-    DateMap[course.id] = course.next_review_date;
-  });
+  useEffect(() => {
   
-  const [dates, setDates] = useState([]);
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    const newDates = [];
-    EnrolledCourses.enrolls
-      .filter((enroll) => enroll.next_review_date == value)
-      .forEach((course) => {
-        newDates.push(course.review_time);
-      });
-      setDates(newDates)
-  }, [dates]);
-  console.log(dates,'hi')
+    dispatch(fetchMentortimings(mentorId));
+    dispatch(MentorLogin());
   
-return (
-      <>
+  }, [dispatch, mentorId]);
+
+  const DateSet = new Set();
+
+  TimingSelector.timings && TimingSelector.timings.forEach((time) => DateSet.add(time.date));
   
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton className='p-3'>
-            <Modal.Title>Time slots</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className='p-2'>
-            <Form>
-              <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                <Form.Label>Scheduled Review Dates</Form.Label>
-                
-                <Form.Select aria-label="Default select example" onChange={handleChange}>
-                    <option >Choose review date</option>
-                    {Object.entries(DateMap).map(([id, date]) => (
-                    <option key={id} value={date}>{date}</option>
-                    ))}                
-                    </Form.Select>
-              </Form.Group>
-              <Form.Group>
-                <h6>{(dates.length>0)?`${dates.length} review(s) have been scheduled on this date`:''}</h6>
-                {dates.map((date,index)=>(
-                  
-                  
-                <h4 key={index}>
-                    <span>{index + 1}. </span> 
-                    {date?
-                   <Badge bg="" style={{backgroundColor:'#12A98E'}} className='p-1'>{date}</Badge>:
-                   <Badge bg="secondary"  className='p-1'>Time not Scheduled</Badge>
-                  }
-                </h4>
-                  
-                ))}
-                
-                
-              </Form.Group>
-            </Form>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose} className='p-1'>
-              Close
-            </Button>
-            
-          </Modal.Footer>
-        </Modal>
-      </>
-    );
+  const DateList = [...DateSet];
+
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const filteredTimings = TimingSelector.timings.filter((time) => time.date === selectedDate);
+  
+  const [formData,setFormData] = useState({
+    'mentor':mentorId,
+    'date':'',
+    'time':'',
+    'booked':false
+  })
+
+  const handleChange = (e) =>{
+    const {name, value} = e.target
+    setFormData((prevData)=>({
+      ...prevData,
+      [name]:value
+    }))
+    
   }
+  
+  const handleSubmit = async(e) =>{
+    e.preventDefault()
+    try{
+      const res = await MentorPostReviewTimings(mentorId,formData)
+      console.log(res,'loiii')
+      dispatch(addTime(res))
+      toast.success('Time slot added')
+      CloseCreateSlot()
+    }
+    catch(error){
+      toast.error('Error while adding time')
+    }
+    
+  }
+  return (
+    <>
+      <Modal show={show} onHide={handleClose}>
+        
+        <Modal.Body className="p-2">
+          <Modal.Title>Free Time slots</Modal.Title>
+          <Form className='p-2'>
+            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+              <Form.Label>Free Time slots</Form.Label>
+              <div>
+      <Form.Select aria-label="Default select example" onChange={handleDateChange}>
+        <option value="">Choose review date</option>
+        {
+        DateList.map((date, index) => (
+          
+          <option key={index} value={date} >
+            {date}
+          </option>
+        ))
+        }
+      </Form.Select>
+    </div>
+            </Form.Group>
+          </Form>
+          {selectedDate && (
+            <>
+              
+              <ul>
+                {filteredTimings.map((timing, index) => (
+                  <li key={timing.id}>
+                    <h5>
+                      <Badge bg="" style={{ backgroundColor: '#12A98E' }} className="p-1">
+                          {timing.time} 
+                      </Badge>
 
+                    </h5>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
 
+          
+          <Button variant="secondary" onClick={handleClose} className="p-1">
+            Close
+          </Button>
+          <Button variant="" onClick={OpenCreateSlot} style={{backgroundColor:'#12A98E'}} className="p-1 mx-1 text-light">
+            Create new time slot
+          </Button>
+          {createSlot &&
+          <Form  className='p-2'>
+            
+            <h5>New Time slots</h5>
+            <Form.Group controlId="formDate">
+              <Form.Label>Date</Form.Label>
+              <Form.Control type="date" name="date" onChange={handleChange} value={formData.date}/>
+            </Form.Group>
 
+            <Form.Group controlId="formTime">
+              <Form.Label>Time</Form.Label>
+              <Form.Control type="time" name="time" onChange={handleChange} value={formData.time}/>
+            </Form.Group>
+
+            <Button variant="" type="submit" className='p-1 my-2 text-light' style={{backgroundColor:'#12A98E'}} onClick={handleSubmit}>
+              Submit
+            </Button>
+
+        </Form>
+        }
+        </Modal.Body>
+      </Modal>
+    </>
+  );
+}

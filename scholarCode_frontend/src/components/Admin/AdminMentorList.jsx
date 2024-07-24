@@ -52,7 +52,7 @@ const AdminMentorList = () => {
     <div>
 
 </div>
-        <Table striped bordered hover>
+        <Table striped bordered hover className='text-center'>
       <thead>
         <tr>
           <th>id</th>
@@ -69,7 +69,7 @@ const AdminMentorList = () => {
 
         <tr key={activeMentor.id}>
           <MentorTableData props = {activeMentor} index ={index} />
-          <td><Link to={`/admin/mentor/active/${activeMentor.id}/`}><Button className='p-1 m-1' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
+          <td><Link to={`/admin/mentor/active/${activeMentor.id}/`}><Button className='p-1 m-1 text-light' variant='' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>
         ))}
         
@@ -81,7 +81,7 @@ const AdminMentorList = () => {
         <br />
 
         <h2>Mentors Requests</h2>
-        <Table striped bordered hover>
+        <Table striped bordered hover className='text-center'>
           <thead>
             <tr>
               <th>id</th>
@@ -107,7 +107,7 @@ const AdminMentorList = () => {
               
               <td>
                   <Link to={`/admin/mentor/request/${mentorRequest.id}/`}>
-                  <Button className="p-1 m-1" style={{ backgroundColor: "#12A98E" }}>View</Button>
+                  <Button className="p-1 m-1 text-light" variant='' style={{ backgroundColor: "#12A98E" }} >View</Button>
                   </Link>
               </td>
                       

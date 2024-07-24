@@ -20,7 +20,14 @@ class MentorCourses(models.Model):
     
 class MentorTimes(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
+    date = models.DateField()
     time = models.TimeField()
+    booked = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields= ['mentor','date','time'],name='unique_time')
+        ]
 
     def __str__(self):
         return f"{self.time}"

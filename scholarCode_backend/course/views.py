@@ -188,3 +188,39 @@ class IssueCertificate(APIView):
             return Response({'error': 'Course not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+@api_view(['GET','POST','PATCH'])
+def mentorTimings(request,mentor_id):
+    if request.method == 'GET':
+        try:
+            timings = MentorTimes.objects.filter(mentor = mentor_id)
+            if not timings:
+                return Response({"message":"Mentor didn't assign any time slots"}, status=status.HTTP_404_NOT_FOUND)
+            serializer = MentorTimesSerializer(timings,many = True)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error':str(e)}, status = status.HTTP_400_BAD_REQUEST)
+        
+    elif request.method == 'POST':
+        try:
+            serializer = MentorTimesSerializer(data = request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=status.HTTP_200_OK)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    elif request.method == 'PATCH':
+        id = request.data.get['id']
+        try:
+            timing = MentorTimes.objects.get(pk = id )
+            timing.booked = True
+            timing.save()
+            serializer = MentorTimesSerializer(timing)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except MentorTimes.DoesNotExist:
+            return Response({'error': 'MentorTime not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

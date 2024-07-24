@@ -32,7 +32,7 @@ const AdminReviewsList = () => {
         
             <h1>Reviews List</h1>
             <br />
-        <Table striped bordered hover>
+        <Table striped bordered hover className='text-center'>
         <thead>
             <tr>
             <th>id</th>

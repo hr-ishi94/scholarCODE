@@ -39,7 +39,7 @@ const AdminUserList = () => {
     
     <div className='user-table'>
         <h1>User Management</h1>
-        <Table striped bordered hover>
+        <Table striped bordered hover className='text-center'>
       <thead>
         <tr>
           <th>id</th>

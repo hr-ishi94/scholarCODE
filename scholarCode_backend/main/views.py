@@ -145,7 +145,7 @@ class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
             print(message,'klo')
             email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [mentor.email])
             email_message.send()
-            return Response({'message': 'Mentor rejected email sent successfully'}, status=status.HTTP_200_OK)
+            return Response({'message': 'Mentor rejected email sent successfully'}, status=status.HTTP_200_OK   )
         except Exception as e:
             message = {'details': str(e)}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
@@ -345,7 +345,4 @@ def TaskList(request, course_id):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
-
-
 

@@ -12,6 +12,7 @@ urlpatterns = [
     path('razorpay_tran_ids/',views.razorpay_order_id, name="all_payments"),
     path('transactions/',views.Transactions.as_view(),name = 'all_transactions'),
     path('review_marks/',views.ReviewMarkView.as_view(),name='review_marks'),
-    path('upload/',views.IssueCertificate.as_view(),name='upload')
+    path('upload/',views.IssueCertificate.as_view(),name='upload'),
+    path('mentor_timings/<int:mentor_id>/',views.mentorTimings, name='mentor_dtimings')
    ]
 
