@@ -20,6 +20,12 @@ const MentorTimingSlice = createSlice({
     reducers:{
         addTime :(state,action)=>{
             state.timings = [...state.timings,action.payload]
+        },
+        patchTime :(state,action)=>{
+            const index = state.timings.findIndex((time)=>time.id === action.payload.id)
+            if (index !== -1){
+                state.timings[index] = action.payload
+            }
         }
     },
     extraReducers:(builder)=>{
@@ -45,5 +51,5 @@ const MentorTimingSlice = createSlice({
 
 
 
-export const {addTime} = MentorTimingSlice.actions
+export const {addTime, patchTime} = MentorTimingSlice.actions
 export default MentorTimingSlice.reducer

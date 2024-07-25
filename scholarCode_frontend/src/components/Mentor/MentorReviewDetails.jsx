@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { enrollPut, fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
-import { ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
+import { MentorPatchReviewTimings, MentorPostReviewTimings, ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
 import { EnrollCourse, EnrollPatch, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
 import { toast } from 'react-toastify';
 import { enrollPatch, fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
@@ -22,6 +22,9 @@ import jsPDF from 'jspdf';
 import axios from 'axios';
 import logo from '../../assets/logo.png'
 import signature from '../../assets/signature.png'
+import Badge from 'react-bootstrap/Badge';
+import { jwtDecode } from 'jwt-decode';
+import { fetchMentortimings, patchTime } from '../../Redux/Slices/MentorTimingSlice';
 
 const MentorReviewDetails = () => {
   
@@ -32,6 +35,11 @@ const MentorReviewDetails = () => {
   const EnrolledCourseSelector = useSelector((state)=>state.AllEnrolls)
   const CourseSelector = useSelector((state)=>state.Courses)
   const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
+  const ReviewTimings = useSelector((state)=>state.MentorTimings)
+  const token = useSelector((state) => state.MentorToken);
+  const access = jwtDecode(token.access);
+  const mentorId = access.user_id;
+  
 
   
   function getFormattedDate() {
@@ -57,6 +65,9 @@ const MentorReviewDetails = () => {
     dispatch(fetchAllEnrolledCourses())  
     dispatch(fetchReviewMarks())
     dispatch(fetchCoursesList())
+    dispatch(fetchMentortimings(mentorId));
+
+    
 
     const dateInterval = setInterval(() => {
       setCurrentDate(getFormattedDate());
@@ -73,7 +84,7 @@ const MentorReviewDetails = () => {
     };
     
   },[dispatch])
-  
+  // console.log(ReviewTimings.timings,'looi')
   const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
   const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course.id)
   
@@ -107,46 +118,50 @@ const MentorReviewDetails = () => {
     const [currTime,setCurrTime] = useState(CurrCourse.review_time)  
     
     const isDisabled = !((currentTime >= currTime ) && (currentDate === CurrCourse.next_review_date))
-    const TimeChange = (e)=>{
-        const {name,value} = e.target
-        setCurrTime(value)
-      
-      }
-    const handleTimeSubmit = async()=>{
-      try {
-        const time = {
+    const [timeSlot,setTimeSlot] = useState(false)
+    
+    
+    const TimeChange = async (e, time,id) => {
+      setCurrTime(time);
+      try{
+        const formData = {
           id:CurrCourse.id,
-          review_time:currTime,
+          review_time:time,
           mentor:CurrCourse.course.mentor,
           next_review_date:CurrCourse.next_review_date
         }
-
-        const ne = await EnrollPatch(CurrCourse.user.id,time)
-        console.log(ne,'resss')
+        const ne = await EnrollPatch(CurrCourse.user.id,formData)
         if (ne.status == 'success'){
-
+          const timeForm = {
+            id,
+            booked:true
+          }
+          const res = await MentorPatchReviewTimings(mentorId,timeForm)
+          console.log(res,'loi')
+          dispatch(patchTime(res))
           const payload = { enroll_id: CurrCourse.id, formData: {
             ...CurrCourse,
             review_time:ne.data.review_time
           } };
-          console.log(ne.data,CurrCourse.id,payload ,'kiii')
+
+          
+          // console.log(ne.data,CurrCourse.id,payload ,'kiii')
           dispatch(enrollPatch(payload));
+          setTimeSlot(false)
           toast.success('Review Time has been scheduled')
         }else{
           if (ne.data.message){
             toast.error(ne.data.message)
           }
         }
-
       }catch(error){
-        console.log(error,'error')
-      }
 
-    }
+      }
+    };
 
     const [user] = UserSelector.users.filter((user)=>user.id === CurrCourse.user.id)
     const [courseDetails ]= CourseSelector.courses.filter((crs)=>crs.id == CurrCourse.course.course)
-    console.log(course,'loi')
+    // console.log(course,'loi')
 
     if(EnrolledCourseSelector.status === 'loading'){
       return <Loader/>
@@ -284,13 +299,42 @@ const MentorReviewDetails = () => {
       {!CurrCourse.is_completed ?
     <>
       <h5>Current module:  <strong> module {CurrCourse.current_module}</strong></h5>
+
       <br />
-      
       <h5>Upcoming Review Date:  
       <input type="date" value={CurrCourse.next_review_date} disabled/></h5>
+      
+      {currTime && !timeSlot ?<Button className='text-primary ' variant='' onClick={()=>setTimeSlot(true)}>Change Time</Button>:(
+  <>
+    <p className='text-secondary'>Available time slots:</p>
+    {ReviewTimings.timings.filter((timing) => timing.date === CurrCourse.next_review_date).length > 0 ? (
+      ReviewTimings.timings
+        .filter((timing) => (timing.date === CurrCourse.next_review_date )&& !timing.booked)
+        .map((timing) => (
+          <Button key={timing.id} variant='' onClick={(e) => TimeChange(e, timing.time,timing.id)}>
+            <Badge bg="" style={{ backgroundColor: '#12A98E' }} className="p-1 mx-1">
+              {timing.time}
+            </Badge>
+          </Button>
+        ))
+    ) : (
+      <Badge bg="secondary" style={{ backgroundColor: '#12A98E' }} className="p-1 mx-1">
+        No Time slots available
+      </Badge>
+    )}
+  </>
+)}
+
+      
+
+
       <br />
-      <h5>Time scheduled:  <strong>  <input type='time' min="09:00" name='review_time' max="18:00" onChange={TimeChange} value={currTime?currTime:null}></input></strong>
-      <Button className='mx-1 p-1 text-light' variant='' onClick={handleTimeSubmit} style={{backgroundColor:"#12A98E"}} > <i className="fa-solid fa-check "></i></Button></h5>
+      <br />
+      {CurrCourse.review_time &&
+      <h5>Time scheduled:  <strong>  <input type='time'  name='review_time'  disabled value={CurrCourse.review_time}></input></strong>
+      </h5>
+      }
+      {/* <Button className='mx-1 p-1 text-light' variant='' onClick={handleTimeSubmit} style={{backgroundColor:"#12A98E"}} > <i className="fa-solid fa-check "></i></Button> */}
       
         {
           (!currTime && CurrCourse.next_review_date === currentDate ) &&
@@ -331,11 +375,11 @@ const MentorReviewDetails = () => {
   :
       <>
       <br />
-      <p style={{color:"#12A98E"}}>Candidate Completed the course please Issue the Certificate. <i className="fa-solid fa-circle-check"></i></p>
       <Col sm={4}>
-      <Button className='p-2 text-light' style={{backgroundColor:'#12A98E'}} onClick={handleIssueCertificate} variant='' >Issue Certificate</Button>
-      {/* {!CurrCourse.certificate?
-    : <p style={{color:"#12A98E"}}>Certificate issued <i className="fa-solid fa-circle-check"></i></p> } */}
+      <Button className='p-2 text-light ' style={{backgroundColor:'#12A98E'}} onClick={handleIssueCertificate} variant='' >Issue Certificate</Button>
+      {!CurrCourse.certificate?
+      <p style={{color:"#12A98E"}}>Candidate Completed the course please Issue the Certificate. <i className="fa-solid fa-circle-check"></i></p>
+    : <p style={{color:"#12A98E"}}>Certificate issued <i className="fa-solid fa-circle-check"></i></p> }
       </Col>
       </>
       }

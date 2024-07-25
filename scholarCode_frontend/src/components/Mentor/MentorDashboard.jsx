@@ -19,8 +19,9 @@ const MentorDashboard = () => {
         dispatch(fetchAllEnrolledCourses())
     },[dispatch])
 
-    const courses = MentorCourseSelector.courses.filter((course)=>course.mentor == user_id)
-    console.log(courses,'klo')
+    const courses = MentorCourseSelector.courses.filter((course)=>course.mentor == user_id).map((course)=>course.id)
+    const userEnrolls = EnrolledCourseSelector.enrolls.filter((enroll)=> courses.includes(enroll.course.id))
+    
 
     const style = {
         position: "absolute",
@@ -46,7 +47,7 @@ const MentorDashboard = () => {
                 <DashComp title={'Wallet'} />
             </Col>
             <Col sm={6}>
-                <DashComp title={'Users Assigned'} />
+                <DashComp title={'User Enrolls'} count ={userEnrolls.length} />
             </Col>
             
         </Row>

@@ -12,6 +12,10 @@ import Loader from '../Utils/Loader'
 import { mentorStatusInstance } from '../../Axios/AdminServer/AdminServer'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
+import { Table } from 'react-bootstrap'
+import MentorReviewCount from './MentorReviewCount'
 
 
 const AdminActiveMentor = () => {
@@ -22,14 +26,19 @@ const AdminActiveMentor = () => {
   
   const dispatch = useDispatch()
   const {mentor, status, error} = useSelector((state)=>state.Mentor)
-  
+  const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
+  const CourseSelector = useSelector((state)=>state.Courses)
+
   useEffect(()=>{
     dispatch(fetchMentor(params.id))
-    if (mentor?.length!==0){
-      setMentorDetail(mentor)
-    }
+    dispatch(fetchMentorCourse())
+    dispatch(fetchCoursesList())
+   
   },[dispatch])
   
+  const mentorCourse = MentorCourseSelector.courses.filter((course)=>course.mentor === mentor.id)
+  console.log(mentorCourse,'loi')
+  console.log(CourseSelector.courses,'lo')
   
   if (status === "loading") {
     return <Loader/>;
@@ -40,45 +49,51 @@ const AdminActiveMentor = () => {
   return (
       <div className='mentor-section'>
         <Row>
-        <Col sm={4} className='text-center'>
+        <Col sm={3} className='text-center'>
           <Image src={avatar} className='w-50 mx-3'roundedCircle />
           <br />
           <h4>{mentor.username}</h4>
           <h6>{mentor.email}</h6>
           <h6>{mentor.designation}</h6>
         </Col>
-        <Col sm={6} >
+        <Col sm={4} >
           <h3>Mentor Details</h3>
           <br />
           
+
+            <label className='m-2'><h6>First name: {mentor.first_name}</h6></label>
             
-            <label className='m-2'>First name: {mentor.first_name}</label>
             <br />
-            <label className='m-2'>Last name: {mentor.last_name}</label>
+            <label className='m-2'><h6> Last name: {mentor.last_name}</h6></label>
             <br />
-            <label className='m-2'>Email: {mentor.email}</label>
+            <label className='m-2'><h6> Email: {mentor.email}</h6></label>
             <br />
-            <label className='m-2'>Designation: {mentor.designation}</label>
+            <label className='m-2'><h6> Designation: {mentor.designation}</h6></label>
             <br />
-            <label className='m-2'>LinkedIn ID: {mentor.linkedin_profile}</label>
+            <label className='m-2'><h6> LinkedIn ID: <a href={mentor.linkedin_profile} target='_blank' rel="noopener noreferrer">{mentor.linkedin_profile}</a></h6></label>
             <br />
-            <label className='m-2'>No. of courses assigned: </label>
+            <label className='m-2'><h6> No. of courses assigned : <strong>{mentorCourse.length} nos</strong>  </h6></label>
             <br />
-            <label className='m-2'>Status:{mentor.is_active?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</label>
+            <label className='m-2'><h6> Status:{mentor.is_active?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</h6></label>
             <br />
             <Button className='p-2' variant={mentor.is_active?"danger":"success"} onClick={() => setModalShow(true)}>{mentor.is_active?"Block":"UnBlock"}</Button>
           <br />
           <br />
-          {/* <h4>Courses Assigned</h4>
+          <h4>Courses self Assigned</h4>
           <br />
           <ul>
-            <li>course1 <Button className='p-1 bg-danger'>X</Button></li>
-            <li>course1 <Button className='p-1 bg-danger'>X</Button></li>
-            <li>course1 <Button className='p-1 bg-danger'>X</Button></li>
+            {mentorCourse.map((course)=>
+              CourseSelector.courses.filter((crs)=>crs.id == course.course).map((crs)=>
+                <li>{crs.name} </li>
+              )
+            )}
           </ul>
 
-          */}
+         
           
+        </Col>
+        <Col sm = {5}>
+        <MentorReviewCount mentor_id = {mentor.id}/>
         </Col>
         
         </Row>

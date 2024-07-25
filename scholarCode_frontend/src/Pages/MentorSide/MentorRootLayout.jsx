@@ -166,7 +166,7 @@ function TimeSlots({ show, handleClose }) {
     setSelectedDate(e.target.value);
   };
 
-  const filteredTimings = TimingSelector.timings.filter((time) => time.date === selectedDate);
+  const filteredTimings = TimingSelector.timings.filter((time) => (time.date === selectedDate) && !time.booked);
   
   const [formData,setFormData] = useState({
     'mentor':mentorId,
@@ -187,8 +187,12 @@ function TimeSlots({ show, handleClose }) {
   const handleSubmit = async(e) =>{
     e.preventDefault()
     try{
+      if (!formData.date || !formData.time){
+        toast.error("All Fields required!")
+        return
+      }
       const res = await MentorPostReviewTimings(mentorId,formData)
-      console.log(res,'loiii')
+      // console.log(res,'loiii')
       dispatch(addTime(res))
       toast.success('Time slot added')
       CloseCreateSlot()
@@ -225,18 +229,17 @@ function TimeSlots({ show, handleClose }) {
           {selectedDate && (
             <>
               
-              <ul>
+                <h5>
                 {filteredTimings.map((timing, index) => (
-                  <li key={timing.id}>
-                    <h5>
-                      <Badge bg="" style={{ backgroundColor: '#12A98E' }} className="p-1">
+                  
+                      <Badge key={timing.id} bg="" style={{ backgroundColor: '#12A98E' }} className="p-1 mx-1">
                           {timing.time} 
                       </Badge>
 
-                    </h5>
-                  </li>
+                
                 ))}
-              </ul>
+                    </h5>
+              
             </>
           )}
 

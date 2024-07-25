@@ -26,7 +26,7 @@ class MentorTimes(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields= ['mentor','date','time'],name='unique_time')
+            models.UniqueConstraint(fields= ['mentor','date','time','booked'],name='unique_time')
         ]
 
     def __str__(self):
@@ -117,3 +117,14 @@ class ReviewMarks(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user}-{self.course}-{self.module} mark'
+    
+
+class Mentor_wallet(models.Model):
+    mentor = models.ForeignKey(Mentor,models.CASCADE,name='mentor_wallet')
+    review_count = models.IntegerField(default=0)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=10, choices=(('pending', 'Pending'), ('completed', 'Completed')), default='pending')
+
+    def __str__(self):
+        return f"{self.mentor}'s wallet"

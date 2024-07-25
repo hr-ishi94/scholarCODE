@@ -53,8 +53,8 @@ def EnrolledCoursesUser(request,user_id):
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-    elif request.method in ['PUT','PATCH']:
-        try:       
+    elif request.method in ['PUT', 'PATCH']:
+        try:
             data = request.data
             enroll_id = data.get('id')
             mentor = data.get('mentor')
@@ -62,14 +62,14 @@ def EnrolledCoursesUser(request,user_id):
             review_date = data.get('next_review_date')
 
             try:
-                course = EnrolledCourse.objects.get(id = enroll_id , user = user_id )
+                course = EnrolledCourse.objects.get(id=enroll_id, user=user_id)
             except EnrolledCourse.DoesNotExist:
-                return Response({'status':'error','message':'Enrollment not found'})
-            print(data)
+                return Response({'status': 'error', 'message': 'Enrollment not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
             if time is not None and review_date is not None:
                 try:
-                    time_dt = datetime.datetime.strptime(time, "%H:%M").time()  # Parse time only
+                    time_dt = datetime.datetime.strptime(time, "%H:%M:%S").time()  # Parse time in HH:MM:SS format
                 except ValueError:
                     return Response({'status': 'error', 'message': 'Invalid time format'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -77,26 +77,26 @@ def EnrolledCoursesUser(request,user_id):
                 existing_reviews = EnrolledCourse.objects.filter(
                     course__mentor=mentor,
                     next_review_date=review_date
-                ).exclude(pk = enroll_id)
+                ).exclude(pk=enroll_id)
 
                 for review in existing_reviews:
                     existing_time = review.review_time
-                    print(existing_time,time_dt,'klei')
+                    print(existing_time, time_dt, 'klei')
                     if existing_time == time_dt:
                         return Response({'status': 'error', 'message': 'You already have a review at the same time.'}, status=status.HTTP_400_BAD_REQUEST)
                     if abs((datetime.datetime.combine(datetime.datetime.today(), time_dt) - datetime.datetime.combine(datetime.datetime.today(), existing_time)).total_seconds()) < 1800:
-                        return Response({'status': 'error', 'message': 'Review time must be at least 30 minutes apart any of your reviews.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-            serializer = EnrollSerializer(course,data=data,partial = True)
+                        return Response({'status': 'error', 'message': 'Review time must be at least 30 minutes apart from any of your reviews.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            print(data)
+            serializer = EnrollSerializer(course, data=data, partial=True)
             if serializer.is_valid():
                 serializer.save()
-                return Response({'status':'success','data':serializer.data},status=status.HTTP_200_OK)
-            
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+                return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             # Handle exceptions and return an error response
             return Response({'status': 'error', 'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class Transactions(generics.ListCreateAPIView):
     queryset = Transaction.objects.all()
@@ -213,7 +213,8 @@ def mentorTimings(request,mentor_id):
             return Response({'error':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
     elif request.method == 'PATCH':
-        id = request.data.get['id']
+        id = request.data.get('id')
+        print('patch',id)
         try:
             timing = MentorTimes.objects.get(pk = id )
             timing.booked = True

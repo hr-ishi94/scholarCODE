@@ -23,10 +23,10 @@ class EnrollSerializer(serializers.ModelSerializer):
         model = EnrolledCourse
         fields='__all__'
 
-    def update(self, instance, validated_data):
-        instance.certificate = validated_data.get('certificate', instance.certificate)
-        instance.save()
-        return instance
+    # def update(self, instance, validated_data):
+    #     instance.certificate = validated_data.get('certificate', instance.certificate)
+    #     instance.save()
+    #     return instance
 
 class AllEnrollSerializer(serializers.ModelSerializer):
     user = UserSerializer()

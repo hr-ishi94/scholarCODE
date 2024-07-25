@@ -123,4 +123,15 @@ export const MentorPostReviewTimings = async (mentor_id,formData)=>{
     }
 
 }
+export const MentorPatchReviewTimings = async (mentor_id,formData)=>{
+    try{
+        const res = await axiosCourseInstance.patch(`mentor_timings/${mentor_id}/`,formData)
+        if (res.status === 200){
+            return res.data
+        }
+    }catch(error){
+        console.log('Error while fetching timings of mentor',error)
+    }
+
+}
 
