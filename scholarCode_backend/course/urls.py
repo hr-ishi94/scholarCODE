@@ -13,6 +13,9 @@ urlpatterns = [
     path('transactions/',views.Transactions.as_view(),name = 'all_transactions'),
     path('review_marks/',views.ReviewMarkView.as_view(),name='review_marks'),
     path('upload/',views.IssueCertificate.as_view(),name='upload'),
-    path('mentor_timings/<int:mentor_id>/',views.mentorTimings, name='mentor_dtimings')
+    path('mentor_timings/<int:mentor_id>/',views.mentorTimings, name='mentor_timings'),
+    path('mentor_wallet/<int:mentor_id>/',views.mentorWallet,name='mentor_wallet'),
+    path('mentor_txns/<int:wallet_id>/',views.MentorTransactionView.as_view(),name='mentor_txn'),
+   
    ]
 

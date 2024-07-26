@@ -120,11 +120,21 @@ class ReviewMarks(models.Model):
     
 
 class Mentor_wallet(models.Model):
-    mentor = models.ForeignKey(Mentor,models.CASCADE,name='mentor_wallet')
-    review_count = models.IntegerField(default=0)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_date = models.DateTimeField(auto_now_add=True)
+    mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
+    review_count = models.IntegerField(default=0,blank=True,null = True )
+    amount = models.DecimalField(max_digits=10, decimal_places=2,blank = True, null = True)
+    payment_date = models.DateTimeField(auto_now_add=True,blank=True, null = True)
     status = models.CharField(max_length=10, choices=(('pending', 'Pending'), ('completed', 'Completed')), default='pending')
 
     def __str__(self):
-        return f"{self.mentor}'s wallet"
+        return f"{self.id}-{self.mentor}'s wallet"
+    
+
+class MentorTransaction(models.Model):
+    mentor_wallet = models.ForeignKey(Mentor_wallet, on_delete=models.CASCADE, related_name='mentor_transactions')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_type = models.CharField(max_length=15, default='BANK TRANSFER')
+    timestamp = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f"Transaction {self.id} for {self.mentor_wallet.mentor}"

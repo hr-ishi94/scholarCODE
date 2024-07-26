@@ -57,3 +57,18 @@ class ReviewMarkSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewMarks
         fields = '__all__'
+
+
+class MentorWalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model  = Mentor_wallet
+        fields = '__all__'
+
+
+class MentorTransactionSerializer(serializers.ModelSerializer):
+    mentor_wallet = MentorWalletSerializer(read_only = True)
+    class Meta:
+        model = MentorTransaction
+        fields = '__all__'
+
+

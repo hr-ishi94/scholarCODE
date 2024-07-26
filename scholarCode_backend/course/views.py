@@ -7,6 +7,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import generics,status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
+from django.utils import timezone
 
 class EnrollCourseView(generics.ListCreateAPIView):
     queryset = EnrolledCourse.objects.all()
@@ -225,3 +226,56 @@ def mentorTimings(request,mentor_id):
             return Response({'error': 'MentorTime not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET','POST','PATCH'])
+def mentorWallet(request,mentor_id):
+    if request.method == 'GET':
+        try:
+                
+            wallet = Mentor_wallet.objects.get(mentor_id = mentor_id)
+            if not wallet:
+                return Response({'message':'Could not find the wallet for the mentor id '},status=status.HTTP_404_NOT_FOUND)
+            serializer = MentorWalletSerializer(wallet)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error':str(e)}, status = status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'POST':
+        try:
+            serializer = MentorWalletSerializer(data = request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data,status=status.HTTP_200_OK)
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == 'PATCH':
+        try:
+            wallet = Mentor_wallet.objects.get(mentor_id = mentor_id)
+            data = request.data.copy()
+            data['payment_date'] = timezone.now() 
+            serializer = MentorWalletSerializer(wallet, data=data, partial = True)
+            if serializer.is_valid():
+                serializer.save()
+                transaction = MentorTransaction.objects.create(
+                    mentor_wallet = wallet,
+                    amount = request.data.get('amount')
+                )
+                transaction_serializer = MentorTransactionSerializer(transaction)
+
+                response_data = {}
+                response_data['wallet'] = serializer.data
+                response_data['transaction'] = transaction_serializer.data
+
+                return Response(response_data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Mentor_wallet.DoesNotExist:
+            return Response({'error': 'Mentor wallet not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class MentorTransactionView(generics.ListAPIView):
+    serializer_class = MentorTransactionSerializer
+
+    def get_queryset(self):
+        wallet_id = self.kwargs['wallet_id']
+        return MentorTransaction.objects.filter(mentor_wallet_id=wallet_id)

@@ -36,7 +36,7 @@ const AdminActiveMentor = () => {
    
   },[dispatch])
   
-  const mentorCourse = MentorCourseSelector.courses.filter((course)=>course.mentor === mentor.id)
+  const mentorCourse = MentorCourseSelector && MentorCourseSelector.courses.filter((course)=>course.mentor === mentor.id)
   console.log(mentorCourse,'loi')
   console.log(CourseSelector.courses,'lo')
   
@@ -49,7 +49,7 @@ const AdminActiveMentor = () => {
   return (
       <div className='mentor-section'>
         <Row>
-        <Col sm={3} className='text-center'>
+        <Col sm={2} className='text-center'>
           <Image src={avatar} className='w-50 mx-3'roundedCircle />
           <br />
           <h4>{mentor.username}</h4>
@@ -74,7 +74,7 @@ const AdminActiveMentor = () => {
             <br />
             <label className='m-2'><h6> No. of courses assigned : <strong>{mentorCourse.length} nos</strong>  </h6></label>
             <br />
-            <label className='m-2'><h6> Status:{mentor.is_active?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</h6></label>
+            <label className='m-2'><h6> Status: {mentor.is_active?<span className='bg-success p-1'> ACTIVE</span>:<span className='bg-danger p-1'> INACTIVE</span>}</h6></label>
             <br />
             <Button className='p-2' variant={mentor.is_active?"danger":"success"} onClick={() => setModalShow(true)}>{mentor.is_active?"Block":"UnBlock"}</Button>
           <br />
@@ -92,7 +92,7 @@ const AdminActiveMentor = () => {
          
           
         </Col>
-        <Col sm = {5}>
+        <Col sm = {6}>
         <MentorReviewCount mentor_id = {mentor.id}/>
         </Col>
         

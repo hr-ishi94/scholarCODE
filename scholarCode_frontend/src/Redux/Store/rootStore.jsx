@@ -122,5 +122,16 @@ export const initialstate = {
         timings:[],
         status:'idle',
         error:null
+    },
+    Mentor_wallet :{
+        wallet :[],
+        status:'idle',
+        error:null
+    },
+    Mentor_transactions :{
+        transactions:[],
+        status:'idle',
+        error:null
+
     }
 }

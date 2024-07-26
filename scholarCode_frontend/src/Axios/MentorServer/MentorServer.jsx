@@ -1,3 +1,4 @@
+import { resetState } from "../../Redux/Slices/CoursesListSlice"
 import { axiosInstance, axiosCourseInstance, axiosCourseFormInstance } from "../Utils/AxiosInstances"
 
 export const MentorRegister = async({first_name,last_name, email, username, designation, linkedin_profile, password,is_staff})=>{
@@ -134,4 +135,41 @@ export const MentorPatchReviewTimings = async (mentor_id,formData)=>{
     }
 
 }
+
+
+export const MentorWallet = async (mentor_id) =>{
+    try{
+        const res = await axiosCourseInstance.get(`mentor_wallet/${mentor_id}/`)
+        if (res.status === 200){
+            return res.data
+        }
+    }catch (error){
+        console.log("Error while fetching mentor's wallet",error)
+    }
+}
+
+export const MentorWalletPatch = async (mentor_id,formData) =>{
+    try{
+        const res = await axiosCourseInstance.patch(`mentor_wallet/${mentor_id}/`,formData)
+        if (res.status === 200){
+            return res.data
+        }
+    }catch (error){
+        console.log("Error while fetching mentor's wallet",error)
+    }
+}
+
+
+export const MentorTransactions = async (wallet_id)=>{
+    try{
+        const res = await axiosCourseInstance.get(`mentor_txns/${wallet_id}/`)
+        if (res.status === 200){
+            return res.data
+        }
+    }catch(error){
+        console.log("Error while fetching mentor's txns",error)
+    }
+}
+
+
 

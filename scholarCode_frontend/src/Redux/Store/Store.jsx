@@ -21,6 +21,8 @@ import ZegoCallSlice from "../Slices/ZegoCallSlice";
 import AllEnrolledCoursesSlice from "../Slices/Userside/AllEnrolledCoursesSlice";
 import AdminTransactionSlice from "../Slices/AdminTransactionSlice";
 import MentorTimingSlice from "../Slices/MentorTimingSlice";
+import MentorTransactionSlice from "../Slices/mentorSide/MentorTransactionSlice";
+import MentorWalletSlice from "../Slices/mentorSide/MentorWalletSlice";
 
 const rootReducer = combineReducers({
     userList :usersListSlice,
@@ -44,6 +46,10 @@ const rootReducer = combineReducers({
     ZegoCall:ZegoCallSlice,
     AdminTransactions:AdminTransactionSlice,
     MentorTimings:MentorTimingSlice,
+
+    MentorTransactions: MentorTransactionSlice,
+    MentorWallet :MentorWalletSlice,
+
 
     
 
