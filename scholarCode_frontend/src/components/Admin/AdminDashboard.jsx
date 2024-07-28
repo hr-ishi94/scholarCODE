@@ -7,26 +7,27 @@ import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSli
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
 import { fetchadminTransactions } from '../../Redux/Slices/AdminTransactionSlice'
 import { payment_ids } from '../../Axios/AdminServer/AdminServer'
+import { fetchAdminWallet } from '../../Redux/Slices/AdminWalletSlice'
 
 const AdminDashboard = () => {
     const UserSelector = useSelector((state)=>state.userList)
     const MentorsSelector = useSelector((state)=>state.Mentors)
     const CourseSelector = useSelector((state)=>state.Courses)
+    const AdminWalletSelector = useSelector((state)=>state.AdminWallet)
     const TransactionSelector = useSelector((state)=>state.AdminTransactions)
     const dispatch = useDispatch()
     const activeMentors = MentorsSelector.mentors.filter((course)=> course.is_active === true )
     const [paymentIds,setPaymentIds ] = useState([])
  
-    console.log(TransactionSelector,'sloi')
     useEffect(()=>{
         dispatch(fetchUsers())
         dispatch(fetchCoursesList())
         dispatch(fetchadminTransactions())
+        dispatch(fetchAdminWallet())
 
         const fetchPaymentIds = async () =>{
             try{
                 const res = await payment_ids()
-                console.log(res.data,'lo')
                 if (res){
                     setPaymentIds(res.data)
                 }
@@ -47,9 +48,11 @@ const AdminDashboard = () => {
         trans += Number(rate.amount)    
     })
 
-    const sortedTransactions = [...TransactionSelector.transactions].sort((a, b) => b.timestamp - a.timestamp);
+    const sortedTransactions = [...TransactionSelector.transactions]
+    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+    .slice(0, 10);
 
-    console.log(paymentIds,'ll')
+    const [wallet] = AdminWalletSelector.wallet
 
     const style = {
         position: "absolute",
@@ -74,7 +77,7 @@ const AdminDashboard = () => {
                 <DashComp title={'Total Courses'} count={CourseSelector.courses.length}/>
             </Col>
             <Col sm={6}>
-                <DashComp title={'Total Revenue'} count = {trans} revenue/>
+                <DashComp title={'Total Revenue'} count = {wallet.balance} revenue/>
             </Col>
             
         </Row>
@@ -93,14 +96,14 @@ const AdminDashboard = () => {
         <tbody>
         
         {sortedTransactions
-        .map((trans)=>(
-            <tr>
-                <td>{trans.id}</td>
+        .map((trans,index)=>(
+            <tr key={index}>
+                <td>{index + 1}</td>
                 
                 
                 {paymentIds
                 .filter((payment)=>payment.id === trans.payment)
-                .map((payment)=>
+                .map((payment,index)=>
                 <>
                 <td>{payment.email}</td>
                 {CourseSelector.courses.filter((course)=>course.id == payment.course_id)

@@ -111,13 +111,21 @@ class Transactions(generics.ListCreateAPIView):
             return Response({"error": "No superuser found"}, status=status.HTTP_400_BAD_REQUEST)
 
         data['admin'] = superuser.id
-        # data['user'] = User.objects.get(id = data['user'])
-        # data['payment'] = RazorpayPayment.objects.get(id = data['payment'])
-        print(data,'keli')
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
+            admin_wallet, created = AdminWallet.objects.get_or_create(admin=superuser)
+
+            admin_wallet.balance += data['amount']
+            admin_wallet.save()
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            admin_wallet_serializer = AdminWalletSerializer(admin_wallet)
+
+            # Prepare the response data
+            response_data = {
+                'transaction': serializer.data,
+                'admin_wallet': admin_wallet_serializer.data
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -254,6 +262,8 @@ def mentorWallet(request,mentor_id):
             data = request.data.copy()
             data['payment_date'] = timezone.now() 
             serializer = MentorWalletSerializer(wallet, data=data, partial = True)
+            superuser = CustomUser.objects.filter(is_superuser=True).first()
+        
             if serializer.is_valid():
                 serializer.save()
                 transaction = MentorTransaction.objects.create(
@@ -262,7 +272,15 @@ def mentorWallet(request,mentor_id):
                 )
                 transaction_serializer = MentorTransactionSerializer(transaction)
 
+                admin_wallet, created = AdminWallet.objects.get_or_create(admin=superuser)
+
+                admin_wallet.balance -= data['amount']
+                admin_wallet.save()
+                admin_wallet_serializer = AdminWalletSerializer(admin_wallet)
+
+
                 response_data = {}
+                response_data['admin_wallet'] = admin_wallet_serializer.data
                 response_data['wallet'] = serializer.data
                 response_data['transaction'] = transaction_serializer.data
 
@@ -279,3 +297,10 @@ class MentorTransactionView(generics.ListAPIView):
     def get_queryset(self):
         wallet_id = self.kwargs['wallet_id']
         return MentorTransaction.objects.filter(mentor_wallet_id=wallet_id)
+
+class AdminWalletView(generics.ListAPIView):
+    serializer_class = AdminWalletSerializer
+
+    def get_queryset(self):
+        superuser = CustomUser.objects.filter(is_superuser=True).first()
+        return AdminWallet.objects.filter(admin = superuser)

@@ -41,8 +41,9 @@ const SingleCourse = () => {
   const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const MentorSelector = useSelector((state)=>state.Mentors)
   const UserToken = useSelector((state)=>state.UserToken)
-  const access = jwtDecode(UserToken.access)
-  const user_id = access.user_id
+  const Authenticated = UserToken?.is_authenticated
+  const access = UserToken?.access||null
+  const user_id =access? jwtDecode(access).user_id:null
   // console.log('esf',user_id)
 
   
@@ -52,9 +53,6 @@ const SingleCourse = () => {
     dispatch(fetchEnrolledCourses(user_id))
     dispatch(fetchMentors())
     dispatch(fetchMentorCourse())
-
-    
-    
 
   },[dispatch,params.id,user_id])
 
@@ -166,6 +164,12 @@ const SingleCourse = () => {
   
   //function will get called when clicked on the pay button.
   async function displayRazorpayPaymentSdk() {
+
+    if (!Authenticated){
+      navigate('/user/login/')
+      toast.error('Please login to enroll')
+    }
+
     const res = await loadRazorpayScript(
         "https://checkout.razorpay.com/v1/checkout.js"
     );

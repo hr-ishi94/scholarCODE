@@ -117,6 +117,18 @@ export const coursesAddInstance = async(newCourse)=>{
     }
 }
 
+export const AdminWalletInstance = async (id) =>{
+    try{
+        const res = await axiosCourseInstance.get('admin_wallet/')
+        if (res.status === 200){
+            return res.data
+        }
+    }catch(error){
+        console.log('error while fetching admin wallet',error)
+        return error
+    }
+}
+
 export const courseDetails= async (id)=>{
     try{
         

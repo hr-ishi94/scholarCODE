@@ -15,6 +15,7 @@ const Login = () => {
 
     const dispatch = useDispatch()
     const navigate = useNavigate()
+    
 
     const [authData, setAuthData] = useState({
         email:"",
@@ -48,6 +49,7 @@ const Login = () => {
                 }else{
                     toast.success('Successfully logged in')
                     navigate('/')
+                    
                     localStorage.setItem('access',res.payload.access)
                     localStorage.setItem('refresh',res.payload.refresh)
                 }
@@ -72,7 +74,7 @@ const Login = () => {
                 <p className='mx-5 mt-5'>Already have an account? <Link to={'/user/signup/'}>Signup</Link> </p>
                 <div className='p-5'>
 
-                <Form onSubmit={(e)=>handleSubmit(e)}>
+                <Form onSubmit={(e)=>handleSubmit(e)} className='text-center'>
                     
                     <Form.Group className="mb-3" controlId="formGroupEmail">
                         <Form.Control type="email" name='email' value={authData.email} onChange={handleChange} placeholder="Email" size='lg'/>
@@ -80,7 +82,7 @@ const Login = () => {
                     <Form.Group className="mb-3" controlId="formGroupPassword">
                         <Form.Control type="password" name='password' value={authData.password} onChange={handleChange} placeholder="Password" size='lg'/>
                     </Form.Group>
-                    <Button className='signupButton' variant='' type='submit'>Login</Button>
+                    <Button className=' p-2 w-75 text-light ' style={{backgroundColor:'#12A98E'}} variant='' type='submit'>Login</Button>
                     
                     <br />
                     {/* <h3 className='text-center p-5 '>or</h3> */}

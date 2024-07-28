@@ -148,6 +148,17 @@ export const MentorWallet = async (mentor_id) =>{
     }
 }
 
+export const MentorWalletPost = async (mentor_id,formData) =>{
+    try{
+        const res = await axiosCourseInstance.post(`mentor_wallet/${mentor_id}/`,formData)
+        if (res.status === 200){
+            return res.data
+        }
+    }catch (error){
+        console.log("Error while fetching mentor's wallet",error)
+    }
+}
+
 export const MentorWalletPatch = async (mentor_id,formData) =>{
     try{
         const res = await axiosCourseInstance.patch(`mentor_wallet/${mentor_id}/`,formData)

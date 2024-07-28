@@ -70,6 +70,14 @@ class Transaction(models.Model):
     def __str__(self):
         return f'Transaction {self.id}: {self.user.email} to Admin {self.admin.email} for Rs. {self.amount} '
 
+class AdminWallet(models.Model):
+    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='admin_wallet')
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f'Admin {self.admin.email} Wallet'
+
+
 class EnrolledCourse(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     course = models.ForeignKey(MentorCourses, on_delete=models.CASCADE)

@@ -30,6 +30,9 @@ const AllEnrolledCoursesSlice = createSlice({
                 state.enrolls[index] = formData;
             }
             console.log('hrishi2',state.enrolls)
+        },
+        clearAllEnrolls:(state)=>{
+            state.enrolls = []
         }
     },
     extraReducers:(builder)=>{
@@ -53,5 +56,5 @@ const AllEnrolledCoursesSlice = createSlice({
     }
 })
 
-export const { newEnroll ,enrollPatch} = AllEnrolledCoursesSlice.actions
+export const { newEnroll ,enrollPatch, clearAllEnrolls} = AllEnrolledCoursesSlice.actions
 export default AllEnrolledCoursesSlice.reducer

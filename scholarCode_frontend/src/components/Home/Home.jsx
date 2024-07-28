@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import bannerimage from '../../assets/banner-image.jpg'
 import './Home.css'
+import { useDispatch, useSelector } from 'react-redux';
+import { jwtDecode } from 'jwt-decode';
+import { fetchUser } from '../../Redux/Slices/UserDetailsSlice';
 
 const Home = () => {
+    const UserToken = useSelector((state)=>state.UserToken)
+    const UserSelector = useSelector((state)=>state.User)
+    const access = UserToken?.access||null
+    const user_id = access?jwtDecode(access).user_id:null
+    const dispatch = useDispatch()
+    
+    
+    console.log(UserSelector,'llo')
   return (
     <div className='banner'>
         

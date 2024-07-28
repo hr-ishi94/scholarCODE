@@ -6,6 +6,7 @@ import './Mentors.css'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
+import Loader from '../Utils/Loader'
 
 const Mentors = () => {
     const [mentorsList, setMentorsList] = useState([])
@@ -14,11 +15,11 @@ const Mentors = () => {
     
     useEffect(() => {
     dispatch(fetchMentors())
-    if(mentors?.length!==0){
-
-      setMentorsList(mentors)
-    }
+    
     }, [dispatch])
+    if (status=== 'loading'){
+        return <Loader/>
+    }
     
   return (
     <>
@@ -38,7 +39,7 @@ const Mentors = () => {
             </Row>
 
             <Row className='m-5 text-center'>
-                {mentorsList.filter((mentor)=>mentor.is_staff==true && mentor.is_active == true ).map((mentor)=>(
+                {mentors.filter((mentor)=>mentor.is_staff==true && mentor.is_active == true ).map((mentor)=>(
 
                 <Col sm={4}>
                     <img className="mentor_img " src={mentor.profile_img?mentor.profile_img:mentor_img} alt="" />

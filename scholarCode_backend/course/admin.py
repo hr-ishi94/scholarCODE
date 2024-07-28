@@ -8,6 +8,7 @@ admin.site.register(MentorTimes)
 admin.site.register(ReviewMarks)
 admin.site.register(Transaction)
 admin.site.register(Mentor_wallet)
+admin.site.register(AdminWallet)
 admin.site.register(MentorTransaction)
 
 

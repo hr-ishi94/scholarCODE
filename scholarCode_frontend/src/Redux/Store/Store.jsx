@@ -23,6 +23,7 @@ import AdminTransactionSlice from "../Slices/AdminTransactionSlice";
 import MentorTimingSlice from "../Slices/MentorTimingSlice";
 import MentorTransactionSlice from "../Slices/mentorSide/MentorTransactionSlice";
 import MentorWalletSlice from "../Slices/mentorSide/MentorWalletSlice";
+import AdminWalletSlice from "../Slices/AdminWalletSlice";
 
 const rootReducer = combineReducers({
     userList :usersListSlice,
@@ -46,7 +47,7 @@ const rootReducer = combineReducers({
     ZegoCall:ZegoCallSlice,
     AdminTransactions:AdminTransactionSlice,
     MentorTimings:MentorTimingSlice,
-
+    AdminWallet:AdminWalletSlice,
     MentorTransactions: MentorTransactionSlice,
     MentorWallet :MentorWalletSlice,
 

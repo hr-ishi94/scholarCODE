@@ -7,9 +7,7 @@ class MentorCourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MentorCourses
-        fields = ['id','mentor','course']
-        
-
+        fields = ['id','mentor','course']        
 
 class MentorTimesSerializer(serializers.ModelSerializer):
 
@@ -18,15 +16,9 @@ class MentorTimesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EnrollSerializer(serializers.ModelSerializer):
-    # next_review_time = MentorTimesSerializer(read_only = True) 
     class Meta:
         model = EnrolledCourse
         fields='__all__'
-
-    # def update(self, instance, validated_data):
-    #     instance.certificate = validated_data.get('certificate', instance.certificate)
-    #     instance.save()
-    #     return instance
 
 class AllEnrollSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -48,6 +40,11 @@ class TransactionSerializer(serializers.ModelSerializer):
     # payment = RazorpaySerializer()
     class Meta:
         model = Transaction
+        fields = '__all__'
+
+class AdminWalletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdminWallet
         fields = '__all__'
 
 

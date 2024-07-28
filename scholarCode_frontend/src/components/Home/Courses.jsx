@@ -42,18 +42,21 @@ const Courses = () => {
   const {courses,status,error} = useSelector((state)=>state.Courses)
   const MentorCourseSelector = useSelector((state)=>state.MentorCourses)
   const EnrolledCourseSelector = useSelector((state) => state.AllEnrolls)
-  
-  const access_token = localStorage.getItem('access')
-  const user = access_token?jwtDecode(access_token):null
-  const user_id = user?user.user_id:null
-  
+  const UserTokenSelector = useSelector((state)=>state.UserToken)
+  const user = UserTokenSelector
+  const access = UserTokenSelector.access?jwtDecode(UserTokenSelector.access):null
+  const user_id = access?access.user_id:null
   const dispatch = useDispatch()
   
   useEffect(()=>{
     dispatch(fetchMentorCourse())
     dispatch(fetchCoursesList())
-    dispatch(fetchAllEnrolledCourses())
+    if (user && user.is_authenticated){
+      console.log('hey there')
+      dispatch(fetchAllEnrolledCourses())
+    }
   },[dispatch])
+  console.log(EnrolledCourseSelector.enrolls,user_id,'lop')
 
   const CourseIdSet = new Set()
   const EnrolledSet = new Set()
@@ -65,7 +68,7 @@ const Courses = () => {
     MentorCourseSet.add(course.id)
   })
  
-  EnrolledCourseSelector.enrolls.map((course)=>EnrolledSet.add(course.course.course))
+  user_id && EnrolledCourseSelector.enrolls.filter((course)=>course.user.id === user_id).map((course)=>EnrolledSet.add(course.course.course))
   
   
   const activeCourses = courses.filter((course)=>course.status === true && CourseIdSet.has(course.id))

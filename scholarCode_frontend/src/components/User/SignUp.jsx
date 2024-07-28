@@ -88,7 +88,7 @@ const SignUp = () => {
             <p className='mx-5 mt-5' >Already have an account? <Link to={'/user/login/'}>Login</Link> </p>
             <div className='p-5'>
 
-            <Form onSubmit={(e)=>handleSubmit(e)}>
+            <Form onSubmit={(e)=>handleSubmit(e)} className='text-center'>
                 <Form.Group className="mb-3" controlId="formGroupusername">
                     <Form.Control type="username" placeholder="Enter username" name='username' value={formData.username} onChange={handleChange} size='lg' />
                 </Form.Group>
@@ -101,7 +101,8 @@ const SignUp = () => {
                 <Form.Group className="mb-3" controlId="formGroupConfirmPassword">
                     <Form.Control type="password" placeholder="Confirm Password" name='confirm_password' onChange={handleChange} value={formData.confirm_password} size='lg'/>
                 </Form.Group>
-                <Button className='signupButton' type='submit'>Signup</Button>
+                <br />
+                <Button className=' w-75 p-2 text-light' style = {{backgroundColor:'#12A98E'}} variant='' type='submit'>Signup</Button>
                 <br />
                 {/* <h3 className='text-center p-5 '>or</h3> */}
             </Form>

@@ -15,6 +15,8 @@ import { jwtDecode } from 'jwt-decode';
 import { fetchUser, logoutUser } from '../../Redux/Slices/UserDetailsSlice';
 import { toast } from 'react-toastify';
 import Loader from '../../components/Utils/Loader';
+import { clearEnrolls } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
+import { clearAllEnrolls } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 
 const Homelayout = () => {
   const navigate = useNavigate()
@@ -24,7 +26,7 @@ const Homelayout = () => {
   const userAuthenticated = userSelector.is_authenticated
   
   useEffect(()=>{
-    const fetchUserData = async()=>{
+    const fetchUserData = async(user)=>{
       
       try{
         if(userSelector.access){
@@ -32,21 +34,37 @@ const Homelayout = () => {
           const access = userSelector.access
           const decodedToken = jwtDecode(access)
           const userId = decodedToken.user_id
-          await dispatch(fetchUser(userId))
+          dispatch(fetchUser(userId))
+          
+
         }
       }
       catch(error){
         console.log("not logged in")
       }
     }
-    fetchUserData()
+    fetchUserData(user)
     
   },[userSelector,dispatch])
+
+  useEffect(() => {
+    if (userAuthenticated && !user.first_name) {
+      setTimeout(() => {
+        toast.warning('Please update your profile details!');
+      }, 6000); // Delay of 3 seconds
+    }
+  }, [user]);
+
+  // if (user && user.first_name){
+  //   toast.warning('Please update your profile details')
+  // }
   
   
   const handleLogout = useCallback(()=>{
     dispatch(userLogout())
     dispatch(logoutUser())
+    dispatch(clearEnrolls())
+    dispatch(clearAllEnrolls())
     navigate('/')
     toast.success("Logout successful")
     localStorage.removeItem('access')
@@ -97,7 +115,7 @@ const Homelayout = () => {
       
       <Outlet/>
 
-      <div className='footer p-5'>
+      <div className='footer p-5' style={{marginTop:'14em'}}>
 
             <br />
             <Row>

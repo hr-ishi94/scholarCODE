@@ -123,6 +123,11 @@ export const initialstate = {
         status:'idle',
         error:null
     },
+    Admin_wallet :{
+        wallet:[],
+        status:'idle',
+        error:null
+    },
     Mentor_wallet :{
         wallet :[],
         status:'idle',

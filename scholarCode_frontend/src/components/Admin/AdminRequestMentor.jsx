@@ -12,11 +12,13 @@ import { mentorApprovalInstance, mentorDeleteInstance, mentorStatusInstance } fr
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Loader from '../Utils/Loader'
+import { MentorWalletPost } from '../../Axios/MentorServer/MentorServer'
 
 const AdminRequestMentor = () => {
 
   const [approvalModalShow, setApprovalModalShow] = useState(false);
   const [rejectModalShow, setRejectModalShow] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const params = useParams()
   const dispatch = useDispatch()
@@ -35,6 +37,11 @@ const AdminRequestMentor = () => {
 
    if (status === "loading") {
     return <Loader />;
+  }
+
+  
+  if(isLoading){
+    return <Loader/>
   }
 
   
@@ -81,6 +88,7 @@ const AdminRequestMentor = () => {
         onHide={() => setApprovalModalShow(false)}
         mentor={mentor}
         id= {params.id}
+        setIsLoading={setIsLoading}
       />
 
       <RejectModal show={rejectModalShow}
@@ -99,12 +107,19 @@ export default AdminRequestMentor
 const ApprovalModal=(props)=> {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  
 
   const handleApproval= async ()=>{
+    props.setIsLoading(true);
     try{
       const id = props.id
       const updateStaff = {is_staff:true}
+      // wallet form data for mentor
+      const formData = {
+        mentor:props.mentor.id
+      }
       const res = await mentorApprovalInstance(id,updateStaff)
+      const ne = await MentorWalletPost(props.mentor.id,formData)
       console.log("new mentor selected")
       dispatch(mentorApproval())
       console.log("new mentor selected")
@@ -112,9 +127,12 @@ const ApprovalModal=(props)=> {
       toast.success(`${props.mentor.first_name} have been approved. Verification mail has been sent to the mentor.`)
     }catch(error){
       toast.error("Failed to accept the mentor")
+    }finally{
+      props.setIsLoading(false)
     }
   
   }
+
 
   return (
     <Modal
