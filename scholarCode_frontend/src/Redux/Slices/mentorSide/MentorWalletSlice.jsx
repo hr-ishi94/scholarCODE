@@ -17,12 +17,25 @@ const MentorWalletSlice = createSlice({
     name:'mentor_wallet',
     initialState:initialstate.Mentor_wallet,
     reducers:{
-        patchWallet :(state,action)=>{
-            const index = state.wallet.findIndex((wallet)=>wallet.id === action.payload.id)
-            if (index !== -1){
-                state.wallet[index] = action.payload
+        patchWallet: (state, action) => {
+            // Debugging: Log the action payload
+            console.log('Action Payload:', action.payload);
+            if (!Array.isArray(state.wallet)) {
+                state.wallet = [];  // Initialize as an empty array if not already an array
             }
-        }
+            console.log(state.wallet,'hey')
+            
+            const index = state.wallet.findIndex((wlt) => wlt.id == action.payload.id);
+            if (index !== -1) {
+              state.wallet[index] = action.payload;
+            } else {
+              console.error('Wallet item not found');
+            }
+          },
+          clearWallet:(state)=>{
+            state.wallet = []
+          }
+        
 
     },
     extraReducers:(builder)=>{
@@ -42,5 +55,5 @@ const MentorWalletSlice = createSlice({
     }
 })
 
-export const {patchWallet} = MentorWalletSlice.actions
+export const {patchWallet,clearWallet} = MentorWalletSlice.actions
 export default MentorWalletSlice.reducer

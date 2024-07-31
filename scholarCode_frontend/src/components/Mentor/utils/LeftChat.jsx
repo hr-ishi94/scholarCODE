@@ -7,13 +7,17 @@ import { stringAvatar } from '../../../constants/mui'
 
 
 const LeftChat = ({Chat = ()=>{}}) => {
-  const userId = jwtDecode(localStorage.getItem('access')).user_id
+  const Mentor_token = useSelector((state)=>state.MentorToken) 
+  const User_token = useSelector((state)=>state.UserToken) 
+  const access = Mentor_token?.access || User_token?.access;
+  console.log(access,'lo')
+  const userId = jwtDecode(access).user_id
   const [chatUsers, setChatUsers] = useState([])
   useEffect(()=>{
     getChatUsers(userId)
   },[])
 
-
+  console.log(chatUsers,'hey')
   const getChatUsers = async (userId)=>{
     try{
 

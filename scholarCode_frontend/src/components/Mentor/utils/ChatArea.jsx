@@ -3,7 +3,7 @@ import Messages from './Messages';
 import { Avatar } from '@mui/material';
 import {jwtDecode} from 'jwt-decode';
 import { ChatMsg } from '../../../Redux/Slices/Userside/ChatSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SOCKET } from '../../../Axios/Urls/EndPoints';
 import { Badge } from 'antd';
 import { Button, Col, Row } from 'react-bootstrap';
@@ -11,7 +11,10 @@ import InputEmoji from 'react-input-emoji';
 import { useNavigate } from 'react-router-dom';
 
 const ChatArea = ({ user, username }) => {
-  const access = localStorage.getItem('access');
+  const Mentor_token = useSelector((state) => state.MentorToken);
+  const User_token = useSelector((state) => state.UserToken);
+  console.log('mentor',Mentor_token,'user',User_token)
+  const access = Mentor_token?.access || User_token?.access;
   const userId = jwtDecode(access).user_id;
   const [messages, setMessages] = useState([]);
   const [socket, setSocket] = useState(null);
@@ -50,7 +53,9 @@ const ChatArea = ({ user, username }) => {
       const newSocket = new WebSocket(`${SOCKET}/${user}/?token=${access}`);
       setSocket(newSocket);
 
-      newSocket.onopen = () => console.log('WebSocket Connected');
+      newSocket.onopen = () => {
+        console.log('WebSocket Connected');
+      };
 
       newSocket.onerror = (error) => {
         console.log('WebSocket error:', error);
@@ -58,7 +63,7 @@ const ChatArea = ({ user, username }) => {
 
       newSocket.onclose = () => {
         console.log('WebSocket closed');
-        setTimeout(getSocket, 1000);
+        setTimeout(getSocket, 1000); // Attempt to reconnect after 1 second
       };
 
       newSocket.onmessage = (event) => {

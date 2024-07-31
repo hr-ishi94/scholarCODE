@@ -8,6 +8,7 @@ from rest_framework import generics,status
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from django.utils import timezone
+from decimal import Decimal
 
 class EnrollCourseView(generics.ListCreateAPIView):
     queryset = EnrolledCourse.objects.all()
@@ -259,30 +260,32 @@ def mentorWallet(request,mentor_id):
     elif request.method == 'PATCH':
         try:
             wallet = Mentor_wallet.objects.get(mentor_id = mentor_id)
+            wallet.amount = 0.00
+            wallet.save()
             data = request.data.copy()
             data['payment_date'] = timezone.now() 
             serializer = MentorWalletSerializer(wallet, data=data, partial = True)
             superuser = CustomUser.objects.filter(is_superuser=True).first()
-        
+            print(data)
             if serializer.is_valid():
                 serializer.save()
-                transaction = MentorTransaction.objects.create(
-                    mentor_wallet = wallet,
-                    amount = request.data.get('amount')
-                )
-                transaction_serializer = MentorTransactionSerializer(transaction)
-
-                admin_wallet, created = AdminWallet.objects.get_or_create(admin=superuser)
-
-                admin_wallet.balance -= data['amount']
-                admin_wallet.save()
-                admin_wallet_serializer = AdminWalletSerializer(admin_wallet)
-
-
                 response_data = {}
-                response_data['admin_wallet'] = admin_wallet_serializer.data
                 response_data['wallet'] = serializer.data
-                response_data['transaction'] = transaction_serializer.data
+                if 'amount' in data:
+                        
+                    transaction = MentorTransaction.objects.create(
+                        mentor_wallet = wallet,
+                        amount = Decimal(request.data.get('amount'))
+                    )
+                    transaction_serializer = MentorTransactionSerializer(transaction)
+
+                    admin_wallet, created = AdminWallet.objects.get_or_create(admin=superuser)
+                    admin_wallet.balance = Decimal(admin_wallet.balance)  # Ensure balance is Decimal
+                    admin_wallet.balance -= Decimal(data['amount']) # Subtract amount
+                    admin_wallet.save()
+                    admin_wallet_serializer = AdminWalletSerializer(admin_wallet)
+                    response_data['admin_wallet'] = admin_wallet_serializer.data
+                    response_data['transaction'] = transaction_serializer.data
 
                 return Response(response_data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

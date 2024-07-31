@@ -30,6 +30,7 @@ const MentorRootLayout = () => {
     const navigate = useNavigate()
 
     useEffect(()=>{
+      // dispatch()
         const fetchMentorDetails = async () =>{
             try{
                 if(selector.access){
@@ -51,7 +52,7 @@ const MentorRootLayout = () => {
     
     const handleClose =()=> setTimeSlotModal(false)
     const handleShow =()=> setTimeSlotModal(true)
-
+    // const [currentDate,setCurrentDate] = useState()
 
 
     const handleLogout = useCallback(()=>{
@@ -63,7 +64,7 @@ const MentorRootLayout = () => {
 
     },[dispatch])
 
-
+    
   return (
     <>    
     {(!selector.is_authenticated | !selector.type == 'mentor')?<Navigate to={'/mentor/login/'}/>:<>
@@ -148,12 +149,17 @@ function TimeSlots({ show, handleClose }) {
   const OpenCreateSlot = ()=> setCreateSlot(true)
   const CloseCreateSlot = ()=> setCreateSlot(false)
 
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0); 
+  const [minDate, setMinDate] = useState('');
 
   useEffect(() => {
   
     dispatch(fetchMentortimings(mentorId));
     dispatch(MentorLogin());
-  
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0];
+    setMinDate(formattedDate);
   }, [dispatch, mentorId]);
 
   const DateSet = new Set();
@@ -215,7 +221,9 @@ function TimeSlots({ show, handleClose }) {
       <Form.Select aria-label="Default select example" onChange={handleDateChange}>
         <option value="">Choose review date</option>
         {
-        DateList.map((date, index) => (
+        DateList
+        .filter((date) => new Date(date).setHours(0, 0, 0, 0) >= currentDate.getTime())
+        .map((date, index) => (
           
           <option key={index} value={date} >
             {date}
@@ -230,7 +238,9 @@ function TimeSlots({ show, handleClose }) {
             <>
               
                 <h5>
-                {filteredTimings.map((timing, index) => (
+                {filteredTimings
+                // .filter((timing)=>timing.date >= currentDate)
+                .map((timing, index) => (
                   
                       <Badge key={timing.id} bg="" style={{ backgroundColor: '#12A98E' }} className="p-1 mx-1">
                           {timing.time} 
@@ -256,7 +266,7 @@ function TimeSlots({ show, handleClose }) {
             <h5>New Time slots</h5>
             <Form.Group controlId="formDate">
               <Form.Label>Date</Form.Label>
-              <Form.Control type="date" name="date" onChange={handleChange} value={formData.date}/>
+              <Form.Control type="date" name="date" onChange={handleChange} value={formData.date} min={minDate}/>
             </Form.Group>
 
             <Form.Group controlId="formTime">

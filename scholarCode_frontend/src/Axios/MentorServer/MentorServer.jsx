@@ -1,7 +1,7 @@
 import { resetState } from "../../Redux/Slices/CoursesListSlice"
-import { axiosInstance, axiosCourseInstance, axiosCourseFormInstance } from "../Utils/AxiosInstances"
+import { axiosInstance, axiosCourseInstance, axiosCourseFormInstance, axiosFormInstance } from "../Utils/AxiosInstances"
 
-export const MentorRegister = async({first_name,last_name, email, username, designation, linkedin_profile, password,is_staff})=>{
+export const MentorRegister = async({first_name,last_name, email, username, designation, linkedin_profile, password,is_staff,is_active})=>{
     const newMentor = {
         first_name,
         last_name,
@@ -11,6 +11,7 @@ export const MentorRegister = async({first_name,last_name, email, username, desi
         linkedin_profile, 
         password,
         is_staff,
+        is_active
         
     }
     try{
@@ -182,5 +183,28 @@ export const MentorTransactions = async (wallet_id)=>{
     }
 }
 
+
+export const mentorRetryLogin = async (credentials) => {
+    try {
+      const response = await axiosFormInstance.post('api/mentor-retry-login/', credentials);
+    //   console.log(response.data)
+      return response.data; // Return data which includes token or other necessary info
+    } catch (error) {
+      console.error('Error logging in:', error.response ? error.response.data : error.message);
+      throw error; // Rethrow error to be handled by the calling function
+    }
+  };
+
+  export const mentorRetryUpdate = async (mentorData) => {
+    try {
+      // Assuming mentor ID is available in the mentorData object
+      const { id, ...data } = mentorData;
+      const response = await axiosFormInstance.put(`api/mentor-retry-update/${id}/`, data);
+      return response.data; // Return response data after update
+    } catch (error) {
+      console.error('Error updating mentor:', error.response ? error.response.data : error.message);
+      throw error; // Rethrow error to be handled by the calling function
+    }
+  };
 
 

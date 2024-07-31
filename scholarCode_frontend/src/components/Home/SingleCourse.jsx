@@ -97,9 +97,9 @@ const SingleCourse = () => {
     }
     try{
       const res = await addChatRoom(ids)
+      window.open(`${Vurl}chat/`)
       console.log(res)
       // navigate('/chat/')
-      window.open(`${Vurl}chat/`)
       
     }catch(error){
       console.log(error,"error in chat")

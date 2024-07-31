@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import { enrollPatch } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 
-const ReviewExtendModal = ({show,handleClose,course}) => {
+const ReviewExtendModal = ({show,handleClose,course, currentDate}) => {
     const [currDate, setcurrDate] = useState(course.next_review_date)
     const handleChange = (e)=>{
         const{ name, value } = e.target 
@@ -30,7 +30,7 @@ const ReviewExtendModal = ({show,handleClose,course}) => {
                 }
             }
 
-            console.log(res.data,'loooo')
+            // console.log(res.data,'loooo')
             dispatch(enrollPatch(payload))
             toast.success('Review extended Successfully')
             handleClose()
@@ -49,7 +49,7 @@ const ReviewExtendModal = ({show,handleClose,course}) => {
         <Modal.Body className='p-3'>
             
             Extend review to : 
-            <input type="date" name="next_review_date" id="" value={currDate}  onChange={handleChange}/>
+            <input type="date" name="next_review_date" id="" value={currDate}  onChange={handleChange} min={currentDate}/>
         
         
         </Modal.Body>

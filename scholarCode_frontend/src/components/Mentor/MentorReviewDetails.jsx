@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 import { enrollPut, fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
-import { MentorPatchReviewTimings, MentorPostReviewTimings, ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
+import { MentorPatchReviewTimings, MentorPostReviewTimings, MentorWalletPatch, ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
 import { EnrollCourse, EnrollPatch, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
 import { toast } from 'react-toastify';
 import { enrollPatch, fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
@@ -25,6 +25,7 @@ import signature from '../../assets/signature.png'
 import Badge from 'react-bootstrap/Badge';
 import { jwtDecode } from 'jwt-decode';
 import { fetchMentortimings, patchTime } from '../../Redux/Slices/MentorTimingSlice';
+import { fetchMentorWallet, patchWallet } from '../../Redux/Slices/mentorSide/MentorWalletSlice';
 
 const MentorReviewDetails = () => {
   
@@ -96,7 +97,6 @@ const MentorReviewDetails = () => {
     setShow(true)
     handleReviewButton()  
   };
-  
   const [extendModalShow,setExtendModalShow] = useState(false)
   
   const handleExtendShow = () => setExtendModalShow(true)
@@ -119,7 +119,18 @@ const MentorReviewDetails = () => {
     
     const isDisabled = !((currentTime >= currTime ) && (currentDate === CurrCourse.next_review_date))
     const [timeSlot,setTimeSlot] = useState(false)
-    
+
+    const ReviewTimingSlots = ReviewTimings.timings
+    .filter((timing) => {
+      if(CurrCourse.next_review_date === currentDate){
+        return timing.date === currentDate && timing.time > currentTime && !timing.booked
+      }
+      else{
+        return CurrCourse.next_review_date === timing.date && !timing.booked
+      }
+    }
+    )
+    console.log(ReviewTimingSlots,'loi')    
     
     const TimeChange = async (e, time,id) => {
       setCurrTime(time);
@@ -307,9 +318,9 @@ const MentorReviewDetails = () => {
       {currTime && !timeSlot ?<Button className='text-primary ' variant='' onClick={()=>setTimeSlot(true)}>Change Time</Button>:(
   <>
     <p className='text-secondary'>Available time slots:</p>
-    {ReviewTimings.timings.filter((timing) => timing.date === CurrCourse.next_review_date).length > 0 ? (
-      ReviewTimings.timings
-        .filter((timing) => (timing.date === CurrCourse.next_review_date )&& !timing.booked)
+    {ReviewTimingSlots.length > 0 ? (
+      ReviewTimingSlots
+        .filter((timing) => (timing.date === CurrCourse.next_review_date ) && !timing.booked)
         .map((timing) => (
           <Button key={timing.id} variant='' onClick={(e) => TimeChange(e, timing.time,timing.id)}>
             <Badge bg="" style={{ backgroundColor: '#12A98E' }} className="p-1 mx-1">
@@ -363,11 +374,11 @@ const MentorReviewDetails = () => {
       </Col>
       <Col sm={4}>
         <Button className='p-2' onClick={handleExtendShow}>Extend Review</Button>
-        <ReviewExtendModal show={extendModalShow} handleClose= {handleExtendClose} course= {CurrCourse}/>
+        <ReviewExtendModal show={extendModalShow} handleClose= {handleExtendClose} course= {CurrCourse} currentDate={currentDate}/>
       </Col>
       <Col>
         
-      <ReviewMarkModal handleClose={handleClose} show={show} CurrCourse = {CurrCourse} module={CurrCourse.curr_module} user={CurrCourse.user} course={CurrCourse.id} review_date= {CurrCourse.next_review_date} />
+      <ReviewMarkModal mentor_id ={mentorId} handleClose={handleClose} show={show} CurrCourse = {CurrCourse} module={CurrCourse.curr_module} user={CurrCourse.user} course={CurrCourse.id} review_date= {CurrCourse.next_review_date} />
       </Col>
       </Row>
 
@@ -431,8 +442,9 @@ const MentorReviewDetails = () => {
 export default MentorReviewDetails
 
 
-function ReviewMarkModal({handleClose,show,CurrCourse}) {
+function ReviewMarkModal({handleClose,show,CurrCourse,mentor_id}) {
   const CourseSelector = useSelector((state) =>state.Course)
+  const MentorWalletSelector = useSelector((state)=>state.MentorWallet)
   const [formData,setFormData] =useState({
     module:CurrCourse.current_module,
     user:CurrCourse.user.id,
@@ -467,7 +479,11 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
   
     return `${year}-${month}-${day}`;
   };
-
+  useEffect(()=>{
+    dispatch(fetchMentorWallet(mentor_id))
+    
+  },[dispatch])
+  console.log(MentorWalletSelector.wallet)
 
 
   const  enrollForm={
@@ -478,13 +494,21 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
     review_time: null,
     vcall_link:null
   }
-  
-
+  // console.log(mentorWalletForm,'loi')
   const handleSubmit = async()=>{
+
+    const mentorWalletForm = {
+      id :MentorWalletSelector.wallet.id,
+      mentor:mentor_id,
+      review_count: MentorWalletSelector.wallet.review_count + 1,
+      amount:MentorWalletSelector.wallet.review_count + 1 === 1 ? 0.00 : MentorWalletSelector.wallet.amount,
+      status: MentorWalletSelector.wallet.review_count + 1 === 1 ? 'pending' : MentorWalletSelector.wallet.status
+    }
     try{
       const res = await ReviewMarkPost(formData)
       const ne = await EnrollPatch(CurrCourse.user.id,enrollForm)
-      console.log(ne,'s.ll')
+      const walletPatch = await MentorWalletPatch(mentor_id,mentorWalletForm)
+      console.log(walletPatch,'s.ll')
       
       if (res.id){
         const payload = { 
@@ -498,7 +522,9 @@ function ReviewMarkModal({handleClose,show,CurrCourse}) {
             vcall_link:null
           } 
         };
+        
         dispatch(enrollPatch(payload));
+        dispatch(patchWallet(walletPatch.wallet))
         toast.success('Mark added successfully')
       }else {  
         toast.error('Enter mark in between 0 and 50')

@@ -82,9 +82,11 @@ export const mentorApprovalInstance = async(id,updateMentor)=>{
 
 }
 
-export const mentorDeleteInstance = async (id)=>{
+export const mentorDeleteInstance = async (id,{ custom_message: customMessage,link:link })=>{
     try{
-        const res = await axiosInstance.delete(`admin/mentor/${id}/`)
+        const res = await axiosInstance.delete(`admin/mentor/${id}/`,{
+            data: { custom_message: customMessage ,link:link }
+        })
         if (res.status === 200){
             return true
         }else{

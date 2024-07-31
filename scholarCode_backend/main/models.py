@@ -101,9 +101,11 @@ class CustomUser(AbstractBaseUser):
 
 class Mentor(CustomUser):
     designation = models.CharField(max_length=100)
-    course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True)
+    course_id = models.ForeignKey(Course,on_delete=models.CASCADE,null=True,blank=True)
     linkedin_profile = models.CharField(max_length=300)
     profile_img = models.ImageField(upload_to='mentor/uploads/',blank=True)
+    request_attempt = models.IntegerField(default=0,blank=True,null=True)
+    degree_certificate = models.FileField(upload_to='mentor/pdfs/',null=True, blank=True)
     
 class User(CustomUser):
     designation = models.CharField(max_length=100,blank=True)

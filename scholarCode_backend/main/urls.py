@@ -7,6 +7,10 @@ urlpatterns = [
 
     # refresh token 
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    path('api/mentor-retry-login/', views.MentorRetryLoginView.as_view(), name='mentor_retry_login'),
+    path('api/mentor-retry-update/<int:pk>/', views.MentorRetryUpdateView.as_view(), name='mentor_retry_update'),
+    
     # admin login
     path('admin/login/',views.AdminLogin.as_view(),name="admin_login"),
     path('admin/mentor/<int:pk>/',views.AdminMentorApproval.as_view(),name="admin_mentor_approval"),

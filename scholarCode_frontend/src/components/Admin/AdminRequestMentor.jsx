@@ -13,6 +13,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Loader from '../Utils/Loader'
 import { MentorWalletPost } from '../../Axios/MentorServer/MentorServer'
+import { Vurl } from '../../Axios/Urls/EndPoints'
 
 const AdminRequestMentor = () => {
 
@@ -60,20 +61,22 @@ const AdminRequestMentor = () => {
         <Col sm={8} >
           <h3>Mentor Details</h3>
           <br />
-          
+
             
-            <label className='m-2'>First name: {mentor.first_name}</label>
+            <label className='m-2'><h5>First name: {mentor.first_name}</h5></label>
             <br />
-            <label className='m-2'>Last name: {mentor.last_name}</label>
+            <label className='m-2'><h5>Last name: {mentor.last_name}</h5></label>
             <br />
-            <label className='m-2'>Email: {mentor.email}</label>
+            <label className='m-2'><h5>Email: {mentor.email}</h5></label>
             <br />
-            <label className='m-2'>Designation: {mentor.designation}</label>
+            <label className='m-2'><h5>Designation: {mentor.designation}</h5></label>
             <br />
-            <label className='m-2'>LinkedIn ID: {mentor.linkedin_profile}</label>
+            <label className='m-2'><h5>LinkedIn ID: {mentor.linkedin_profile}</h5></label>
             <br />
+            {mentor.degree_certificate && <Button href={mentor.degree_certificate} className='text-primary px-2' target='_blank' variant=''>Download Certificate</Button>}
             <br />
-            
+            <label className='m-2 text-danger'><h5>Request attempts: {mentor.request_attempt} out of 3</h5></label>
+            <br />
             <Button className='p-2 w-25 ' variant='success' onClick={() => setApprovalModalShow(true)}>Approve</Button>
             <Button className='p-2 w-25 mx-3' variant='danger' onClick={()=> setRejectModalShow(true)} > Reject </Button>
 
@@ -159,52 +162,57 @@ const ApprovalModal=(props)=> {
   );
 }
 
-const RejectModal=(props)=> {
+const RejectModal = (props) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [customMessage, setCustomMessage] = useState('');
 
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const handleRejection = async () => {
+    try {
+      const id = props.id;
+      const data = { custom_message: customMessage, link:`${Vurl}mentor/request/login/` }
+      const res = await mentorDeleteInstance(id,data );
+      dispatch(mentorReject());
+      navigate('/admin/mentors/');
+      if(props.mentor.request_attempt === 3){
 
-  const handleRejection = async ()=>{
+        toast.success(`${props.mentor.first_name} has been rejected successfully`);
+      }else{
+        toast.success(` Warning mail has been send to ${props.mentor.first_name}`);
 
-    try{
-
-      const id = props.id 
-      const res = await mentorDeleteInstance(id)
-      dispatch(mentorReject())
-      navigate('/admin/mentors/')
-      toast.success(`${props.mentor.first_name} have been rejected successfully`)
-
-    }catch(error){
-
-      toast.error('Failed to delete the mentor')
-      
+      }
+    } catch (error) {
+      toast.error('Failed to delete the mentor');
     }
-    
-  }
-
+  };
 
   return (
     <Modal
-    {...props}
-    size="lg"
-    aria-labelledby="contained-modal-title-vcenter"
-    centered
+      {...props}
+      size="lg"
+      aria-labelledby="contained-modal-title-vcenter"
+      centered
     >
-      <Modal.Header closeButton className='p-2'>
+      <Modal.Header closeButton className="p-2">
         <Modal.Title id="contained-modal-title-vcenter">
-        <h4 style={{color:"#12A98E"}}>Delete mentor Request</h4>
+          <h4 style={{ color: "#12A98E" }}>Reject Mentor Request</h4>
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body className='p-2'>
-       
-        <p>
-         Are you sure you want to Reject the mentor?
-        </p>
+      <Modal.Body className="p-2">
+        <p>Are you sure you want to reject the mentor?</p>
+        <textarea
+          className="form-control"
+          placeholder="Enter your message here"
+          value={customMessage}
+          onChange={(e) => setCustomMessage(e.target.value)}
+          rows="4"
+        />
       </Modal.Body>
-      <Modal.Footer className='p-2'>
-        <Button onClick={handleRejection} className='p-1' variant='warning'>Confirm</Button>
+      <Modal.Footer className="p-2">
+        <Button onClick={handleRejection} className="p-1" variant="warning">
+          Confirm
+        </Button>
       </Modal.Footer>
     </Modal>
   );
-}
-
+};

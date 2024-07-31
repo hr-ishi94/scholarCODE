@@ -130,7 +130,8 @@ class ReviewMarks(models.Model):
 class Mentor_wallet(models.Model):
     mentor = models.ForeignKey(Mentor, on_delete=models.CASCADE)
     review_count = models.IntegerField(default=0,blank=True,null = True )
-    amount = models.DecimalField(max_digits=10, decimal_places=2,blank = True, null = True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2,blank = True, default=0)
+    balance = models.DecimalField(max_digits=10, decimal_places=2,blank = True, default=0)
     payment_date = models.DateTimeField(auto_now_add=True,blank=True, null = True)
     status = models.CharField(max_length=10, choices=(('pending', 'Pending'), ('completed', 'Completed')), default='pending')
 

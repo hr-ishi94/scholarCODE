@@ -1,6 +1,6 @@
 from rest_framework import generics,status
 from .models import Mentor, User, Category, Course, Module, Task
-from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, UserSerializerWithToken, TaskSerializer,AdminLoginSerializer,MentorSerializerWithToken,UserLoginSerializer,MentorLoginSerializer
+from .serializers import MentorSerializer, UserSerializer, CategorySerializer, CourseSerializer, UserSerializerWithToken, TaskSerializer,AdminLoginSerializer,MentorSerializerWithToken,UserLoginSerializer,MentorLoginSerializer,MentorRetrySerializer
 
 from rest_framework.response import Response
 from rest_framework.decorators import api_view,authentication_classes,permission_classes
@@ -22,6 +22,7 @@ from django.conf import settings
 from django.views.generic import View
 from django.db import transaction
 from django.db.utils import IntegrityError
+from django.contrib.auth import authenticate
 
 
 
@@ -65,7 +66,36 @@ class MentorLogin(generics.CreateAPIView):
             data = request.data,context = {'request':request}
         )
         serializer.is_valid(raise_exception = True)
-        return Response(serializer.data,status= status.HTTP_200_OK)
+        return Response(serializer.data,status = status.HTTP_200_OK)
+
+class MentorRetryLoginView(generics.GenericAPIView):
+    serializer_class = MentorRetrySerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        mentor = serializer.validated_data['mentor']
+        
+        # Return the email, username, and password (password as write-only, so use directly from request)
+        response_data = {
+            'id':mentor.id,
+            'email': mentor.email,
+            'username': mentor.username,
+            'password': request.data.get('password')  # Include password from request
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+class MentorRetryUpdateView(generics.UpdateAPIView):
+    queryset = Mentor.objects.all()
+    serializer_class = MentorSerializer
+
+    def put(self, request, *args, **kwargs):
+        mentor = self.get_object()
+        serializer = self.get_serializer(mentor, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 # GET, POST mentors entire mentors
@@ -99,56 +129,84 @@ class MentorDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
-    queryset =Mentor.objects.all()
+    queryset = Mentor.objects.all()
     serializer_class = MentorSerializer
-    # authentication_classes =[JWTAuthentication]
-    # permission_classes = [AdminOnlyPermission,IsAuthenticated]
-    
-    def put (self,request, *args, **kwargs):
-        data = request.data
-        print(data,'loi')
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [AdminOnlyPermission, IsAuthenticated]
 
-        try:
-            Mentor.objects.filter(pk = kwargs['pk']).update(is_staff = data['is_staff'])
-            mentor = Mentor.objects.get(pk=kwargs['pk'])
-            print(mentor.pk,"dsfsdfdskkkkk")
-            email_subject = 'Mentor Request Accepted'
-            message =render_to_string("mentor_activate.html",{
-                'mentor':mentor,
-                'domain':'127.0.0.1:8000',
-                'uid':urlsafe_base64_encode(force_bytes(mentor.pk)),
-                'token':generate_token.make_token(mentor)
-            })
-            # print(message)
-            email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER,[mentor.email] )
-            email_message.send()
-            serialize = MentorSerializerWithToken(mentor,many=False)
-            return Response(serialize.data)
-        
-        except Exception as e:
-            message = {'details':e}
-            print(e)
-            return Response(message,status=status.HTTP_400_BAD_REQUEST)
-        
-    def delete(self, request, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
+        data = request.data
         try:
             mentor = Mentor.objects.get(pk=kwargs['pk'])
-            mentor.delete()
-            print(mentor)
-            email_subject = 'Mentor Request Rejected'
-            message = render_to_string("mentor_reject.html", {
-                'mentor': mentor,
-                'domain': '127.0.0.1:8000',
-                'uid': urlsafe_base64_encode(force_bytes(mentor.pk)),
-                'token': generate_token.make_token(mentor)
-            })
-            print(message,'klo')
-            email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [mentor.email])
-            email_message.send()
-            return Response({'message': 'Mentor rejected email sent successfully'}, status=status.HTTP_200_OK   )
+            if 'is_staff' in data:
+                mentor.is_staff = data['is_staff']
+                mentor.is_active = False
+                mentor.request_attempt = 0 if data['is_staff'] else mentor.request_attempt
+                mentor.save()
+
+                if mentor.is_staff:
+                    email_subject = 'Mentor Request Accepted'
+                    message = render_to_string("mentor_activate.html", {
+                        'mentor': mentor,
+                        'domain': '127.0.0.1:8000',
+                        'uid': urlsafe_base64_encode(force_bytes(mentor.pk)),
+                        'token': generate_token.make_token(mentor)
+                    })
+                    email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [mentor.email])
+                    email_message.send()
+                    serialize = MentorSerializerWithToken(mentor, many=False)
+                    return Response(serialize.data, status=status.HTTP_200_OK)
+                else:
+                    return Response({'message': 'Mentor status updated'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'message': 'is_staff field is required'}, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             message = {'details': str(e)}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, *args, **kwargs):
+        data = request.data
+        try:
+            mentor = Mentor.objects.get(pk=kwargs['pk'])
+            mentor.request_attempt += 1
+            custom_message = data.get('custom_message', '')
+            link = data.get('link','')
+            print(custom_message,link,'kii')
+
+            if mentor.request_attempt >= 3:
+                email_subject = 'Mentor Request Rejected'
+                message = render_to_string("mentor_reject.html", {
+                    'mentor': mentor,
+                    'domain': '127.0.0.1:8000',
+                    'uid': urlsafe_base64_encode(force_bytes(mentor.pk)),
+                    'token': generate_token.make_token(mentor),
+                    'custom_message': custom_message,
+                    
+                })
+                mentor.delete()
+                email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [mentor.email])
+                email_message.send()
+                return Response({'message': 'Mentor rejected after 3 attempts'}, status=status.HTTP_200_OK)
+            else:
+                mentor.save()
+                email_subject = 'Mentor Request Rejected'
+                message = render_to_string("mentor_retry.html", {
+                    'mentor': mentor,
+                    'domain': '127.0.0.1:8000',
+                    'uid': urlsafe_base64_encode(force_bytes(mentor.pk)),
+                    'token': generate_token.make_token(mentor),
+                    'custom_message': custom_message,
+                    'link':link
+                })
+                email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [mentor.email])
+                email_message.send()
+                return Response({'message': 'Mentor request rejected, retry attempt: {}'.format(mentor.request_attempt)}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            message = {'details': str(e)}
+            return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
 
 class MentorActivateAccountView(View):
     def get(self,request,uidb64,token):

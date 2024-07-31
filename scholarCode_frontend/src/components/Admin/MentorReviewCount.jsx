@@ -2,48 +2,60 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Badge, Button, Card, Modal, Table } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { addTransaction, fetchMentorTransactions } from '../../Redux/Slices/mentorSide/MentorTransactionSlice'
-import { fetchMentorWallet, patchWallet } from '../../Redux/Slices/mentorSide/MentorWalletSlice'
+import { clearWallet, fetchMentorWallet, patchWallet } from '../../Redux/Slices/mentorSide/MentorWalletSlice'
 import { MentorWalletPatch } from '../../Axios/MentorServer/MentorServer'
 import { toast } from 'react-toastify'
+import Decimal from 'decimal.js'
 
 const MentorReviewCount = ({mentor_id}) => {
 
   const WalletSelector = useSelector((state)=>state.MentorWallet)
   const TransactionSelector = useSelector((state)=>state.MentorTransactions)
   const dispatch = useDispatch()
+
   useEffect(()=>{
     dispatch(fetchMentorWallet(mentor_id))
     const wallet_id = WalletSelector && WalletSelector.wallet.id
     dispatch(fetchMentorTransactions(wallet_id))  
+
   },[dispatch])
 
-  const wallet = WalletSelector?.wallet
-
+  const wallet = WalletSelector && WalletSelector.wallet
+  console.log(WalletSelector,'kkk')
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const reviewCount = wallet?.review_count || "0";
+  const balanceValue = wallet?.balance || '0';
+
+  const amount = new Decimal(300).times(reviewCount);
+  const balance = new Decimal(balanceValue).plus(amount);
+
   const formData = {
+    id: wallet.id,
     mentor : mentor_id,
-    review_count :0,
-    amount : 300,
-    status :'completed'
+    review_count : 0,
+    amount: amount.toFixed(2),
+    balance: balance.toFixed(2),
+    status : 'completed'
   }
 
   
 
   return (
     <div>
-      {/* {!wallet.status === 'pending' && */}  
+      {wallet.status === 'pending' &&  
       <div>
         <Card style={{ width: '18rem', backgroundColor:'#BCFFDB' }} className='p-2 text-center w-100 h-100 my-3 py-3' >
           <Card.Body>
             <Card.Title><strong> Mentor Wallet</strong></Card.Title>
-            {/* <br /> */}
+            <br />
             <Card.Text>
-              <h6>Mentor Balance Review Count : {formData.review_count}Nos</h6>
-              <h6>Mentor Payment Balance : Rs {formData.amount} </h6>
+              <h6>Mentor Balance Review Count : {wallet.review_count}Nos</h6>
+              <h5>Mentor Payment Balance : Rs {amount.toFixed(2)} </h5>
+              <h6>Mentor Wallet: Rs { balance.toFixed(2)} </h6>
               <h6>Payment Status :  <Badge pill bg="primary" className='p-1'>Pending</Badge></h6>
               <Button className='p-1 text-light' style={{backgroundColor:'#12A98E'}} variant='' onClick={handleShow}>Already Paid?</Button>
             </Card.Text>
@@ -52,7 +64,7 @@ const MentorReviewCount = ({mentor_id}) => {
         </Card>
         <PaymentModal handleClose={handleClose} show={show}  wallet = {WalletSelector.wallet} formData={formData}/>
     </div>
-    {/* }  */}
+     }  
     <div>
 
         <Table striped bordered hover className='text-center'>
@@ -67,8 +79,10 @@ const MentorReviewCount = ({mentor_id}) => {
         </tr>
       </thead>
       <tbody >
-        {TransactionSelector.transactions && TransactionSelector.transactions
-        // .sort((a,b)=>a.timestamp - b.timestamp)
+        {TransactionSelector.transactions && [...TransactionSelector.transactions]
+        .filter((wlt)=>wlt.mentor_wallet.id === wallet.id)
+        .sort((a,b)=>new Date(b.timestamp) - new Date(a.timestamp))
+        .slice(0,10)
         .map((txn,index)=>(
 
         <tr key = {index}>
@@ -94,13 +108,14 @@ function PaymentModal({show,handleClose, wallet,formData}) {
   const handleSubmit = useCallback(async()=>{
     try{
       const res = await MentorWalletPatch(wallet.mentor,formData)
+      console.log(res,'kkki')
       if (res.wallet.id ){
         toast.success('Confirmed Payment')
         dispatch(addTransaction(res.transaction))
+        console.log(res.wallet,'loi')
         dispatch(patchWallet(res.wallet))
         handleClose()
       }
-      console.log(res,'loii')
     }
     catch(error){
       console.log(error,'kloi')

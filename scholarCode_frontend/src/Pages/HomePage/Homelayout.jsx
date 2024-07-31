@@ -115,7 +115,7 @@ const Homelayout = () => {
       
       <Outlet/>
 
-      <div className='footer p-5' style={{marginTop:'14em'}}>
+      <div className='footer p-5' style={{marginTop:'20em'}}>
 
             <br />
             <Row>

@@ -43,6 +43,8 @@ import AdminReviewDetails from './components/Admin/AdminReviewDetails';
 import { Tooltip } from 'react-tooltip';
 import AdminDashboard from './components/Admin/AdminDashboard';
 import MentorDashboard from './components/Mentor/MentorDashboard';
+import MentorRetryLogin from './components/Mentor/MentorRetryLogin';
+import MentorRetry from './components/Mentor/MentorRetry';
 
 
 
@@ -58,8 +60,10 @@ function App() {
 
             <Route path='admin/login/' element={<AdminLogin/>}></Route>
             <Route path='mentor/login/' element={<LoginMentor/>}></Route>
-          
+            <Route path='mentor/request/login/' element={<MentorRetryLogin/>}></Route>
+            
           </Route>
+
           
           {/* Admin Root Layout */}
           <Route element={<AdminRootLayoot/>}>
@@ -94,8 +98,10 @@ function App() {
           </Route>
 
           <Route element={<ChatScreenLayout/>}>
-          <Route path='/chat/' element= {<Chat/>}></Route>
-          <Route path='/meeting/:userid/:mentorid/:courseid/' element={<ZegoCall/>}></Route>
+            <Route path='/chat/' element= {<Chat/>}></Route>
+            <Route path='/meeting/:userid/:mentorid/:courseid/' element={<ZegoCall/>}></Route>
+            <Route path='mentor/request/form/' element={<MentorRetry/>}></Route>
+          
 
           </Route>
 

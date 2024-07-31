@@ -9,6 +9,7 @@ import { Button } from 'react-bootstrap';
 import { MentorRegister } from '../../Axios/MentorServer/MentorServer';
 import { toast } from 'react-toastify';
 import { ValidationError } from 'yup';
+import Loader from '../Utils/Loader';
 
 const JoinMentor = () => {
     const [formData, setFormData] = useState({
@@ -22,12 +23,13 @@ const JoinMentor = () => {
         password:"",
         confirm_password:"",
         is_staff:false,
-        isActive:false
+        is_active:true
         
     })
 
     const [signupError,setSignupError] = useState('')
     const [loading, setLoading] = useState(false)
+    const [submit, setSubmit] = useState(false)
 
     if(signupError){
         toast.error(signupError)
@@ -57,12 +59,13 @@ const JoinMentor = () => {
         
         if(isFormValid){
             try{
+                setLoading(true)   
                 await mentorSchema.validate(formData,{ abortEarly: false })
                 const registrationResponse = await MentorRegister(
                     formData
                 )
                 if(registrationResponse.id){
-                        setLoading(true)   
+                    setSubmit(true)
                     }
                     
                 if (registrationResponse.data.email){
@@ -81,11 +84,18 @@ const JoinMentor = () => {
                 }
                 throw error
             }
+            finally{
+                setLoading(false)
+            }
         }else{
             setSignupError("Fill all fields")
             
         }
     },[formData])
+
+    if (loading === true){
+        return <Loader/>
+    }
 
   return (
     <div className='container text-center p-5'>
@@ -98,7 +108,7 @@ const JoinMentor = () => {
                     <input type="file" id="myFile" value={formData.profile_img} onChange={handleChange} name="profile_img"></input> */}
                 </Col>
 
-                {(!loading)?
+                {(!submit)?
                     <Col sm={6}>
                     <br />
                     <Form.Group className="mb-3" controlId="formGroupfirst_name">

@@ -1,0 +1,17 @@
+{% autoescape off %}
+Hi {{ mentor.first_name }},
+
+Upon verification by the Admin, the details given below should corrected and please fill up the form given below.
+
+1.{{custom_message}}
+
+
+link-- {{link}}
+{% if mentor.request_attempt < 3 %}
+Note: You have used {{mentor.request_attempt }} out of 3 attempts. 
+{% else %}
+Note: This is your final attempt
+{% endif %}
+-scholarCODE
+
+{% endautoescape %}

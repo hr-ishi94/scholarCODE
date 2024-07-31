@@ -112,7 +112,29 @@ class MentorLoginSerializer(serializers.ModelSerializer):
             'refresh_token':str(mentor_token.get('refresh')),
 
         }
+    
+class MentorRetrySerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=150)
+    password = serializers.CharField(max_length=150, write_only=True)
+
+    class Meta:
+        model = Mentor
+        fields = ['email', 'password']
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+        request = self.context.get('request')
+        mentor = authenticate(request, username=email, password=password)
         
+        if not mentor:
+            raise AuthenticationFailed("Invalid credentials")
+
+        # Include the authenticated mentor instance in the validated data
+        attrs['mentor'] = mentor
+        return attrs
+
+
 # mentor model serializer
 class MentorSerializer(serializers.ModelSerializer):
     class Meta:
