@@ -1,4 +1,9 @@
+import { useSelector } from "react-redux";
+import { Notification_url, SOCKET } from "../Urls/EndPoints";
 import { axiosChatInstance, axiosCourseInstance, axiosInstance } from "../Utils/AxiosInstances";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 export const UserRegister = async({username,email,password,is_active})=>{
     const newUser = {
@@ -111,3 +116,34 @@ export const addChatRoom = async (ids)=>{
         throw error
     }
 }
+
+
+export const fetchNotifications = async () =>{
+    try{
+        const response = await axios.get(Notification_url,{
+            headers:{
+                Authorization :`Bearer ${localStorage.getItem('access')}`
+            }
+        })
+        return response.data
+    }catch(error){
+        console.log('Error fetching notifications :',error)
+        throw error
+
+    }
+}
+
+export const markNotifications = async ()=>{
+    try{
+        const response = await axios.put(Notification_url,{},{
+            headers:{
+                Authorization :`Bearer ${localStorage.getItem('access')}`
+            }
+    });
+        return response
+    }
+    catch(error){
+        console.log('Error while marking read',error)
+    }
+}
+

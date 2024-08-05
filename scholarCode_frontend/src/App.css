@@ -13,6 +13,62 @@ html {
   box-sizing: border-box;
   overflow-x: hidden;
 }
+/* Custom styles for notifications dropdown */
+.notifications-container {
+  position: relative;
+}
+
+.notification-bell {
+  position: relative;
+  z-index: 1002;
+}
+
+.notifications-dropdown {
+  position: absolute;
+  top: 40px; /* Adjust this to place the dropdown correctly */
+  right: 0; /* Adjust this to place the dropdown correctly */
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1001; /* Ensure this is higher than other elements */
+}
+
+.notifications-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.custom-dropdown-item {
+  padding: 10px 15px; /* Adjust padding as needed */
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.custom-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.notification-message {
+  margin: 0;
+}
+
+.notification-timestamp {
+  margin: 0;
+  font-size: 0.8em;
+}
+
+.custom-dropdown-link {
+  margin-top: 5px; /* Space between message and link */
+  color: #007bff; /* Adjust link color as needed */
+  text-decoration: none;
+}
+
+.custom-dropdown-link:hover {
+  text-decoration: underline;
+}
+
 
 html body {
   padding: 0;

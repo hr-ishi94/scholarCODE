@@ -20,6 +20,9 @@ const MentorTransactionSlice = createSlice({
         addTransaction :(state,action)=>{
             state.transactions = [...state.transactions,action.payload]
         }
+        ,clearTransactions :(state)=>{
+            state.transactions = []
+        }
     },
     extraReducers:(builder)=>{
         builder
@@ -38,5 +41,5 @@ const MentorTransactionSlice = createSlice({
     }
 })
 
-export const {addTransaction} = MentorTransactionSlice.actions
+export const {addTransaction,clearTransactions} = MentorTransactionSlice.actions
 export default MentorTransactionSlice.reducer

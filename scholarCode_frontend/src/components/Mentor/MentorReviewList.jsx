@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Row  from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table';
@@ -11,6 +11,8 @@ import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
 import Loader from '../Utils/Loader';
 import { jwtDecode } from 'jwt-decode';
+import { Form } from 'react-bootstrap';
+import Pagination from '../Admin/utils/Pagination';
 
 const MentorReviewList = () => {
     const EnrolledCourseSelector = useSelector((state)=>state.AllEnrolls)
@@ -18,19 +20,33 @@ const MentorReviewList = () => {
     const MentorToken = useSelector((state)=>state.MentorToken)
     const access = jwtDecode(MentorToken.access)
     const MentorId = access.user_id
-    console.log('mentor,',MentorId)
     const UserSelector = useSelector((state)=>state.userList)
     const CourseSelector = useSelector((state)=>state.Courses)
     const dispatch = useDispatch()
-    console.log(UserSelector,'sd')
+
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const reviewsPerPage = 5;
+
     useEffect(()=>{
         dispatch(fetchUsers())
         dispatch(fetchCoursesList())
         dispatch(fetchMentorCourse())
         dispatch(fetchAllEnrolledCourses())
-        
-
     },[dispatch])
+
+    const filteredReviews = EnrolledCourseSelector.enrolls.filter((enroll) =>
+        enroll.user.first_name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    
+      const indexOfLastReview = currentPage * reviewsPerPage;
+      const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+      const currentReviews = filteredReviews.slice(indexOfFirstReview, indexOfLastReview);
+      const paginate = (pageNumber) => setCurrentPage(pageNumber);
+      const sortedReviews = [...currentReviews].sort((a, b) => a.id - b.id);
+    
+
+
 
     const MentorCourseSet = new Set()
     for(let course of MentorCourseSelector.courses){
@@ -66,6 +82,20 @@ const MentorReviewList = () => {
     <div style={style}>
         
             <h1>Upcoming Reviews</h1>
+            <Row className="mx-2 my-2" >
+          <Col sm={9}>
+          </Col>
+          <Col sm={3}>
+            <Form.Control
+            className='p-1'
+              type="text"
+              placeholder="Search User Reviews"
+              value={searchQuery}
+              onChange={(e) => {setSearchQuery(e.target.value);
+                setCurrentPage(1);}}
+            />
+          </Col>
+        </Row>
             
         <Table striped bordered hover className='text-center'>
         <thead>
@@ -80,7 +110,7 @@ const MentorReviewList = () => {
             </tr>
         </thead>
         <tbody >
-            {MentorCoursesList
+            {sortedReviews
             .sort((a,b)=>  a.next_review_date - b.next_review_date)
             .filter((course)=>!course.is_completed)
             .map((course,index)=>(
@@ -111,6 +141,12 @@ const MentorReviewList = () => {
             
         </tbody>
         </Table>
+        <Pagination
+          itemsPerPage={reviewsPerPage}
+          totalItems={filteredReviews.length}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
         <br />
         <br />
         <br />
@@ -161,6 +197,7 @@ const MentorReviewList = () => {
             
         </tbody>
         </Table>
+        
         
             
        

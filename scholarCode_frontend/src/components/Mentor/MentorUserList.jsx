@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Row  from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table';
@@ -10,6 +10,8 @@ import { fetchUsers } from '../../Redux/Slices/UserListSlice';
 import Loader from '../Utils/Loader';
 import { Link } from 'react-router-dom';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
+import Pagination from '../Admin/utils/Pagination';
+import { Form } from 'react-bootstrap';
 
 const MentorUserList = () => {
     const MentorSelector = useSelector((state)=>state.MentorToken)
@@ -20,6 +22,10 @@ const MentorUserList = () => {
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
     const EnrolledCourseSelector = useSelector((state)=>state.EnrolledCourses)
     const allEnrolledCourses = useSelector((state)=>state.AllEnrolls)
+
+    const [searchQuery, setSearchQuery] = useState('')
+    const [currentPage,setCurrentPage] = useState(1)
+    const usersPerPage = 10;
     
     const dispatch = useDispatch()
     
@@ -40,17 +46,28 @@ const MentorUserList = () => {
             mentorCourseSet.add(course.id)
         }
     })
-    console.log(mentorCourseSet,'mcourse')
 
     allEnrolledCourses.enrolls.filter((enroll)=>mentorCourseSet.has(enroll.course.id)).map((enroll)=>{
         enrollUserSet.add(enroll.user.id)
     })
     const users = userSelector.users.filter((user)=>enrollUserSet.has(user.id))
-    console.log(users,'sedi')
+    
+    const fitleredUsers = users.filter((user)=>
+        user.first_name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      
+      const indexOfLastUser = currentPage * usersPerPage
+      const indexofFirstUser = indexOfLastUser - usersPerPage
+      const currentUsers = fitleredUsers.slice(indexofFirstUser,indexOfLastUser)
+      
+      const paginate = (pageNumber) =>setCurrentPage(pageNumber)
 
     if (userSelector.status === 'loading'){
         return <Loader/>
     }
+
+    const sortedUsers = [...currentUsers].sort((a,b)=>a.id-b.id)
+
     
     const style = {
         position: "absolute",
@@ -62,12 +79,24 @@ const MentorUserList = () => {
     <div style={style}>
     <div>
 
-    <Row>
+    <Row className="mx-2 my-2" >
+          <Col sm={9}>
             <h1>Assigned Users List</h1>
-        
-    </Row>
+          </Col>
+          <Col sm={3}>
+            <Form.Control
+            className='p-1'
+              type="text"
+              placeholder="Search Users"
+              value={searchQuery}
+              onChange={(e) => {setSearchQuery(e.target.value);
+                setCurrentPage(1);}
+              }
+            />
+          </Col>
+        </Row>
 
-    <Table striped bordered hover>
+    <Table striped bordered hover className='text-center'> 
     <thead>
         <tr>
         <th>id</th>
@@ -79,7 +108,7 @@ const MentorUserList = () => {
         </tr>
     </thead>
     <tbody >
-        {users.map((user,index)=>(
+        {sortedUsers.map((user,index)=>(
         
             
         <tr key={index} >
@@ -95,6 +124,12 @@ const MentorUserList = () => {
         
     </tbody>
     </Table>
+    <Pagination
+          itemsPerPage={usersPerPage}
+          totalItems={fitleredUsers.length}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
     
         
     </div>

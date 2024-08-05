@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'main',
     'course',
     'chat',
+    'notifications',
 
     # dependencies
     'rest_framework',
@@ -95,17 +96,8 @@ TEMPLATES = [
 ASGI_APPLICATION = 'scholarCode_backend.asgi.application'
 
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": ["rediss://:AdZvAAIncDE2MDJjZTg0ODE5OTY0YzNlYTAyMjg5OTM1OTUzZTliOHAxNTQ4OTU@diverse-fly-54895.upstash.io:6379"],
-#         },
-#     },
-# }
+
 # settings.py
-
-
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': False,

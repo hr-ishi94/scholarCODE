@@ -17,6 +17,8 @@ import { toast } from 'react-toastify';
 import Loader from '../../components/Utils/Loader';
 import { clearEnrolls } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
 import { clearAllEnrolls } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
+import { Dropdown } from 'react-bootstrap';
+import Notifications from '../../components/Home/Notifications';
 
 const Homelayout = () => {
   const navigate = useNavigate()
@@ -95,7 +97,9 @@ const Homelayout = () => {
               <Link to={'/user/login/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Login</Nav.Link></Link>
               :
               <>
+              
               <Link to={'/chat/'} className="react-router-link"><Nav.Link href="#deets" className='options'>Messages</Nav.Link></Link>
+              <Notifications/>
               <NavDropdown title={( user.first_name)?user.first_name:"User"} className='options ' id="collapsible-nav-dropdown">
                 <NavDropdown.Item href="" className='options'><Link to={'/user/profile/'} className='react-router-link text-dark'> My courses</Link></NavDropdown.Item>
                 <NavDropdown.Divider />

@@ -12,18 +12,19 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { toast } from 'react-toastify';
 import { categoryAddInstance } from '../../Axios/AdminServer/AdminServer';
+import Pagination from './utils/Pagination';
 
 
 const AdminCategoryList = () => {
   const dispatch = useDispatch()
   const {categories,status,error} = useSelector((state)=>state.Categories)
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const categoriesPerPage = 10;
 
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  
- 
-
   
   useEffect(()=>{
     try{
@@ -34,12 +35,22 @@ const AdminCategoryList = () => {
     }
     
   },[dispatch])
+
+  const filteredCategories = categories.filter((category) =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const indexOfLastCategory = currentPage * categoriesPerPage;
+  const indexOfFirstCategory = indexOfLastCategory - categoriesPerPage;
+  const currentCategory = filteredCategories.slice(indexOfFirstCategory, indexOfLastCategory);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const sortedCategories = [...currentCategory].sort((a, b) => a.id - b.id);
+
   
   if (status === "loading") {
     return <Loader />;
   }
 
-  const sortedCategories = [...categories].sort((a,b)=>a.id- b.id)
   return (
     <div>
         <div className='category-table'>
@@ -52,6 +63,20 @@ const AdminCategoryList = () => {
             </Col>
             <AddCategoryModal handleClose={()=>handleClose()} show={show}/>
           </Row>
+          <Row className="mx-1 my-2" >
+          <Col sm={9}>
+          </Col>
+          <Col sm={3}>
+            <Form.Control
+              type="text"
+              className='p-1'
+              placeholder="Search Category"
+              value={searchQuery}
+              onChange={(e) => {setSearchQuery(e.target.value);
+                setCurrentPage(1);}}
+            />
+          </Col>
+        </Row>
         <Table striped bordered hover className='text-center'>
       <thead>
         <tr>
@@ -67,7 +92,7 @@ const AdminCategoryList = () => {
         {
         sortedCategories.map((category,index)=>(
         <tr key={index}>
-          <td>{index+1}</td>
+          <td>{indexOfFirstCategory+ index+1}</td>
           <td>{category.name}</td>
           <td>04</td>
           {/* <td>05</td>
@@ -78,6 +103,12 @@ const AdminCategoryList = () => {
         ))}
       </tbody>
     </Table>
+    <Pagination
+          itemsPerPage={categoriesPerPage}
+          totalItems={filteredCategories.length}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
     </div>
     </div>
   )

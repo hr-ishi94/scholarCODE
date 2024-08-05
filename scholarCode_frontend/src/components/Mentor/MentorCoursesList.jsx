@@ -84,7 +84,7 @@ const MentorCoursesList = () => {
     <AddCourseModal show={showModal} handleClose={handleClose} mentorId = {id} courseSet ={MentorCourseSet}/>
     <br />
 
-    <Table striped bordered hover>
+    <Table striped bordered hover className='text-center'>
     <thead>
         <tr>
         <th>id</th>

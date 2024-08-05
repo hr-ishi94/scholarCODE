@@ -7,14 +7,16 @@ import { fetchMentors } from '../../Redux/Slices/MentorsSlice.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Loader from '../Utils/Loader.jsx';
+import { Col, Form, Row } from 'react-bootstrap';
+import Pagination from './utils/Pagination.jsx';
 
  
 
-const MentorTableData=({props,index})=>{
+const MentorTableData=({props,index,indexOfFirstMentor})=>{
   const mentor = props
  return (
  <>
-    <td>{index+1}</td>
+    <td>{indexOfFirstMentor+index+1}</td>
     <td>{mentor.first_name } {mentor.last_name} </td>
     <td>04</td>
     <td>{mentor.email}</td>
@@ -30,18 +32,35 @@ const AdminMentorList = () => {
 
   const dispatch = useDispatch()
   const {mentors, status, error} = useSelector((state)=>state.Mentors)
+
+  const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const mentorsPerPage = 5;
+
+  const filteredMentors = mentors.filter((mentor)=>
+  mentor.first_name.toLowerCase().includes(searchQuery.toLowerCase()))
+
+  const indexOfLastMentor = currentPage * mentorsPerPage
+  const indexOfFirstMentor = indexOfLastMentor - mentorsPerPage
+  const currentMentors = filteredMentors.slice( indexOfFirstMentor,indexOfLastMentor )
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
+
   if (error && error.trim().length > 0){
     toast.error(error)
   }
-  useEffect(() => {
 
+  
+  useEffect(() => {
     dispatch(fetchMentors())
-    
   }, [dispatch])
+    
 
   if (status === "loading") {
     return <Loader />;
   }
+
+  const sortedMentors = [...currentMentors].sort((a,b)=> a.id - b.id)
 
   
   return (
@@ -52,6 +71,19 @@ const AdminMentorList = () => {
     <div>
 
 </div>
+        <Row className="mx-2 my-2" >
+          <Col sm={9}>
+          </Col>
+          <Col sm={3}>
+            <Form.Control
+              type="text"
+              placeholder="Search Mentor"
+              value={searchQuery}
+              onChange={(e) => {setSearchQuery(e.target.value);
+                setCurrentPage(1);}}
+            />
+          </Col>
+        </Row>
         <Table striped bordered hover className='text-center'>
       <thead>
         <tr>
@@ -64,11 +96,11 @@ const AdminMentorList = () => {
         </tr>
       </thead>
       <tbody >
-        {mentors.filter((mentor)=>mentor.is_staff===true).sort((a,b)=>a.id-b.id).map((activeMentor,index)=>(
+        {sortedMentors.filter((mentor)=>mentor.is_staff===true).map((activeMentor,index)=>(
 
 
         <tr key={activeMentor.id}>
-          <MentorTableData props = {activeMentor} index ={index} />
+          <MentorTableData props = {activeMentor} index ={index} indexOfFirstMentor={indexOfFirstMentor}/>
           <td><Link to={`/admin/mentor/active/${activeMentor.id}/`}><Button className='p-1 m-1 text-light' variant='' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>
         </tr>
         ))}
@@ -76,6 +108,12 @@ const AdminMentorList = () => {
         
       </tbody>
         </Table>
+        <Pagination
+          itemsPerPage={mentorsPerPage}
+          totalItems={filteredMentors.length}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
 
         <br />
         <br />

@@ -50,7 +50,7 @@ const ChatArea = ({ user, username }) => {
 
   const getSocket = () => {
     if (user && access) {
-      const newSocket = new WebSocket(`${SOCKET}/${user}/?token=${access}`);
+      const newSocket = new WebSocket(`${SOCKET}/chat/${user}/?token=${access}`);
       setSocket(newSocket);
 
       newSocket.onopen = () => {

@@ -118,6 +118,8 @@ function App() {
             <Route path='/mentor/join/' element={<JoinMentor/>}></Route>
             <Route path='/payment/' element={<Payment/>}></Route>
             <Route path='/sample/' element={<Sample/>}></Route>
+            {/* <Route path='/notifications/' element={<Notifications/>}></Route> */}
+            
            
           </Route>
           

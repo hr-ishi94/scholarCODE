@@ -1,96 +1,130 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button'
-import './AdminCourseList.css'
+import Button from 'react-bootstrap/Button';
+import './AdminCourseList.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addCourse, fetchCoursesList, resetState } from '../../Redux/Slices/CoursesListSlice';
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { Link } from 'react-router-dom';
 import Loader from '../Utils/Loader';
-import Modal  from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
-import { coursesAddInstance } from '../../Axios/AdminServer/AdminServer';
-import CategoryListSlice from '../../Redux/Slices/CategoryListSlice';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { toast } from 'react-toastify';
-import { fetchCourseDetails } from '../../Redux/Slices/CourseDetailsSlice';
-
+import Pagination from './utils/Pagination';
 
 const AdminCourseList = () => {
-  const dispatch = useDispatch()
-  const {courses,status,error} = useSelector((state)=>state.Courses)
-  const categorySelector = useSelector((state)=>state.Categories)
-  
-  
-  const [show,setShow] = useState(false)
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
+  const dispatch = useDispatch();
+  const { courses, status } = useSelector((state) => state.Courses);
+  const categorySelector = useSelector((state) => state.Categories);
+
+  const [show, setShow] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 10;
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
+
+  useEffect(() => {
+    dispatch(fetchCoursesList());
+  }, [dispatch]);
+
+  const filteredCourses = courses.filter((course) =>
+    course.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = filteredCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const sortedCourses = [...currentCourses].sort((a, b) => a.id - b.id);
 
 
-  useEffect(()=>{
-    dispatch(fetchCoursesList())
-    
-  },[dispatch])
-
-
-  if (status === "loading") {
+  if (status === 'loading') {
     return <Loader />;
   }
 
-  const sortedCourses = [...courses].sort((a,b)=>a.id-b.id)
+
   return (
     <>
-        <div className='course-table'>
+      <div className="course-table">
         <Row>
           <Col sm={10}>
-              <h1>Course Management</h1>
+            <h1>Course Management</h1>
           </Col>
           <Col sm={2}>
-              <Button onClick={handleShow}
-              className='p-1 text-light' 
-              variant='' 
-              style={{backgroundColor:'#12A98E'}}>Add new Course</Button>
+            <Button onClick={handleShow} className="p-1 text-light" variant="" style={{ backgroundColor: '#12A98E' }}>
+              Add new Course
+            </Button>
           </Col>
         </Row>
 
-        <AddCourseModal handleClose={handleClose} show={show}/>
-        <Table striped bordered hover className='text-center'>
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>Name</th>
-          <th>Category</th>
-          {/* <th>No.of Modules</th> */}
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody >
+        <Row className="mx-2 my-2" >
+          <Col sm={9}>
+          </Col>
+          <Col sm={3}>
+            <Form.Control
+              type="text"
+              placeholder="Search Courses"
+              value={searchQuery}
+              onChange={(e) => {setSearchQuery(e.target.value);
+                setCurrentPage(1);}}
+            />
+          </Col>
+        </Row>
 
+        <AddCourseModal handleClose={handleClose} show={show} />
 
-        {sortedCourses.map((course,index)=>(
-        <tr key={index}>
-          <td>{index+1}</td>
-          <td>{course.name}</td>
-          {categorySelector.categories.filter((category)=>category.id == course.category).map((category)=>
-          <td key={category.id}>{category.name}</td>
-          )}
-          {/* <td>05</td> */}
-          <td>{course.status?<span className='text-success'>Active</span>:<span className='text-danger'>Inactive</span>}</td>
-          <td><Link to={`/admin/course/${course.id}/`}><Button className='p-1 m-1 text-light' style={{backgroundColor:"#12A98E"}} variant=''>View</Button></Link></td>
-        </tr>
+        <Table striped bordered hover className="text-center">
+          <thead>
+            <tr>
+              <th>id</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedCourses.map((course, index) => (
+              <tr key={index}>
+                <td>{indexOfFirstCourse + index + 1}</td>
+                <td>{course.name}</td>
+                {categorySelector.categories
+                  .filter((category) => category.id === course.category)
+                  .map((category) => (
+                    <td key={category.id}>{category.name}</td>
+                  ))}
+                <td>{course.status ? <span className="text-success">Active</span> : <span className="text-danger">Inactive</span>}</td>
+                <td>
+                  <Link to={`/admin/course/${course.id}/`}>
+                    <Button className="p-1 m-1 text-light" style={{ backgroundColor: '#12A98E' }} variant="">
+                      View
+                    </Button>
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
 
-        ))}
-        
-        
-      </tbody>
-    </Table>
-    </div>
+        <Pagination
+          itemsPerPage={coursesPerPage}
+          totalItems={filteredCourses.length}
+          paginate={paginate}
+          currentPage={currentPage}
+        />
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default AdminCourseList
+
+
+
+export default AdminCourseList;
+
 
 
 

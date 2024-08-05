@@ -1,128 +1,149 @@
-import React, { useEffect, useState } from 'react'
-import DashComp from '../Mentor/utils/DashComp'
-import { Col, Row, Table } from 'react-bootstrap'
-import { useDispatch, useSelector } from 'react-redux'
-import { fetchUsers } from '../../Redux/Slices/UserListSlice'
-import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
-import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
-import { fetchadminTransactions } from '../../Redux/Slices/AdminTransactionSlice'
-import { payment_ids } from '../../Axios/AdminServer/AdminServer'
-import { fetchAdminWallet } from '../../Redux/Slices/AdminWalletSlice'
+import React, { useEffect, useState } from 'react';
+import DashComp from '../Mentor/utils/DashComp';
+import { Col, Row, Table, Form } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers } from '../../Redux/Slices/UserListSlice';
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
+import { fetchadminTransactions } from '../../Redux/Slices/AdminTransactionSlice';
+import { payment_ids } from '../../Axios/AdminServer/AdminServer';
+import { fetchAdminWallet } from '../../Redux/Slices/AdminWalletSlice';
+import Pagination from './utils/Pagination';
 
 const AdminDashboard = () => {
-    const UserSelector = useSelector((state)=>state.userList)
-    const MentorsSelector = useSelector((state)=>state.Mentors)
-    const CourseSelector = useSelector((state)=>state.Courses)
-    const AdminWalletSelector = useSelector((state)=>state.AdminWallet)
-    const TransactionSelector = useSelector((state)=>state.AdminTransactions)
-    const dispatch = useDispatch()
-    const activeMentors = MentorsSelector.mentors.filter((course)=> course.is_active === true )
-    const [paymentIds,setPaymentIds ] = useState([])
- 
+    const UserSelector = useSelector((state)=>state.userList);
+    const MentorsSelector = useSelector((state)=>state.Mentors);
+    const CourseSelector = useSelector((state)=>state.Courses);
+    const AdminWalletSelector = useSelector((state)=>state.AdminWallet);
+    const TransactionSelector = useSelector((state)=>state.AdminTransactions);
+    const dispatch = useDispatch();
+    const activeMentors = MentorsSelector.mentors.filter((course)=> course.is_active === true);
+    const [paymentIds, setPaymentIds ] = useState([]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [currentPage, setCurrentPage] = useState(1);
+    const transactionsPerPage = 6;
+
     useEffect(()=>{
-        dispatch(fetchUsers())
-        dispatch(fetchCoursesList())
-        dispatch(fetchadminTransactions())
-        dispatch(fetchAdminWallet())
+        dispatch(fetchUsers());
+        dispatch(fetchCoursesList());
+        dispatch(fetchadminTransactions());
+        dispatch(fetchAdminWallet());
 
         const fetchPaymentIds = async () =>{
-            try{
-                const res = await payment_ids()
-                if (res){
-                    setPaymentIds(res.data)
+            try {
+                const res = await payment_ids();
+                if (res) {
+                    setPaymentIds(res.data);
                 }
-            }
-            catch(error){
-                console.log(error)
+            } catch(error) {
+                console.log(error);
             }
         }
-        fetchPaymentIds()
+        fetchPaymentIds();
+    }, [dispatch]);
 
-    },[dispatch])
-
-    // const [trans, setTrans] = useState(0)
-    let trans = 0 
-
+    let trans = 0;
     TransactionSelector.transactions.map((rate)=>{
-        // setTrans((prevData)=>prevData + Number(rate.amount))
-        trans += Number(rate.amount)    
-    })
+        trans += Number(rate.amount);    
+    });
 
-    const sortedTransactions = [...TransactionSelector.transactions]
-    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-    .slice(0, 10);
+    // Filter transactions based on email search query
+    const filteredTransactions = TransactionSelector.transactions.filter((txn) =>
+        paymentIds.some((payment) => payment.id === txn.payment && payment.email.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
 
-    const [wallet] = AdminWalletSelector.wallet
+    // Pagination logic
+    const indexOfLastTransaction = currentPage * transactionsPerPage;
+    const indexOfFirstTransaction = indexOfLastTransaction - transactionsPerPage;
+    const currentTransactions = filteredTransactions.slice(indexOfFirstTransaction, indexOfLastTransaction);
+
+    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const sortedTransactions = [...currentTransactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    const [wallet] = AdminWalletSelector.wallet;
 
     const style = {
         position: "absolute",
         left: "350px",
         right: "100px",
         top: "100px",
-        }
-  return (
-    <div style={style}>
-        <h2><strong> Admin Dashboard</strong></h2>
-         <Row>
-            <Col sm={6}>
-                <DashComp title={'Users Enrolled'} count = {UserSelector.users.length} />
-            </Col>
-            <Col sm={6}>
-                <DashComp title={'Active Mentors'} count = {activeMentors.length}/>
-            </Col>
-            
-        </Row>   
-         <Row>
-            <Col sm={6}>
-                <DashComp title={'Total Courses'} count={CourseSelector.courses.length}/>
-            </Col>
-            <Col sm={6}>
-                <DashComp title={'Total Revenue'} count = {wallet.balance} revenue/>
-            </Col>
-            
+    };
+
+    return (
+        <div style={style}>
+            <h2><strong> Admin Dashboard</strong></h2>
+            <Row>
+                <Col sm={6}>
+                    <DashComp title={'Users Enrolled'} count = {UserSelector.users.length} />
+                </Col>
+                <Col sm={6}>
+                    <DashComp title={'Active Mentors'} count = {activeMentors.length}/>
+                </Col>
+            </Row>   
+            <Row>
+                <Col sm={6}>
+                    <DashComp title={'Total Courses'} count={CourseSelector.courses.length}/>
+                </Col>
+                <Col sm={6}>
+                    <DashComp title={'Total Revenue'} count = {wallet.balance} revenue/>
+                </Col>
+            </Row>
+            <br />
+            <Row className="mx-2 my-2" >
+          <Col sm={9}>
+            <h2><strong> Transactions</strong></h2>
+          </Col>
+          <Col sm={3}>
+            <Form.Control
+              type="text"
+              placeholder="Search email "
+              className='p-1'
+              value={searchQuery}
+              onChange={(e) => {setSearchQuery(e.target.value);
+                setCurrentPage(1);}}
+            />
+          </Col>
         </Row>
-        <br />
-        <h2><strong> Transactions</strong></h2>
-        <Table striped bordered hover className='text-center'>
-        <thead>
-            <tr>
-            <th>id</th>
-            <th>User</th>
-            <th>Course</th>
-            <th>Tran ID</th>
-            <th>Time</th>
-            </tr>
-        </thead>
-        <tbody>
-        
-        {sortedTransactions
-        .map((trans,index)=>(
-            <tr key={index}>
-                <td>{index + 1}</td>
-                
-                
-                {paymentIds
-                .filter((payment)=>payment.id === trans.payment)
-                .map((payment,index)=>
-                <>
-                <td>{payment.email}</td>
-                {CourseSelector.courses.filter((course)=>course.id == payment.course_id)
-                .map((course)=>
-                    <td >{course.name}</td>
-                )}
-                
+            
+            <Table striped bordered hover className='text-center'>
+                <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>User</th>
+                        <th>Course</th>
+                        <th>Tran ID</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sortedTransactions.map((trans, index) => (
+                        <tr key={index}>
+                            <td>{indexOfFirstTransaction + index + 1}</td>
+                            {paymentIds
+                                .filter((payment) => payment.id === trans.payment)
+                                .map((payment, index) => (
+                                    <React.Fragment key={index}>
+                                        <td>{payment.email}</td>
+                                        {CourseSelector.courses.filter((course) => course.id == payment.course_id)
+                                            .map((course) => (
+                                                <td key={course.id}>{course.name}</td>
+                                            ))}
+                                        <td>{payment.provider_order_id}</td>
+                                    </React.Fragment>
+                                ))}
+                            <td>{trans.timestamp}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+            <Pagination
+                itemsPerPage={transactionsPerPage}
+                totalItems={filteredTransactions.length}
+                paginate={paginate}
+                currentPage={currentPage}
+            />
+        </div>
+    );
+};
 
-                <td>{payment.provider_order_id}</td>
-                </>
-                )}
-                <td>{trans.timestamp}</td>
-            </tr>
-
-        ))}
-        </tbody>
-        </Table>     
-    </div>
-  )
-}
-
-export default AdminDashboard
+export default AdminDashboard;
