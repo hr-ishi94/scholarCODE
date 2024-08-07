@@ -6,11 +6,10 @@ import { Link } from 'react-router-dom';
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice';
-import Loader from '../Utils/Loader';
 import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { jwtDecode } from 'jwt-decode';
-import { fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice';
 import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
+import HomeLoader from '../Utils/HomeLoader';
 
 const CourseCard = ({course,enrolledset})=>(
 
@@ -89,7 +88,7 @@ const Courses = () => {
   };
 
   if (status === 'loading'){
-    return <Loader/>
+    return <HomeLoader/>
   }
   
   return (

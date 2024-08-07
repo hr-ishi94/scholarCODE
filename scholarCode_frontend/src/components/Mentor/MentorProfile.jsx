@@ -65,7 +65,6 @@ const MentorProfile = () => {
                     <h6 className='m-2'>Email: {mentor.email?mentor.email:"--"}</h6>
                     <h6 className='m-2'>Designation: {mentor.designation?mentor.designation:<span style={{ fontSize: 'small', color: 'red' }}>Please update your designation</span>} </h6>
                     <h6 className='m-2'>Linkedin Profile: {mentor.linkedin_profile} </h6>
-                    <h6 className='m-2'>Courses Assigned : 0 </h6>
                     <br />
                     <Button className="p-2 text-light" variant="" style={{backgroundColor:"#12A98E"}}  onClick={handleShowModal}>Edit details</Button>
                     

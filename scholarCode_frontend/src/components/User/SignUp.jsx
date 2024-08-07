@@ -11,6 +11,7 @@ import { UserRegister } from '../../Axios/UserServer/UserServer';
 import logo from '../../assets/logo.png'
 import { toast } from 'react-toastify';
 import { ValidationError } from 'yup';
+import HomeLoader from '../Utils/HomeLoader';
 
 const SignUp = () => {
     const [formData, setformData] = useState({
@@ -21,6 +22,7 @@ const SignUp = () => {
         is_active:false
     })
     const [loading, setLoading] = useState(false)
+    const [submit, setSubmit] = useState(false)
     const [signupError,setSignupError] = useState("")
 
     if (signupError){
@@ -46,6 +48,7 @@ const SignUp = () => {
             });
             
             if(isFormValid){
+                setLoading(true)
                 try
                 {
                     await userSchema.validate(formData,{abortEarly:false})
@@ -55,7 +58,7 @@ const SignUp = () => {
                     // console.log("reg response: ",registerationResponse)
                     if (registrationResponse.id){
 
-                        setLoading(true)
+                        setSubmit(true)
                     }
                     else{
                        if (registrationResponse.email){
@@ -70,22 +73,30 @@ const SignUp = () => {
                     if (error instanceof ValidationError){
                         toast.error(error.message)
                     }
+                }finally{
+                    setLoading(false)
                 }
                
             }
             else{
                 setSignupError("All fields required!")
+                setLoading(false)
             }
             
         }
+
+        if(loading){
+            return <HomeLoader/>
+        }
+
         
 
   return (
-    <>{!loading?
+    <>{!submit?
         <Row className='p-5 mx-5'>
             <Col className='mt-5'>
             <h1 style={{color:'#12A98E',fontWeight:"bold"}} className='text-center'>SIGNUP</h1>
-            <p className='mx-5 mt-5' >Already have an account? <Link to={'/user/login/'}>Login</Link> </p>
+            <p className='mx-5 mt-5' >Already have an account? <Link to={'/user/login/'} style={{textDecoration:'None'}}>Login</Link> </p>
             <div className='p-5'>
 
             <Form onSubmit={(e)=>handleSubmit(e)} className='text-center'>

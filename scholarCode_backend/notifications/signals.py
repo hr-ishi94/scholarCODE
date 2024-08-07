@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from course.models import EnrolledCourse
+from main.models import Mentor,CustomUser
 from .models import Notification
 from django.utils.dateformat import format
 
@@ -52,6 +53,23 @@ def create_notification(user,message,instance , link = None):
         enrolled_course = instance
     )
     send_real_time_notification(user.id, message)
+
+
+@receiver(post_save,sender = Mentor)
+def send_notification_mentor_registration(sender,instance,created , **kwargs):
+    if created:
+        message = f'New Mentor Request- {instance.first_name}.Please verify!'
+        admin_user = CustomUser.objects.filter(is_superuser = True).first()
+
+        create_mentor_notification(admin_user, message)
+
+def create_mentor_notification(user , message, link = None):
+    notification = Notification.objects.create(
+        user = user,
+        message = message,
+        link = link
+    )
+    send_real_time_notification(user.id,message)
 
 def send_real_time_notification(user_id, message):
     channel_layer = get_channel_layer()

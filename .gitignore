@@ -1,1 +1,5 @@
+# Ignore the virtual environment directory
 djvenv/
+
+# Ignore the SSH key pair file
+scholarCODE_key_pair.pem

@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import { UserLogin } from '../../Redux/Slices/UserAuthSlice';
 import { Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import HomeLoader from '../Utils/HomeLoader';
 
 
 const Login = () => {
@@ -21,6 +22,8 @@ const Login = () => {
         email:"",
         password:""
     })
+    
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e)=>{
         const {name,value} = e.target
@@ -35,11 +38,12 @@ const Login = () => {
         const isFormValid = Object.values(authData).every((value)=>{
             if(typeof value === 'string'){
                 return value.trim() !== ''
-
+                
             }
             return true
         })
         if (isFormValid){
+            setLoading(true)
 
             try{
                 const res = await dispatch(UserLogin(authData))
@@ -57,12 +61,19 @@ const Login = () => {
 
             }catch(error){
                 console.log(error)
+            }finally{
+                setLoading(false)
             }
         }else{
             toast.error("All fields are required!")
+            setLoading(false)
         }
 
     },[authData])
+
+    if(loading){
+        return <HomeLoader/>
+    }
   return (
     <>
         <Row className='p-5 mx-5'>
@@ -71,7 +82,7 @@ const Login = () => {
             </Col>
             <Col className='mt-5'>
                 <h1 style={{color:'#12A98E',fontWeight:"bold"}} className='text-center'>LOGIN</h1>
-                <p className='mx-5 mt-5'>Already have an account? <Link to={'/user/signup/'}>Signup</Link> </p>
+                <p className='mx-5 mt-5'> Not Registered? <Link to={'/user/signup/'} style={{textDecoration:'None'}}>Signup</Link> </p>
                 <div className='p-5'>
 
                 <Form onSubmit={(e)=>handleSubmit(e)} className='text-center'>

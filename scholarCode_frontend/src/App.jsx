@@ -98,6 +98,7 @@ function App() {
           </Route>
 
           <Route element={<ChatScreenLayout/>}>
+          
             <Route path='/chat/' element= {<Chat/>}></Route>
             <Route path='/meeting/:userid/:mentorid/:courseid/' element={<ZegoCall/>}></Route>
             <Route path='mentor/request/form/' element={<MentorRetry/>}></Route>
@@ -118,7 +119,6 @@ function App() {
             <Route path='/mentor/join/' element={<JoinMentor/>}></Route>
             <Route path='/payment/' element={<Payment/>}></Route>
             <Route path='/sample/' element={<Sample/>}></Route>
-            {/* <Route path='/notifications/' element={<Notifications/>}></Route> */}
             
            
           </Route>

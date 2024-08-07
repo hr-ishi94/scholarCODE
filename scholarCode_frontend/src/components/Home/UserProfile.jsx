@@ -11,6 +11,10 @@ import  Form  from 'react-bootstrap/Form'
 import { toast } from 'react-toastify'
 import { userstatusInstance } from '../../Axios/AdminServer/AdminServer'
 import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
+import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice'
+import { Table } from 'react-bootstrap'
+import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
 
 
 
@@ -18,9 +22,21 @@ import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
 const UserProfile = () => {
     const {user,status,error}= useSelector((state)=>state.User)
     const [showModal, setShowModal] = useState(false);
+    const EnrolledCourses = useSelector((state)=>state.AllEnrolls)
+    const MentorSelector = useSelector((state)=>state.Mentors)
+    const CoursesSelector = useSelector((state)=>state.Courses)
 
+    const dispatch = useDispatch()
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
+    useEffect(()=>{
+        dispatch(fetchAllEnrolledCourses())
+        dispatch(fetchMentors())
+        dispatch(fetchCoursesList())
+    },[dispatch])
+    const Enrolls = EnrolledCourses.enrolls && EnrolledCourses.enrolls.filter((enroll)=>enroll.user.id === user.id)
+    const Completed = Enrolls && Enrolls.filter((enroll)=>enroll.is_completed)
+    
    
     
     if (status === "loading") {
@@ -45,8 +61,8 @@ const UserProfile = () => {
                     <h5 className='m-2'>Name: {user.first_name && user.last_name? user.first_name + " "  +user.last_name:<span style={{ fontSize: 'small', color: 'red' }}> Please update your details</span>}</h5>
                     <h6 className='m-2'>Email: {user.email?user.email:"--"}</h6>
                     <h6 className='m-2'>Designation: {user.designation?user.designation:<span style={{ fontSize: 'small', color: 'red' }}>Please update your designation</span>} </h6>
-                    <h6 className='m-2'>Courses Enrolled : 0 </h6>
-                    <h6 className='m-2'>Completed Courses : 0 </h6>
+                    <h6 className='m-2'>Courses Enrolled : {Enrolls.length} Nos </h6>
+                    <h6 className='m-2'>Completed Courses : {Completed.length} Nos </h6>
                     <br />
                     <Button className="p-2 text-light" variant="" style={{backgroundColor:"#12A98E"}}  onClick={handleShowModal}>Edit details</Button>
                     
@@ -55,6 +71,43 @@ const UserProfile = () => {
             </Col>
             
         </Row>
+        <Table className='text-center'>
+            <thead >
+                <tr >
+                    <td>id</td>
+                    <td>Course</td>
+                    <td>Mentor Assigned</td>
+                    <td>Current Module</td>
+                    <td>Status</td>
+
+                </tr>
+            </thead>
+            <tbody>
+                {Enrolls
+                .sort((a,b)=>a.id - b.id)
+                .map((enroll,index)=>(
+                <tr key={index}>
+                    <td>{index + 1}</td>
+                    {CoursesSelector.courses
+                    .filter((course)=>course.id == enroll.course.course)
+                    .map((course)=>
+                        <td>{course.name}</td>
+                    )
+                    }
+                    {MentorSelector.mentors
+                    .filter((mentor)=>mentor.id === enroll.course.mentor)
+                    .map((mentor)=>
+                    <td>{mentor.first_name} {mentor.last_name}</td>
+                    )}
+                    <td>{enroll.current_module}</td>
+                    <td>{enroll.is_completed?<span className='text-success'>Completed<i className="fa-solid fa-circle-check"></i></span>:<span className='text-primary'>Ongoing</span>}</td>
+
+                </tr>
+
+                ))}
+
+            </tbody>
+        </Table>
     </div>
   )
 }

@@ -7,6 +7,7 @@ import {Outlet,Link, Navigate, useNavigate} from 'react-router-dom'
 import './AdminRootLayout.css'
 import { useDispatch, useSelector } from 'react-redux';
 import { AdminLogout } from '../../Redux/Slices/AdminAuthSlice';
+import Notifications from '../../components/Home/Notifications';
 
 const AdminRootLayout = () => {
     const selector = useSelector((state)=>state.AdminToken)
@@ -35,15 +36,14 @@ const AdminRootLayout = () => {
                     
                     </Col>
                     <Col sm = {2} className='d-flex'>
-                        <button className='noti-admin text-center '><i className="fa-regular fa-bell admin-drop"></i></button>
-                        <Dropdown className='mt-3' >
+
+                        <Notifications />
+                        <Dropdown className='mt-3 ' >
                             <Dropdown.Toggle variant="success" style={{backgroundColor:'#12A98E',border:'none'}} id="dropdown-basic">
                                 Admin
                             </Dropdown.Toggle>
 
-                            <Dropdown.Menu>
-                                <Dropdown.Item >Action</Dropdown.Item>
-                                <Dropdown.Item >Another action</Dropdown.Item>
+                            <Dropdown.Menu className='p-2'>
                                 <Dropdown.Item onClick={logOut}>Logout</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>

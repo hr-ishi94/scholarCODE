@@ -6,7 +6,7 @@ import './Mentors.css'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
-import Loader from '../Utils/Loader'
+import HomeLoader from '../Utils/HomeLoader'
 
 const Mentors = () => {
     const [mentorsList, setMentorsList] = useState([])
@@ -18,7 +18,7 @@ const Mentors = () => {
     
     }, [dispatch])
     if (status=== 'loading'){
-        return <Loader/>
+        return <HomeLoader/>
     }
     
   return (

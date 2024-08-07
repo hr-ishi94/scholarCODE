@@ -49,19 +49,24 @@ const MentorReviewList = () => {
 
 
     const MentorCourseSet = new Set()
-    for(let course of MentorCourseSelector.courses){
-        if(!MentorCourseSet.has(course.id) && course.mentor === MentorId){
-            MentorCourseSet.add(course.id)
-        }
-    }
-    const CoursesObject = {}
-    for(let mentorCourse of MentorCourseSelector.courses){
-        for (let course of CourseSelector.courses){
-            if(mentorCourse.course === course.id){
-                CoursesObject[mentorCourse.id] = course.name
-    
+    if (MentorCourseSelector.courses){
+        for(let course of MentorCourseSelector.courses){
+            if(!MentorCourseSet.has(course.id) && course.mentor === MentorId){
+                MentorCourseSet.add(course.id)
             }
-            
+        }
+    } 
+    const CoursesObject = {}
+    if(MentorCourseSelector.courses && CourseSelector.courses){
+
+        for(let mentorCourse of MentorCourseSelector.courses){
+            for (let course of CourseSelector.courses){
+                if(mentorCourse.course === course.id){
+                    CoursesObject[mentorCourse.id] = course.name
+                    
+                }
+                
+            }
         }
     }
     console.log(CoursesObject,'sed')

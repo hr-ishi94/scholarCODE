@@ -11,8 +11,10 @@ const useNotifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const UserToken = useSelector((state) => state.UserToken);
-  const access = UserToken.access;
+  const AdminToken = useSelector((state) =>state.AdminToken)
+  const access = UserToken.access || AdminToken.access;
   const user_id = jwtDecode(access).user_id;
+  
 
   useEffect(() => {
     const getNotifications = async () => {
@@ -54,11 +56,11 @@ const useNotifications = () => {
     }
   };
 
-  return { notifications, loading, markNotificationsAsRead };
+  return { notifications, loading, markNotificationsAsRead ,AdminToken};
 };
 
 const Notifications = () => {
-  const { notifications, loading, markNotificationsAsRead } = useNotifications();
+  const { notifications, loading, markNotificationsAsRead,AdminToken } = useNotifications();
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadNotifications, setUnreadNotifications] = useState([]);
 
@@ -87,7 +89,7 @@ const Notifications = () => {
     <div className="notification-container">
       <Button 
         variant="" 
-        className="text-dark notification-button" 
+        className={`${AdminToken && AdminToken.access?"text-light mt-3 mx-3":'text-dark'} notification-button`} 
         onClick={handleButtonClick}
       >
         <i className="fa-solid fa-bell"></i>

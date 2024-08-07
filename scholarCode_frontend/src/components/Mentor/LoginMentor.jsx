@@ -6,6 +6,7 @@ import { Button } from 'react-bootstrap';
 import { MentorLogin } from '../../Redux/Slices/MentorAuthSlice';
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate } from 'react-router-dom';
+import HomeLoader from '../Utils/HomeLoader';
 
 const LoginMentor = () => {
   
@@ -13,6 +14,7 @@ const LoginMentor = () => {
   const selector = useSelector((state)=>state.MentorToken)
   const MentorAuthenticated = selector.is_authenticated
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
   
   const [authData, setauthData] = useState({
     email:'',
@@ -36,6 +38,7 @@ const LoginMentor = () => {
  
     })
     if (isFormValid){
+      setLoading(true)
       try{
         const res = await dispatch(MentorLogin(authData))
 
@@ -53,12 +56,20 @@ const LoginMentor = () => {
         console.log("autherror")
   
       }
+      finally{
+        setLoading(false)
+      }
       
     }else{
       toast.error("All fields required")
+      setLoading(false)
     }
     
   },[authData])
+
+  if(loading){
+    return <HomeLoader/>
+  }
 
   return (
     <div>

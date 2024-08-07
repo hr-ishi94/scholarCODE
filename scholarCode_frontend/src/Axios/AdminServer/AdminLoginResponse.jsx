@@ -7,7 +7,7 @@ export const AdminResponse = async (email,password)=>{
             email,
             password,
         });
-        if(response.status ===200 || response.status === 201){
+        if(response.status === 200 || response.status === 201){
 
             const access = response.data.access_token;
             const refresh = response.data.refresh_token;

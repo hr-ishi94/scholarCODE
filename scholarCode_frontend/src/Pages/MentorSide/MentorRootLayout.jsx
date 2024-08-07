@@ -21,6 +21,7 @@ import { addTime, fetchMentortimings } from '../../Redux/Slices/MentorTimingSlic
 import { FastForward } from '@mui/icons-material';
 import { MentorPostReviewTimings } from '../../Axios/MentorServer/MentorServer';
 import { toast } from 'react-toastify';
+import Notifications from '../../components/Home/Notifications';
 
 const MentorRootLayout = () => {
     const dispatch = useDispatch()
@@ -30,7 +31,6 @@ const MentorRootLayout = () => {
     const navigate = useNavigate()
 
     useEffect(()=>{
-      // dispatch()
         const fetchMentorDetails = async () =>{
             try{
                 if(selector.access){
@@ -100,20 +100,20 @@ const MentorRootLayout = () => {
                       <i className="fa-solid fa-message"></i>
                     </Link>
 
-                    <Link  
+                    {/* <Link  
                       className=' text-light react-router-link px-3 mt-3'
                       data-tooltip-id="my-tooltip"
                       data-tooltip-content="Notification"
                       data-tooltip-place="top">
                       <i className="fa-solid fa-bell"></i>
-                      </Link>
+                      </Link> */}
+                      {/* <Notifications/> */}
                     <Dropdown className='mt-3 px-3  ' >
                         <Dropdown.Toggle variant="success" style={{backgroundColor:'#12A98E',border:'none'}} id="dropdown-basic">
                            Mentor: {mentor.first_name}
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu className='p-2 '>
-                            <Dropdown.Item >Action</Dropdown.Item>
                             <Dropdown.Item ><Link to={'/mentor/profile/'} className="react-router-link text-dark"> Profile</Link></Dropdown.Item>
                             <Dropdown.Item  onClick={handleLogout}>Logout</Dropdown.Item>
                         </Dropdown.Menu>
@@ -172,7 +172,7 @@ function TimeSlots({ show, handleClose }) {
     setSelectedDate(e.target.value);
   };
 
-  const filteredTimings = TimingSelector.timings.filter((time) => (time.date === selectedDate) && !time.booked);
+  const filteredTimings = TimingSelector.timings && TimingSelector.timings.filter((time) => (time.date === selectedDate) && !time.booked);
   
   const [formData,setFormData] = useState({
     'mentor':mentorId,

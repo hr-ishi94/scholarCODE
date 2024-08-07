@@ -9,7 +9,7 @@ import { Button } from 'react-bootstrap';
 import { MentorRegister } from '../../Axios/MentorServer/MentorServer';
 import { toast } from 'react-toastify';
 import { ValidationError } from 'yup';
-import Loader from '../Utils/Loader';
+import HomeLoader from '../Utils/HomeLoader';
 
 const JoinMentor = () => {
     const [formData, setFormData] = useState({
@@ -94,7 +94,7 @@ const JoinMentor = () => {
     },[formData])
 
     if (loading === true){
-        return <Loader/>
+        return <HomeLoader/>
     }
 
   return (

@@ -32,7 +32,7 @@ const MentorCoursesList = () => {
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
 
     const MentorCourseSet = new Set()
-    MentorCourseSelector.courses.filter((course)=>course.mentor === id).map((course)=>MentorCourseSet.add(course.course))
+    MentorCourseSelector.courses && MentorCourseSelector.courses.filter((course)=>course.mentor === id).map((course)=>MentorCourseSet.add(course.course))
     console.log(MentorCourseSet,'hiiii')
 
     useEffect(()=>{
