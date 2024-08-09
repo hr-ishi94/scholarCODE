@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
-import mentor_img from '../../assets/mentors.jpg'
+import mentor_img from '../../assets/mentor_img.jpg'
 import './Mentors.css'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
