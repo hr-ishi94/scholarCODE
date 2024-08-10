@@ -47,7 +47,7 @@ const AdminLogin = () => {
         if (res.payload.error ==='Authentication Failed'){
           toast.error('Invalid Credentials')
         }else{
-          navigate('/admin/users/')
+          navigate('/admin/dashboard/')
           toast.success('Successfully logged in')
           localStorage.setItem('access',res.payload.access)
           localStorage.setItem('refresh',res.payload.refresh)

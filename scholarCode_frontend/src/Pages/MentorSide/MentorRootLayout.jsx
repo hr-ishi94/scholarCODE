@@ -164,7 +164,13 @@ function TimeSlots({ show, handleClose }) {
 
   const DateSet = new Set();
 
-  TimingSelector.timings && TimingSelector.timings.forEach((time) => DateSet.add(time.date));
+  if (TimingSelector.timings) {
+    TimingSelector.timings.forEach((time) => {
+      if (time && time.date) {  // Check if 'time' is not null and has a 'date' property
+        DateSet.add(time.date);
+      }
+    });
+  }
   
   const DateList = [...DateSet];
 
@@ -172,8 +178,10 @@ function TimeSlots({ show, handleClose }) {
     setSelectedDate(e.target.value);
   };
 
-  const filteredTimings = TimingSelector.timings && TimingSelector.timings.filter((time) => (time.date === selectedDate) && !time.booked);
-  
+  const filteredTimings = Array.isArray(TimingSelector.timings)
+  ? TimingSelector.timings.filter((time) => time && time.date === selectedDate && !time.booked)
+  : [];
+
   const [formData,setFormData] = useState({
     'mentor':mentorId,
     'date':'',

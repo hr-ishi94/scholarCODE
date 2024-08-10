@@ -73,8 +73,8 @@ const AdminCourse = () => {
     const distinctModulesSet = new Set()
 
     taskSelector.tasks.filter((task)=>{
-            if(!distinctModulesSet.has(task.module)){
-            distinctModulesSet.add(task.module)
+            if(!distinctModulesSet.has(task.task_module)){
+            distinctModulesSet.add(task.task_module)
             return true
         }
         return false
@@ -130,8 +130,8 @@ const AdminCourse = () => {
                 {modulesArray.map((module)=>(
                     
                     <div key={module}>
-                            <h5 className='m-2'>{module}</h5>
-                            {taskSelector.tasks.filter((task)=>task.module==module).sort((a, b) => a.id - b.id).map((task)=>(
+                            <h5 className='m-2'>Module {module}</h5>
+                            {taskSelector.tasks.filter((task)=>task.task_module==module).sort((a, b) => a.id - b.id).map((task)=>(
                                 
                                 <ul key={task.id}>
                                 <li >{task.name}  <i className="mx-2 fa-regular text-success fa-pen-to-square" onClick={()=>handleTaskEditShow(task)}></i><i className="text-secondary fa-solid fa-trash" onClick={()=>handleTaskDeleteshow(task)}></i></li>
@@ -327,8 +327,9 @@ const CourseUpdateModal = ({coursePutShow,handleCourseClose,id})=>{
 const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task,id})=>{
     const [newTask,setNewTask]=useState({
       course:id,
-      module:"",
-      task:""
+      task_module:"",
+      task:"",
+      module:"0"
     })
     const dispatch = useDispatch()
     console.log(task.id)
@@ -372,10 +373,10 @@ const TaskUpdateModal = ({handleTaskEditClose,taskPutShow,task,id})=>{
                 <Form.Label>Module Name</Form.Label>
                 <Form.Control
                     type="text"
-                    name='module'
+                    name='task_module'
                     placeholder="Module Name"
                     onChange={handleChange}
-                    value= {newTask.module}
+                    value= {newTask.task_module}
                     autoFocus
                 />
                 </Form.Group>
@@ -413,7 +414,8 @@ const NewTaskModal =({handleNewTaskClose,addTaskShow,course,id})=>{
     const [newTask ,setNewTask] = useState({
         course:id,
         name:"",
-        module:""
+        module:"0",
+        task_module:null
     })
     const handleChange = (e)=>{
         
@@ -435,7 +437,7 @@ const NewTaskModal =({handleNewTaskClose,addTaskShow,course,id})=>{
             handleNewTaskClose()
             setNewTask({course:id,
               name:"",
-              module:""})
+              module:"0",task_module:null})
         }catch(error){
             console.log("failed to add new Task",error)
         }
@@ -451,13 +453,13 @@ const NewTaskModal =({handleNewTaskClose,addTaskShow,course,id})=>{
             </Modal.Header>
             <Modal.Body className='p-2'>
                 <Form.Group className="mb-3 " controlId="exampleForm.ControlInput1">
-                <Form.Label>Module Name</Form.Label>
+                <Form.Label>Module Number</Form.Label>
                 <Form.Control
                     type="text"
-                    name='module'
-                    placeholder="Module Name"
+                    name='task_module'
+                    placeholder="Module Number"
                     onChange={handleChange}
-                    value= {newTask.module}
+                    value= {newTask.task_module}
                     autoFocus
                 />
                 </Form.Group>

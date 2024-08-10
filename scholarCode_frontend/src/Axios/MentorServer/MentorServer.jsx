@@ -16,7 +16,7 @@ export const MentorRegister = async({first_name,last_name, email, username, desi
     }
     try{
         const response = await axiosInstance.post('/mentors/',newMentor)
-        console.log(response)
+        console.log('ss',response)
         return response.data
     }
     catch(error){

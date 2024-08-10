@@ -35,7 +35,10 @@ const MentorDashboard = () => {
         }
     }, [dispatch, WalletSelector.wallet]);
 
-    const courses = MentorCourseSelector.courses?.filter((course) => course.mentor === user_id).map((course) => course.id) || [];
+    const courses = Array.isArray(MentorCourseSelector.courses)
+  ? MentorCourseSelector.courses.filter((course) => course.mentor === user_id).map((course) => course.id)
+  : [];
+
     const userEnrolls = EnrolledCourseSelector.enrolls?.filter((enroll) => courses.includes(enroll.course.id)) || [];
     const wallet = WalletSelector?.wallet;
 

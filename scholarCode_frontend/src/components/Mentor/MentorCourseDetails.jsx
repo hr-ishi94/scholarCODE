@@ -82,8 +82,8 @@ const MentorCourseDetails = () => {
                 <h6 className='m-2'>{course.description}</h6>
                 <br />
                 <h6 className='m-2'>Total Modules: {modulesArray.length} nos </h6>
-                <h6 className='m-2'>Price: ₹{course.price}* only</h6>
-                <h6 className='m-2'>Course status: {course.status?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
+                {/* <h6 className='m-2'>Price: ₹{course.price}* only</h6>
+                <h6 className='m-2'>Course status: {course.status?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6> */}
                 <br />
                 <Row>
                         <h4>Syllabus</h4>

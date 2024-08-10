@@ -9,7 +9,6 @@ import { fetchMentors } from '../../Redux/Slices/MentorsSlice'
 import HomeLoader from '../Utils/HomeLoader'
 
 const Mentors = () => {
-    const [mentorsList, setMentorsList] = useState([])
     const dispatch = useDispatch()
     const {mentors,status, error} = useSelector((state)=>state.Mentors)
     
@@ -39,7 +38,7 @@ const Mentors = () => {
             </Row>
 
             <Row className='m-5 text-center'>
-                {mentors.filter((mentor)=>mentor.is_staff==true && mentor.is_active == true ).map((mentor)=>(
+                {mentors && mentors.filter((mentor)=>mentor.is_staff==true && mentor.is_active == true ).map((mentor)=>(
 
                 <Col sm={4}>
                     <img className="mentor_img " src={mentor.profile_img?mentor.profile_img:mentor_img} alt="" />

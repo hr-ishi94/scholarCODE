@@ -13,35 +13,38 @@ const LeftChat = ({Chat = ()=>{}}) => {
   console.log(access,'lo')
   const userId = jwtDecode(access).user_id
   const [chatUsers, setChatUsers] = useState([])
-  useEffect(()=>{
-    getChatUsers(userId)
-  },[])
+  console.log(Mentor_token,access,'lllko')
+  useEffect(() => {
+    const getChatUsers = async (userId) => {
+      try {
+        const res = await axiosChatInstance.get(`/chat_users/${userId}/`);
+        setChatUsers(res.data);
+      } catch (error) {
+        console.log('Error while fetching users:', error);
+      }
+    };
 
-  console.log(chatUsers,'hey')
-  const getChatUsers = async (userId)=>{
-    try{
-
-      const res = await axiosChatInstance.get(`/chat_users/${userId}/`)
-      setChatUsers(res.data)
-    }catch(error){
-      console.log('Error while fetching users:',error)
-    }
-
-  }
-
+    getChatUsers(userId);
+  }, [userId])
+  ;
+  console.log(chatUsers,'chatusers')
   return (
     <>
     <div id="plist" className="people-list p-2">
-      <div className="input-group p-2">
+      {/* <div className="input-group p-2">
           <div className="input-group-prepend ">
               <span className="input-group-text p-2"><i className="fa fa-search"></i></span>
           </div>
           <input type="text" className="form-control" placeholder="Search..."/>
-      </div>
+      </div> */}
       <ul className="list-unstyled chat-list mt-2 mb-0 px-2">
-        {chatUsers.map((user,index)=>
-          <ChatUserItem user= {user} userId ={userId} key={index} Chat={Chat}/>
-        )}
+      {Array.isArray(chatUsers) && chatUsers.length > 0 ? (
+        chatUsers.map((user, index) => (
+          <ChatUserItem user={user} userId={userId} key={user.id } Chat={Chat} />
+        ))
+      ) : (
+        <p>No users available.</p> // Display a message if there are no users
+      )}
           
       </ul>
     </div>

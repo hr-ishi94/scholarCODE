@@ -64,18 +64,18 @@ const JoinMentor = () => {
                 const registrationResponse = await MentorRegister(
                     formData
                 )
-                if(registrationResponse.id){
-                    setSubmit(true)
+                // if(registrationResponse.id){
+                    //     }
+                    
+                    if (registrationResponse.data.email){
+                        setSignupError(`Email error:${registrationResponse.data.email[0]}`)
+                        return
                     }
-                    
-                if (registrationResponse.data.email){
-                    setSignupError(`Email error:${registrationResponse.data.email[0]}`)
-                    
-                }
-                if (registrationResponse.data.username){
-                    setSignupError(`Username error:${registrationResponse.data.username[0]}`)
-                    
-                }
+                    if (registrationResponse.data.username){
+                        setSignupError(`Username error:${registrationResponse.data.username[0]}`)
+                        return
+                    }
+                    setSubmit(true)
                 console.log(registrationResponse,'api response')
             }   
             catch(error){
@@ -92,7 +92,7 @@ const JoinMentor = () => {
             
         }
     },[formData])
-
+    console.log(submit,'ll')
     if (loading === true){
         return <HomeLoader/>
     }

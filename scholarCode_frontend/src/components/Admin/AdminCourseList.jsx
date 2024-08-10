@@ -3,7 +3,7 @@ import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import './AdminCourseList.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
+import { addCourse, fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import { Link } from 'react-router-dom';
 import Loader from '../Utils/Loader';
 import Modal from 'react-bootstrap/Modal';
@@ -12,11 +12,15 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { toast } from 'react-toastify';
 import Pagination from './utils/Pagination';
+import { coursesAddInstance } from '../../Axios/AdminServer/AdminServer';
+import { fetchCategoryList } from '../../Redux/Slices/CategoryListSlice';
 
 const AdminCourseList = () => {
   const dispatch = useDispatch();
   const { courses, status } = useSelector((state) => state.Courses);
   const categorySelector = useSelector((state) => state.Categories);
+  
+  const [loading, setLoading] = useState(false)
 
   const [show, setShow] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +31,7 @@ const AdminCourseList = () => {
   const handleShow = () => setShow(true);
 
   useEffect(() => {
+    dispatch(fetchCategoryList())
     dispatch(fetchCoursesList());
   }, [dispatch]);
 
@@ -41,7 +46,7 @@ const AdminCourseList = () => {
   const sortedCourses = [...currentCourses].sort((a, b) => a.id - b.id);
 
 
-  if (status === 'loading') {
+  if (loading) {
     return <Loader />;
   }
 
@@ -74,7 +79,7 @@ const AdminCourseList = () => {
           </Col>
         </Row>
 
-        <AddCourseModal handleClose={handleClose} show={show} />
+        <AddCourseModal handleClose={handleClose} show={show} setLoading={setLoading}/>
 
         <Table striped bordered hover className="text-center">
           <thead>
@@ -128,7 +133,7 @@ export default AdminCourseList;
 
 
 
-const AddCourseModal = ({handleClose,show})=> {
+const AddCourseModal = ({handleClose,show,setLoading})=> {
 
   const [newCourse,SetNewCourse] = useState({
     name:"",
@@ -140,7 +145,6 @@ const AddCourseModal = ({handleClose,show})=> {
   })
 
   
-
   const handleChange = (e)=>{
     const {name,value} = e.target
       SetNewCourse((prevData)=>({
@@ -164,6 +168,8 @@ const AddCourseModal = ({handleClose,show})=> {
 
     
     if (isFormValid){
+      setLoading(true)
+      try{
 
         const res = await coursesAddInstance(newCourse)
         if (res.id){
@@ -177,6 +183,12 @@ const AddCourseModal = ({handleClose,show})=> {
           }
 
         }
+      }catch(error){
+        console.log(error,'error while adding course')
+      }
+      finally{
+        setLoading(false)
+      }
     }else{
       toast.error("All fields required")
     }

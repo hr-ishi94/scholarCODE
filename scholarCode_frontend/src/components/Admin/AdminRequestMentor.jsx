@@ -75,7 +75,7 @@ const AdminRequestMentor = () => {
             <br />
             {mentor.degree_certificate && <Button href={mentor.degree_certificate} className='text-primary px-2' target='_blank' variant=''>Download Certificate</Button>}
             <br />
-            <label className='m-2 text-danger'><h5>Request attempts: {mentor.request_attempt} out of 3</h5></label>
+            <label className='m-2 text-danger'><h5>Rejections: {mentor.request_attempt } out of 3</h5></label>
             <br />
             <Button className='p-2 w-25 ' variant='success' onClick={() => setApprovalModalShow(true)}>Approve</Button>
             <Button className='p-2 w-25 mx-3' variant='danger' onClick={()=> setRejectModalShow(true)} > Reject </Button>
@@ -174,7 +174,7 @@ const RejectModal = (props) => {
       const res = await mentorDeleteInstance(id,data );
       dispatch(mentorReject());
       navigate('/admin/mentors/');
-      if(props.mentor.request_attempt === 3){
+      if(props.mentor.request_attempt === 2){
 
         toast.success(`${props.mentor.first_name} has been rejected successfully`);
       }else{

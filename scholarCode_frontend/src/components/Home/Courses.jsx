@@ -55,22 +55,32 @@ const Courses = () => {
       dispatch(fetchAllEnrolledCourses())
     }
   },[dispatch])
-  console.log(EnrolledCourseSelector.enrolls,user_id,'lop')
+  // console.log(EnrolledCourseSelector.enrolls,user_id,'lop')
 
   const CourseIdSet = new Set()
   const EnrolledSet = new Set()
   const MentorCourseSet = new Set()
 
   
-  MentorCourseSelector && MentorCourseSelector.courses.map((course)=>{
-    CourseIdSet.add(course.course)
-    MentorCourseSet.add(course.id)
-  })
+//  if (courses) {
+//    MentorCourseSelector && MentorCourseSelector.courses.map((course)=>{
+//       CourseIdSet.add(course.course)
+//       MentorCourseSet.add(course.id)
+//     })
+
+//  } 
+if (MentorCourseSelector && Array.isArray(MentorCourseSelector.courses)) {
+  MentorCourseSelector.courses.forEach((course) => {
+    CourseIdSet.add(course.course);
+    MentorCourseSet.add(course.id);
+  });
+}
  
+
   user_id && EnrolledCourseSelector.enrolls.filter((course)=>course.user.id === user_id).map((course)=>EnrolledSet.add(course.course.course))
   
   
-  const activeCourses = courses.filter((course)=>course.status === true && CourseIdSet.has(course.id))
+  const activeCourses =courses && courses.filter((course)=>course.status === true && CourseIdSet.has(course.id))
   
   const renderRows = (courses) => {
     const rows = [];

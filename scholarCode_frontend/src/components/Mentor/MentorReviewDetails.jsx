@@ -123,7 +123,7 @@ const MentorReviewDetails = () => {
     const ReviewTimingSlots = ReviewTimings.timings
     .filter((timing) => {
       if(CurrCourse.next_review_date === currentDate){
-        return timing.date === currentDate && timing.time > currentTime && !timing.booked
+        return timing.date === currentDate && timing.time >= currentTime && !timing.booked
       }
       else{
         return CurrCourse.next_review_date === timing.date && !timing.booked
@@ -365,7 +365,7 @@ const MentorReviewDetails = () => {
         </>
         
       }
-      <ReviewConfirmModal handleConfirmClose={handleConfirmClose} review={review} userid = {CurrCourse.user} mentorid = {mentorCourse.mentor} courseid = {params.id}/>
+      <ReviewConfirmModal handleConfirmClose={handleConfirmClose} review={review} userid = {CurrCourse.user.id} mentorid = {mentorCourse.mentor} courseid = {params.id}/>
       {
         ! button && 
         <Button className='p-2 text-light' style={{backgroundColor:'#12A98E'}} variant='' onClick={handleShow}>Submit Review</Button>

@@ -32,16 +32,20 @@ const MentorCoursesList = () => {
     const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
 
     const MentorCourseSet = new Set()
-    MentorCourseSelector.courses && MentorCourseSelector.courses.filter((course)=>course.mentor === id).map((course)=>MentorCourseSet.add(course.course))
-    console.log(MentorCourseSet,'hiiii')
+    if (Array.isArray(MentorCourseSelector.courses)) {
+        MentorCourseSelector.courses
+          .filter((course) => course.mentor === id)
+          .forEach((course) => MentorCourseSet.add(course.course));
+      }
 
+      
     useEffect(()=>{
         dispatch(fetchMentorCourse())
         dispatch(fetchCoursesList())
     },[dispatch])
 
 
-    console.log(mentorCourseSelector,'df')
+    // console.log(mentorCourseSelector,'df')
     const sortedCourses = [];
    
     if (mentorCourseSelector.courses && mentorCourseSelector.courses.length > 0) {
@@ -139,7 +143,7 @@ const AddCourseModal = ({handleClose,show,mentorId,courseSet})=> {
             [name]:Number(value)
         }))
     }
-    console.log(formData,'jjjj')
+    // console.log(formData,'jjjj')
 
     const handleSubmit = async(e)=>{
         e.preventDefault()
@@ -147,8 +151,8 @@ const AddCourseModal = ({handleClose,show,mentorId,courseSet})=> {
             const res = await MentorCourseAssign(formData)
             if(res.status === 200 || res.status === 201){
                 toast.success("Successfully assigned new course")
-                dispatch(addCourse(res.data))
                 handleClose()
+                dispatch(addCourse(res.data))
             }
             else{
                 if (res.data.non_field_errors){

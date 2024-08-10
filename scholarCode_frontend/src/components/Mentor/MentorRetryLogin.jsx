@@ -30,7 +30,7 @@ const MentorRetryLogin = () => {
       console.log(res,'loi')
       navigate('/mentor/request/form/',{state:{mentorData:res}}); // Redirect to retry form
     } catch (error) {
-      toast.error('Login failed');
+      toast.error('Invalid credentials');
     }
   };
 

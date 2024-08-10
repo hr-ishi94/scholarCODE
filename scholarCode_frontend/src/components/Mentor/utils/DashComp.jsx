@@ -12,7 +12,7 @@ const DashComp = ({title, count,revenue}) => {
   return (
     <div className='p-3' style={dash_style}>
       <h3>{title}</h3>
-      <h3 style={{marginLeft:'10em',marginTop:'20px'}}>{revenue?`Rs ${count}` :`${count} Nos`}</h3>
+      <h3 style={{marginLeft:'10em',marginTop:'20px'}}>{revenue?`Rs ${count?count:0}` :`${count?count:0} Nos`}</h3>
     </div>
   )
 }

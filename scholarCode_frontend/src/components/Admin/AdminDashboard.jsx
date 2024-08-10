@@ -8,6 +8,7 @@ import { fetchadminTransactions } from '../../Redux/Slices/AdminTransactionSlice
 import { payment_ids } from '../../Axios/AdminServer/AdminServer';
 import { fetchAdminWallet } from '../../Redux/Slices/AdminWalletSlice';
 import Pagination from './utils/Pagination';
+import { course } from '../../Axios/Urls/EndPoints';
 
 const AdminDashboard = () => {
     const UserSelector = useSelector((state)=>state.userList);
@@ -16,7 +17,7 @@ const AdminDashboard = () => {
     const AdminWalletSelector = useSelector((state)=>state.AdminWallet);
     const TransactionSelector = useSelector((state)=>state.AdminTransactions);
     const dispatch = useDispatch();
-    const activeMentors = MentorsSelector.mentors.filter((course)=> course.is_active === true);
+    const activeMentors = MentorsSelector.mentors.filter((mentor)=> mentor.is_active === true && mentor.is_staff === true);
     const [paymentIds, setPaymentIds ] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -85,7 +86,7 @@ const AdminDashboard = () => {
                     <DashComp title={'Total Courses'} count={CourseSelector.courses.length}/>
                 </Col>
                 <Col sm={6}>
-                    <DashComp title={'Total Revenue'} count = {wallet.balance} revenue/>
+                    <DashComp title={'Total Revenue'} count = {wallet && wallet.balance} revenue/>
                 </Col>
             </Row>
             <br />

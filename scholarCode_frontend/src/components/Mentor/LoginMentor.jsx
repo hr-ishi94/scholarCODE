@@ -7,6 +7,7 @@ import { MentorLogin } from '../../Redux/Slices/MentorAuthSlice';
 import { toast } from 'react-toastify';
 import { Navigate, useNavigate } from 'react-router-dom';
 import HomeLoader from '../Utils/HomeLoader';
+import Loader from '../Utils/Loader';
 
 const LoginMentor = () => {
   
@@ -38,14 +39,14 @@ const LoginMentor = () => {
  
     })
     if (isFormValid){
-      setLoading(true)
+      // setLoading(true)
       try{
         const res = await dispatch(MentorLogin(authData))
 
         if(res.payload.error === 'Authentication Failed'){
           toast.error('Invalid credentials')
         }else{
-          navigate('/mentor/reviews/')
+          navigate('/mentor/dashboard/')
           toast.success('Successfully logged in')
           localStorage.setItem('access',res.payload.access)
           localStorage.setItem('refresh',res.payload.refresh)
@@ -68,7 +69,7 @@ const LoginMentor = () => {
   },[authData])
 
   if(loading){
-    return <HomeLoader/>
+    return <Loader/>
   }
 
   return (

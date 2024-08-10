@@ -21,7 +21,7 @@ import avatar from '../../assets/avatar.jpg'
 import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice'
 import { clearLinks } from '../../Redux/Slices/ZegoCallSlice'
 import ReactStars from 'react-stars'
-import { Vurl } from '../../Axios/Urls/EndPoints'
+import { base_url, Vurl } from '../../Axios/Urls/EndPoints'
 import TaskSection from './TaskSection'
 import { adminTransactionPost } from '../../Axios/AdminServer/AdminServer'
 import { jwtDecode } from 'jwt-decode'
@@ -44,7 +44,7 @@ const SingleCourse = () => {
   const Authenticated = UserToken?.is_authenticated
   const access = UserToken?.access||null
   const user_id =access? jwtDecode(access).user_id:null
-  // console.log('esf',user_id)
+  console.log('esf',user_id)
 
   
   useEffect(()=>{
@@ -181,7 +181,7 @@ const SingleCourse = () => {
     }
   
     // creating a new order and sending order ID to backend
-    const result = await axios.post("http://127.0.0.1:8000/course/razorpay_order/", {
+    const result = await axios.post(`${base_url}course/razorpay_order/`, {
         "email" : userSelector.user.email,
         'course_id':course.id,
         'amount':course.price
@@ -216,7 +216,7 @@ const SingleCourse = () => {
             color: "#12A98E",
         },
         handler: async function (response) {
-          const verificationResult = await axios.post("http://127.0.0.1:8000/course/razorpay_callback/", response);
+          const verificationResult = await axios.post(`${base_url}course/razorpay_callback/`, response);
           console.log(verificationResult.data.payment,'verifyio')
           if (verificationResult.data.status === 'Payment Done') {
             enrollCourse(user_id)
