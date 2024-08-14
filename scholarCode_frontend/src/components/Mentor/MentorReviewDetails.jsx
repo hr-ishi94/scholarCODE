@@ -7,8 +7,6 @@ import Modal from 'react-bootstrap/Modal';
 import  Table  from 'react-bootstrap/Table'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchUser } from '../../Redux/Slices/UserDetailsSlice'
-import { enrollPut, fetchEnrolledCourses } from '../../Redux/Slices/Userside/EnrolledCoursesSlice'
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
 import { MentorPatchReviewTimings, MentorPostReviewTimings, MentorWalletPatch, ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
 import { EnrollCourse, EnrollPatch, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
@@ -117,13 +115,13 @@ const MentorReviewDetails = () => {
 
     const [currTime,setCurrTime] = useState(CurrCourse.review_time)  
     
-    const isDisabled = !((currentTime >= currTime ) && (currentDate === CurrCourse.next_review_date))
+    const isDisabled = !((currentTime >= CurrCourse.review_time ) && (currentDate === CurrCourse.next_review_date))
     const [timeSlot,setTimeSlot] = useState(false)
 
     const ReviewTimingSlots = ReviewTimings.timings
     .filter((timing) => {
       if(CurrCourse.next_review_date === currentDate){
-        return timing.date === currentDate && timing.time >= currentTime && !timing.booked
+        return timing.date == currentDate && timing.time >= currentTime && !timing.booked
       }
       else{
         return CurrCourse.next_review_date === timing.date && !timing.booked
@@ -148,7 +146,7 @@ const MentorReviewDetails = () => {
             booked:true
           }
           const res = await MentorPatchReviewTimings(mentorId,timeForm)
-          console.log(res,'loi')
+          // console.log(res,'loi')
           dispatch(patchTime(res))
           const payload = { enroll_id: CurrCourse.id, formData: {
             ...CurrCourse,

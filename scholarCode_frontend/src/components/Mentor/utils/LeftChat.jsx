@@ -10,10 +10,10 @@ const LeftChat = ({Chat = ()=>{}}) => {
   const Mentor_token = useSelector((state)=>state.MentorToken) 
   const User_token = useSelector((state)=>state.UserToken) 
   const access = Mentor_token?.access || User_token?.access;
-  console.log(access,'lo')
+  // console.log(access,'lo')
   const userId = jwtDecode(access).user_id
   const [chatUsers, setChatUsers] = useState([])
-  console.log(Mentor_token,access,'lllko')
+  // console.log(Mentor_token,access,'lllko')
   useEffect(() => {
     const getChatUsers = async (userId) => {
       try {
@@ -27,7 +27,7 @@ const LeftChat = ({Chat = ()=>{}}) => {
     getChatUsers(userId);
   }, [userId])
   ;
-  console.log(chatUsers,'chatusers')
+  // console.log(chatUsers,'chatusers')
   return (
     <>
     <div id="plist" className="people-list p-2">

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 const ChatArea = ({ user, username }) => {
   const Mentor_token = useSelector((state) => state.MentorToken);
   const User_token = useSelector((state) => state.UserToken);
-  console.log('mentor',Mentor_token,'user',User_token)
+  // console.log('mentor',Mentor_token,'user',User_token)
   const access = Mentor_token?.access || User_token?.access;
   const userId = jwtDecode(access).user_id;
   const [messages, setMessages] = useState([]);
@@ -51,6 +51,7 @@ const ChatArea = ({ user, username }) => {
   const getSocket = () => {
     if (user && access) {
       const newSocket = new WebSocket(`${SOCKET}/chat/${user}/?token=${access}`);
+      console.log("socket--->",newSocket)
       setSocket(newSocket);
 
       newSocket.onopen = () => {

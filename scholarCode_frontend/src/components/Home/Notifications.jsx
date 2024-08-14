@@ -92,7 +92,7 @@ const Notifications = () => {
         className={`${AdminToken && AdminToken.access?"text-light mt-3 mx-3":'text-dark'} notification-button`} 
         onClick={handleButtonClick}
       >
-        <i className="fa-solid fa-bell"></i>
+        <i className="fa-solid fa-bell "></i>
         {unreadNotifications.length > 0 && (
           <span className="notification-badge px-1">{unreadNotifications.length}</span>
         )}

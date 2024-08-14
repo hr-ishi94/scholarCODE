@@ -133,6 +133,7 @@ const SignUp = () => {
             <br />
             <br />  
             <h5>The activation link has been sent to your email please confirm your registration.</h5>
+            <h6>If Verified. <Link to={'/user/login/'} style={{textDecoration:'None'}}>Please Login</Link></h6>
             <br />
             <br />
             <br />
