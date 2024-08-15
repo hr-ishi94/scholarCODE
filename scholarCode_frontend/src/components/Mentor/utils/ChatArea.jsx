@@ -113,17 +113,17 @@ const ChatArea = ({ user, username }) => {
               </a>
               <div className="chat-about">
                 <h5>{username || 'user'}</h5>
-                <Badge status="success" /> online
+                {/* <Badge status="success" /> online */}
               </div>
             </div>
           </Col>
-          <Col sm={1}>
+          {/* <Col sm={1}>
             <Button className='text-light rounded-circle mt-3' variant='' onClick={handleVcall}>
               <h5 className='pt-2 px-2'>
                 <i className="fa-solid fa-video"></i>
               </h5>
             </Button>
-          </Col>
+          </Col> */}
         </Row>
       </div>
       <div ref={chatContainerRef} className="chat-area">

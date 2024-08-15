@@ -14,11 +14,14 @@ import { toast } from 'react-toastify';
 import Pagination from './utils/Pagination';
 import { coursesAddInstance } from '../../Axios/AdminServer/AdminServer';
 import { fetchCategoryList } from '../../Redux/Slices/CategoryListSlice';
+import { fetchMentorCourse } from '../../Redux/Slices/mentorSide/MentorCourseSlice';
 
 const AdminCourseList = () => {
   const dispatch = useDispatch();
   const { courses, status } = useSelector((state) => state.Courses);
   const categorySelector = useSelector((state) => state.Categories);
+  const MentorCoursesSelector = useSelector((state)=>state.MentorCourse)
+  // console.log(MentorCoursesSelector,'kozhi')
   
   const [loading, setLoading] = useState(false)
 
@@ -33,6 +36,7 @@ const AdminCourseList = () => {
   useEffect(() => {
     dispatch(fetchCategoryList())
     dispatch(fetchCoursesList());
+    dispatch(fetchMentorCourse())
   }, [dispatch]);
 
   const filteredCourses = courses.filter((course) =>

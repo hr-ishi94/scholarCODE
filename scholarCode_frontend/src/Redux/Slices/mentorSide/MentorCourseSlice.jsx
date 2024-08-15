@@ -19,7 +19,13 @@ const MentorCourseSlice = createSlice({
     initialState:initialstate.MentorCourses,
     reducers:{
         addCourse :(state,action)=>{
-            state.courses=[...state.courses,action.payload]
+            if(state.courses.length===0){
+
+                state.courses=action.payload
+            }else{
+                state.courses=[...state.courses,action.payload]
+
+            }
         },
         clearCourse:(state)=>{
             return initialstate.MentorCourses

@@ -48,28 +48,31 @@ const MentorReviewList = () => {
 
 
 
-    const MentorCourseSet = new Set()
-    if (MentorCourseSelector.courses){
-        for(let course of MentorCourseSelector.courses){
-            if(!MentorCourseSet.has(course.id) && course.mentor === MentorId){
-                MentorCourseSet.add(course.id)
-            }
-        }
-    } 
-    const CoursesObject = {}
-    if(MentorCourseSelector.courses && CourseSelector.courses){
+      const MentorCourseSet = new Set();
+      if (Array.isArray(MentorCourseSelector.courses)) {
+          for (let course of MentorCourseSelector.courses) {
+              if (!MentorCourseSet.has(course.id) && course.mentor === MentorId) {
+                  MentorCourseSet.add(course.id);
+              }
+          }
+      }
+      
+      const CoursesObject = {};
 
-        for(let mentorCourse of MentorCourseSelector.courses){
-            for (let course of CourseSelector.courses){
-                if(mentorCourse.course === course.id){
-                    CoursesObject[mentorCourse.id] = course.name
-                    
-                }
-                
-            }
-        }
-    }
-    console.log(CoursesObject,'sed')
+      // Ensure both MentorCourseSelector.courses and CourseSelector.courses are arrays before iterating
+      if (Array.isArray(MentorCourseSelector.courses) && Array.isArray(CourseSelector.courses)) {
+          for (let mentorCourse of MentorCourseSelector.courses) {
+              for (let course of CourseSelector.courses) {
+                  // Check if mentorCourse.course matches course.id
+                  if (mentorCourse.course === course.id) {
+                      // Assign the course name to the mentorCourse ID
+                      CoursesObject[mentorCourse.id] = course.name;
+                  }
+              }
+          }
+      }
+      
+    // console.log(CoursesObject,'sed')
 
     const MentorCoursesList = EnrolledCourseSelector && EnrolledCourseSelector.enrolls.filter((enroll)=>MentorCourseSet.has(enroll.course.id))
 

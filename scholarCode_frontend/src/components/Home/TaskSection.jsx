@@ -160,17 +160,11 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         </div>
         
       ))}
-      {EnrolledCourse && EnrolledCourse.is_completed?
+      {EnrolledCourse && EnrolledCourse.certificate?
       <Col sm={8}>
-        <h4>You have successfully completed this course with overall score of ___
-          <br />
-          <br />
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-          <span className="fa fa-star checked" style={{color:'#ffd700'}}></span>
-        </h4>
+        <br />
+
+        <h6>You have successfully completed this course please download the certificate</h6>
         
         <Button
           className='p-2 my-3 text-light'
@@ -184,7 +178,11 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         </Button>
 
       </Col>:
+      <>
+      <br />
+      <h6 className='text-primary'>Mentor will issue the certificate soon!</h6>
       <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
+      </>
       
     }
     

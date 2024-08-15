@@ -49,6 +49,13 @@ const MentorRetry = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const isFormValid = Object.values(formData).every((value) => {
+      if (typeof value === 'string') {
+          return value.trim() !== "";
+      }
+     
+      return true; // Skip non-string values in the validation
+  });
     const { password, confirm_password } = formData;
 
     if (password !== confirm_password) {
@@ -57,15 +64,20 @@ const MentorRetry = () => {
     }
 
     setLoading(true);
-    try {
-      await mentorRetryUpdate(formData); // Update mentor info
-      setSubmit(true);
-      toast.success('Your form has been submitted successfully!');
-    } catch (error) {
-      // setError('Failed to update the mentor information');
-      toast.error('Please provide all the details');
-    } finally {
-      setLoading(false);
+    if (isFormValid){
+      
+      try {
+       const res =  await mentorRetryUpdate(formData); // Update mentor info
+       console.log(res,'sss') 
+       setSubmit(true);
+        toast.success('Your form has been submitted successfully!');
+      } catch (error) {
+        toast.error('Failed to update the mentor information');
+      } finally {
+        setLoading(false);
+      }
+    }else{
+      toast.error('Please provide all details')
     }
   };
 

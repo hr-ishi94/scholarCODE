@@ -21,7 +21,7 @@ const MentorReviewCount = ({mentor_id}) => {
   },[dispatch])
 
   const wallet = WalletSelector && WalletSelector.wallet
-  console.log(WalletSelector,'kkk')
+  // console.log(WalletSelector,'kkk')
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
@@ -51,13 +51,18 @@ const MentorReviewCount = ({mentor_id}) => {
         <Card style={{ width: '18rem', backgroundColor:'#BCFFDB' }} className='p-2 text-center w-100 h-100 my-3 py-3' >
           <Card.Body>
             <Card.Title><strong> Mentor Wallet</strong></Card.Title>
-            <br />
+            {/* <br /> */}
             <Card.Text>
-              <h6>Mentor Balance Review Count : {wallet.review_count}Nos</h6>
-              <h5>Mentor Payment Balance : Rs {amount.toFixed(2)} </h5>
-              <h6>Mentor Wallet: Rs { balance.toFixed(2)} </h6>
+              <h6>Mentor Balance Review Count : {wallet.review_count} nos</h6>
+              <h5>Mentor Payment Balance : Rs {amount.toFixed(2)} /-</h5>
+              <h6>Mentor Wallet: Rs { balance.toFixed(2)} /-</h6>
+              {amount!=0
+              &&<>
+              
               <h6>Payment Status :  <Badge pill bg="primary" className='p-1'>Pending</Badge></h6>
               <Button className='p-1 text-light' style={{backgroundColor:'#12A98E'}} variant='' onClick={handleShow}>Already Paid?</Button>
+              </>
+              }
             </Card.Text>
             
           </Card.Body>
@@ -108,7 +113,7 @@ function PaymentModal({show,handleClose, wallet,formData}) {
   const handleSubmit = useCallback(async()=>{
     try{
       const res = await MentorWalletPatch(wallet.mentor,formData)
-      console.log(res,'kkki')
+      // console.log(res,'kkki')
       if (res.wallet.id ){
         toast.success('Confirmed Payment')
         dispatch(addTransaction(res.transaction))

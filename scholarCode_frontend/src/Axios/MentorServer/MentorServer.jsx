@@ -200,6 +200,7 @@ export const mentorRetryLogin = async (credentials) => {
       // Assuming mentor ID is available in the mentorData object
       const { id, ...data } = mentorData;
       const response = await axiosFormInstance.put(`api/mentor-retry-update/${id}/`, data);
+      console.log(response,'respp')
       return response.data; // Return response data after update
     } catch (error) {
       console.error('Error updating mentor:', error.response ? error.response.data : error.message);

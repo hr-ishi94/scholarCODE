@@ -18,7 +18,7 @@ const MentorTableData=({props,index,indexOfFirstMentor})=>{
  <>
     <td>{indexOfFirstMentor+index+1}</td>
     <td>{mentor.first_name } {mentor.last_name} </td>
-    <td>04</td>
+    <td>{mentor.designation}</td>
     <td>{mentor.email}</td>
     <td>{mentor.is_active?<span className='text-success'>Active</span>:<span className='text-danger'>Inactive</span>}</td>
     
@@ -89,7 +89,7 @@ const AdminMentorList = () => {
         <tr>
           <th>id</th>
           <th>Name</th>
-          <th>No. of Courses</th>
+          <th>Designation</th>
           <th>Email</th>
           <th>Status</th>
           <th>Action</th>

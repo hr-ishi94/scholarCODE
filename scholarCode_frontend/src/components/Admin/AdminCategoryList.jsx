@@ -82,7 +82,7 @@ const AdminCategoryList = () => {
         <tr>
           <th>id</th>
           <th>Categories</th>
-          <th>No. of Courses</th>
+          {/* <th>No. of Courses</th> */}
           {/* <th>No. of Mentors</th>
           <th>Status</th> */}
           <th>Action</th>
@@ -94,7 +94,7 @@ const AdminCategoryList = () => {
         <tr key={index}>
           <td>{indexOfFirstCategory+ index+1}</td>
           <td>{category.name}</td>
-          <td>04</td>
+          {/* <td>04</td> */}
           {/* <td>05</td>
           <td>Active</td> */}
           <td><Link to={`/admin/category/${category.id}/`}><Button className='p-1 m-1 text-light' variant='None' style={{backgroundColor:"#12A98E"}}>View</Button></Link></td>

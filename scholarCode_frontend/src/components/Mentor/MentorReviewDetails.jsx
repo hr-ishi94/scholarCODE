@@ -119,7 +119,7 @@ const MentorReviewDetails = () => {
     const [timeSlot,setTimeSlot] = useState(false)
 
     const ReviewTimingSlots = ReviewTimings.timings
-    .filter((timing) => {
+    ?.filter((timing) => {
       if(CurrCourse.next_review_date === currentDate){
         return timing.date == currentDate && timing.time >= currentTime && !timing.booked
       }
@@ -128,7 +128,7 @@ const MentorReviewDetails = () => {
       }
     }
     )
-    console.log(ReviewTimingSlots,'loi')    
+    // console.log(ReviewTimingSlots,'loi')    
     
     const TimeChange = async (e, time,id) => {
       setCurrTime(time);
@@ -316,7 +316,7 @@ const MentorReviewDetails = () => {
       {currTime && !timeSlot ?<Button className='text-primary ' variant='' onClick={()=>setTimeSlot(true)}>Change Time</Button>:(
   <>
     <p className='text-secondary'>Available time slots:</p>
-    {ReviewTimingSlots.length > 0 ? (
+    {ReviewTimingSlots?.length > 0 ? (
       ReviewTimingSlots
         .filter((timing) => (timing.date === CurrCourse.next_review_date ) && !timing.booked)
         .map((timing) => (
@@ -506,8 +506,8 @@ function ReviewMarkModal({handleClose,show,CurrCourse,mentor_id}) {
       const res = await ReviewMarkPost(formData)
       const ne = await EnrollPatch(CurrCourse.user.id,enrollForm)
       const walletPatch = await MentorWalletPatch(mentor_id,mentorWalletForm)
-      console.log(walletPatch,'s.ll')
-      
+      // console.log(walletPatch,'s.ll')
+      console.log(ne,'leo')
       if (res.id){
         const payload = { 
           enroll_id: CurrCourse.id,

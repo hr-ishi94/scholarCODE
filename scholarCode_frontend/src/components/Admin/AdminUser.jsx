@@ -11,6 +11,8 @@ import { userstatusInstance } from '../../Axios/AdminServer/AdminServer'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Loader from '../Utils/Loader'
+import { fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice'
+import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice'
 
 const AdminUser = () => {
 
@@ -19,6 +21,8 @@ const AdminUser = () => {
 
     const dispatch = useDispatch()
     const {user, status, error} =  useSelector((state)=>state.User)
+    const EnrolledCourseSelector = useSelector((state)=>state.AllEnrolls)
+    const CoursesSelector = useSelector((state)=>state.Courses)
 
     const [modalShow, setModalShow] = React.useState(false);
     
@@ -32,13 +36,14 @@ const AdminUser = () => {
       toast.error(error)
     }
     useEffect(()=>{
-     
+      dispatch(fetchCoursesList())
+      dispatch(fetchAllEnrolledCourses())
       dispatch(fetchUser(params.id))
       
     },[dispatch])
 
-
-    
+    const userEnrolled = EnrolledCourseSelector.enrolls?.filter((enroll)=>enroll.user.id === user.id)
+    console.log(userEnrolled,'loi')
     if (status === "loading") {
       return <Loader />;
     }
@@ -61,14 +66,11 @@ const AdminUser = () => {
           <br />
           <Row>
             <Col sm={4}>
-            <h6 className='m-2'>First name: {user.first_name}</h6>
-            <br />
-            <h6 className='m-2'>Last name: {user.last_name}</h6>
-            <br />
+            <h6 className='m-2'>First name: {user.first_name || <span className='text-secondary'>-NA-</span> }</h6>
+            
+            <h6 className='m-2'>Last name: {user.last_name || <span className='text-secondary'>-NA-</span>}</h6>
             <h6 className='m-2'>Email: {user.email}</h6>
-            <br />
-            <h6 className='m-2'>Designation: {user.designation}</h6>
-            <br />
+            <h6 className='m-2'>Designation: {user.designation || <span className='text-secondary'>-NA-</span>}</h6>
             <h6 className='m-2'>Status: {user.is_active?<span className='bg-success p-1'>ACTIVE</span>:<span className='bg-danger p-1'>INACTIVE</span>}</h6>
             <br />
             <Button className="p-2" variant={user.is_active?"danger":"success"} onClick={() => setModalShow(true)}>{user.is_active?"Block User":"Unblock User"}</Button>
@@ -79,17 +81,19 @@ const AdminUser = () => {
            
             
           </Row>
-          {/* <br />
-          <h4>Courses Enrolled</h4>
           <br />
-          <h5>course 1</h5>
-          <h6>Current Week</h6>
+          <h4>Courses Enrolled : {userEnrolled.length} nos</h4>
           <br />
-          <h5>course 1</h5>
-          <h6>Current Week</h6>
+          {userEnrolled?.map((enroll)=>
+            <div key={enroll.id}>
+            {CoursesSelector.courses?.filter((course)=>course.id === enroll.course.course ).map((course)=>
+          <h5>course :{course.name}</h5>
+            )}
+          <h6 className='text-secondary'>status:{enroll.is_completed?<span className='text-sucess'>Completed</span>:<span className='text-primary'> ongoing</span>}</h6>
+            </div >
+          )}
           <br />
-          <h5>course 1</h5>
-          <h6>Current Week</h6> */}
+          
           
         </Col>
 

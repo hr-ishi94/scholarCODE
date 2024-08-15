@@ -64,8 +64,9 @@ const JoinMentor = () => {
                 const registrationResponse = await MentorRegister(
                     formData
                 )
-                // if(registrationResponse.id){
-                    //     }
+                if(registrationResponse.id){
+                    setSubmit(true)
+                        }
                     
                     if (registrationResponse.data.email){
                         setSignupError(`Email error:${registrationResponse.data.email[0]}`)
@@ -75,7 +76,6 @@ const JoinMentor = () => {
                         setSignupError(`Username error:${registrationResponse.data.username[0]}`)
                         return
                     }
-                    setSubmit(true)
                 console.log(registrationResponse,'api response')
             }   
             catch(error){

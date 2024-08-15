@@ -18,19 +18,23 @@ const MentorRetryLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = authData;
-    
-    if (!email.trim() || !password.trim()) {
-      toast.error("All fields are required");
-      return;
-    }
-    
-    try {
-      const res = await mentorRetryLogin(authData); // Dispatch login action
-      console.log(res,'loi')
-      navigate('/mentor/request/form/',{state:{mentorData:res}}); // Redirect to retry form
-    } catch (error) {
-      toast.error('Invalid credentials');
+    const isFormValid = Object.values(authData).every((value) => {
+      if (typeof value === 'string') {
+          return value.trim() !== "";
+      }
+      return true; 
+  });
+    if(isFormValid){
+
+      try {
+        const res = await mentorRetryLogin(authData); // Dispatch login action
+        console.log(res,'loi')
+        navigate('/mentor/request/form/',{state:{mentorData:res}}); // Redirect to retry form
+      } catch (error) {
+        toast.error('Invalid credentials');
+      }
+    }else{
+      toast.error("All Fields required")
     }
   };
 

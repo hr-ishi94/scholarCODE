@@ -430,6 +430,15 @@ const NewTaskModal =({handleNewTaskClose,addTaskShow,course,id})=>{
     const dispatch = useDispatch()
     const handleTaskSubmit = async(e)=>{
         e.preventDefault()
+        const isFormValid = Object.values(newTask).every((value) => {
+          if (typeof value === 'string') {
+              return value.trim() !== "";
+          }
+         
+          return true; // Skip non-string values in the validation
+      });
+      if (isFormValid){
+console.log('hiii')
         try{
             const res = await addTaskInstance(id,newTask)
             console.log('new task added ',res)
@@ -441,6 +450,9 @@ const NewTaskModal =({handleNewTaskClose,addTaskShow,course,id})=>{
         }catch(error){
             console.log("failed to add new Task",error)
         }
+      }else{
+        toast.error('All fields required!')
+      }
 
     }
 

@@ -29,7 +29,7 @@ const AllEnrolledCoursesSlice = createSlice({
             if (index !== -1) {
                 state.enrolls[index] = formData;
             }
-            console.log('hrishi2',state.enrolls)
+            console.log('hrishi2',state.enrolls,index)
         },
         clearAllEnrolls:(state)=>{
             state.enrolls = []

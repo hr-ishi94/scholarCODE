@@ -64,7 +64,7 @@ const paginate = (pageNumber) =>setCurrentPage(pageNumber)
         <tr>
           <th>id</th>
           <th>Name</th>
-          <th>No. of Courses</th>
+          {/* <th>No. of Courses</th> */}
           <th>Email</th>
           <th>Status</th>
           <th>Action</th>
@@ -75,7 +75,7 @@ const paginate = (pageNumber) =>setCurrentPage(pageNumber)
         <tr key={user.id}  >
           <td>{indexofFirstUser + index+1}</td>
           <td>{user.first_name?user.first_name+ " "+user.last_name:<span className='text-secondary'>-NA-</span>}</td>
-          <td>04</td>
+          {/* <td>04</td> */}
           <td>{user.email}</td>
           <td>{user.is_active?<span className='text-success'>Active</span>:<span className='text-danger'>InActive</span>}</td>
           <td><Link to={`/admin/user/${user.id}/`}><Button className="p-1 m-1 text-light"style={{backgroundColor:"#12A98E"}} variant=''>View</Button></Link></td>

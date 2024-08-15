@@ -39,14 +39,15 @@ const MentorUserList = () => {
     const mentorCourseSet = new Set()
     const enrollUserSet = new Set()
     
-    console.log(allEnrolledCourses.enrolls,'enro')
-    mentorCourseSelector.courses.map((course)=>{
-        if (course.mentor === mentorId){
-
-            mentorCourseSet.add(course.id)
-        }
-    })
-
+    // console.log(allEnrolledCourses.enrolls,'enro')
+    if (Array.isArray(mentorCourseSelector.courses)) {
+      mentorCourseSelector.courses.forEach((course) => {
+          if (course.mentor === mentorId) {
+              mentorCourseSet.add(course.id);
+          }
+      });
+  }
+  
     allEnrolledCourses.enrolls.filter((enroll)=>mentorCourseSet.has(enroll.course.id)).map((enroll)=>{
         enrollUserSet.add(enroll.user.id)
     })

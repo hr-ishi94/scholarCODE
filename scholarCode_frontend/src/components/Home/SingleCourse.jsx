@@ -90,7 +90,7 @@ const SingleCourse = () => {
     window.open(`${Vurl}meeting/${user_id}/${mentorData.id}/${EnrolledCourse.id}/`)
   },[])
   // Handle message me
-  const handleChat = useCallback(async()=>{
+  const handleChat = async()=>{
     const ids = {
       'user_id1' :mentorData.id,
       'user_id2' : user_id
@@ -98,14 +98,14 @@ const SingleCourse = () => {
     try{
       const res = await addChatRoom(ids)
       window.open(`${Vurl}chat/`)
-      console.log(res)
+      console.log(res,'kieru')
       // navigate('/chat/')
       
     }catch(error){
       console.log(error,"error in chat")
     }
 
-  },[])
+  }
 
   
   const tasks  = TaskSelector.tasks
