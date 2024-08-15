@@ -204,6 +204,9 @@ const Homelayout = () => {
                 <Col sm={1} className='copyright'>Privacy policy</Col>
                 <Col sm={1} className='copyright'>Web use policy</Col>
                 <Col sm={1} className='copyright'>Cookie policy</Col>
+                <Col sm={1} className='copyright'>
+                
+                <Link className='react-router-link text-dark' to={'/admin/login/'}> Admin Login</Link></Col>
             </Row>
             <br />
     </div>  
