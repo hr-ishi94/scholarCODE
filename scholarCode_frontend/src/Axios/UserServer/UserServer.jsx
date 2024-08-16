@@ -147,3 +147,25 @@ export const markNotifications = async ()=>{
     }
 }
 
+export const userFeedbacks= async ()=>{
+    try{
+        const response = await axiosCourseInstance.get('user_feedbacks')
+        if (response.status === 200){
+            return response.data
+        } 
+    }catch(error){
+        console.log('Error in fetching user_feedaback',error)
+    }
+}
+
+export const userFeedbackPost= async (formData)=>{
+    try{
+        const response = await axiosCourseInstance.post('user_feedbacks',FormData)
+        if (response.status === 200){
+            return response.data
+        } 
+    }catch(error){
+        console.log('Error in fetching user_feedaback',error)
+    }
+}
+

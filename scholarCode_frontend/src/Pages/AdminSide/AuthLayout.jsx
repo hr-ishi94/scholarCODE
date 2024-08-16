@@ -1,13 +1,15 @@
 import React from 'react'
 import logo from '../../assets/logo.png'
 import './AuthLayout.css'
-import { Outlet } from 'react-router-dom'
+import { Link, Outlet } from 'react-router-dom'
 
 const AuthLayout = () => {
   return (
     <div className='container text-center'>
         <div className='inner-container-mentor p-5'>
+            <Link to={'/'}>
              <img src={logo} alt="" className='logo' /> 
+            </Link>
              <br />
              <br />
              <Outlet/>

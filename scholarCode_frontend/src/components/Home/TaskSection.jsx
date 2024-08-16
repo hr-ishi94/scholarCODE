@@ -180,7 +180,10 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
       </Col>:
       <>
       <br />
-      <h6 className='text-primary'>Mentor will issue the certificate soon!</h6>
+      {
+       EnrolledCourse && EnrolledCourse.is_completed && !EnrolledCourse.certificate &&
+      <h6 className='text-primary'><i className="fa-solid fa-circle-exclamation"></i> Mentor will issue the certificate soon!</h6>
+      }
       <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
       </>
       

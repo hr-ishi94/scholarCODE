@@ -209,3 +209,17 @@ export const mentorRetryLogin = async (credentials) => {
   };
 
 
+  export const issueCertificate = async (formData) =>{
+    try{
+        const res = await axiosCourseFormInstance.patch('upload/',formData)
+        console.log('res,sff',res)
+        if (res.status === 200 ||res.status === 201){
+            return res.data
+        }
+    }catch(error){
+        console.log("Error while patching certificate")
+        return error
+    }
+  }
+
+

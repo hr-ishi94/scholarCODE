@@ -104,7 +104,9 @@ const MentorDashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {currentTransactions.map((txn, index) => (
+                    {currentTransactions
+                    .filter((txn)=>txn.amount > 0 )
+                    .map((txn, index) => (
                         <tr key={index}>
                             <td>{indexOfFirstTransaction + index + 1}</td>
                             <td>Rs. {txn.amount}</td>

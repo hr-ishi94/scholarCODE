@@ -19,7 +19,7 @@ const AllEnrolledCoursesSlice = createSlice({
     initialState:initialstate.AllEnrolledCourses,
     reducers:{
         newEnroll:(state,action)=>{
-            state.enrolls =[...state.enrolls,action.payload]
+            state.enrolls = [...state.enrolls,action.payload]
         },
         enrollPatch: (state, action) => {
             const { enroll_id, formData } = action.payload;

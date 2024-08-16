@@ -8,7 +8,7 @@ import  Table  from 'react-bootstrap/Table'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
-import { MentorPatchReviewTimings, MentorPostReviewTimings, MentorWalletPatch, ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
+import { issueCertificate, MentorPatchReviewTimings, MentorPostReviewTimings, MentorWalletPatch, ReviewMarkPost } from '../../Axios/MentorServer/MentorServer';
 import { EnrollCourse, EnrollPatch, EnrollPut, EnrolledAllCourses } from '../../Axios/UserServer/UserServer';
 import { toast } from 'react-toastify';
 import { enrollPatch, fetchAllEnrolledCourses } from '../../Redux/Slices/Userside/AllEnrolledCoursesSlice';
@@ -17,7 +17,6 @@ import { fetchCoursesList } from '../../Redux/Slices/CoursesListSlice';
 import Loader from '../Utils/Loader';
 import ReviewExtendModal from './ReviewExtendModal';
 import jsPDF from 'jspdf';
-import axios from 'axios';
 import logo from '../../assets/logo.png'
 import signature from '../../assets/signature.png'
 import Badge from 'react-bootstrap/Badge';
@@ -85,10 +84,14 @@ const MentorReviewDetails = () => {
   },[dispatch])
   // console.log(ReviewTimings.timings,'looi')
   const [CurrCourse] = EnrolledCourseSelector.enrolls.filter((course)=>course.id == params.id)
-  const[ mentorCourse ]= MentorCourseSelector.courses.filter((course)=>course.id == CurrCourse.course.id)
+  const mentorCourse = MentorCourseSelector.courses?.find(
+    (course) => course.id === CurrCourse?.course?.id
+  );
   
-  const ReviewMarksList = ReviewMarkSelector.marks.filter((n)=>n.course === CurrCourse.id && n.user === CurrCourse.user.id)
-  
+  const ReviewMarksList = Array.isArray(ReviewMarkSelector.marks)
+  ? ReviewMarkSelector.marks.filter((n) => n.course === CurrCourse.id && n.user === CurrCourse.user.id)
+  : [];
+
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -113,8 +116,8 @@ const MentorReviewDetails = () => {
     setReview(true)
     };
 
-    const [currTime,setCurrTime] = useState(CurrCourse.review_time)  
-    
+    const [currTime, setCurrTime] = useState(CurrCourse?.review_time || null);
+
     const isDisabled = !((currentTime >= CurrCourse.review_time ) && (currentDate === CurrCourse.next_review_date))
     const [timeSlot,setTimeSlot] = useState(false)
 
@@ -255,14 +258,25 @@ const MentorReviewDetails = () => {
           const formData = new FormData();
           formData.append('enroll_id', CurrCourse.id);
           formData.append('certificate', pdfBlob, 'certificate.pdf');
-    
+          // console.log(formData,'koio')
           try {
             // Upload the PDF to the backend
-            const response = await axios.patch(`${course}upload/`, formData);
+            const response = await issueCertificate(formData)
+            // const response = await axios.patch(`${course}upload/`, formData);
             
             // Handle the response from the backend
+            if(response.status === 'success'){
             console.log('PDF uploaded successfully:', response.data);
             toast.success('Certificate issued and uploaded successfully!');
+            const payload = { enroll_id: CurrCourse.id, formData: {
+              ...CurrCourse,
+              certificate:response.data.certificate
+            } };
+            dispatch(enrollPatch(payload))
+            }else{
+              toast.error("error occured while issuing certificate!")
+            }
+
           } catch (error) {
             console.error('Error uploading PDF:', error);
             toast.error('Failed to issue certificate. Please try again.');
@@ -383,12 +397,17 @@ const MentorReviewDetails = () => {
   </>
   :
       <>
-      <br />
-      <Col sm={4}>
-      <Button className='p-2 text-light ' style={{backgroundColor:'#12A98E'}} onClick={handleIssueCertificate} variant='' >Issue Certificate</Button>
-      {!CurrCourse.certificate?
-      <p style={{color:"#12A98E"}}>Candidate Completed the course please Issue the Certificate. <i className="fa-solid fa-circle-check"></i></p>
-    : <p style={{color:"#12A98E"}}>Certificate issued <i className="fa-solid fa-circle-check"></i></p> }
+      <Col sm={6}>
+        <br/>
+        <p style={{color:"#12A98E"}}>Course Completed <i className="fa-solid fa-circle-check"></i></p>
+        
+        {!CurrCourse.certificate ?
+        <>
+        <Button className='p-2 text-light ' style={{backgroundColor:'#12A98E'}} onClick={handleIssueCertificate} variant='' >Issue Certificate</Button>
+        <p className='text-danger'><i className="fa-solid fa-circle-exclamation"></i> Please issue the certificate</p>
+        
+        </>:
+      <p style={{color:"#12A98E"}}>Certificate issued <i className="fa-solid fa-circle-check"></i></p> }
       </Col>
       </>
       }
@@ -481,7 +500,7 @@ function ReviewMarkModal({handleClose,show,CurrCourse,mentor_id}) {
     dispatch(fetchMentorWallet(mentor_id))
     
   },[dispatch])
-  console.log(MentorWalletSelector.wallet)
+  // console.log(MentorWalletSelector.wallet)
 
 
   const  enrollForm={
@@ -506,7 +525,6 @@ function ReviewMarkModal({handleClose,show,CurrCourse,mentor_id}) {
       const res = await ReviewMarkPost(formData)
       const ne = await EnrollPatch(CurrCourse.user.id,enrollForm)
       const walletPatch = await MentorWalletPatch(mentor_id,mentorWalletForm)
-      // console.log(walletPatch,'s.ll')
       console.log(ne,'leo')
       if (res.id){
         const payload = { 
@@ -516,10 +534,10 @@ function ReviewMarkModal({handleClose,show,CurrCourse,mentor_id}) {
             current_module:ne.data.current_module,
             is_completed,
             next_review_date: ne.data.next_review_date,
-            review_time: null,
-            vcall_link:null
+            review_time: null
           } 
         };
+        console.log(payload,'loi')
         
         dispatch(enrollPatch(payload));
         dispatch(patchWallet(walletPatch.wallet))
@@ -553,7 +571,6 @@ function ReviewMarkModal({handleClose,show,CurrCourse,mentor_id}) {
         }
       ))
     }
-   console.log(formData,'555')
   }
 
   return (

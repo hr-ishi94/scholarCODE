@@ -86,7 +86,7 @@ addAuthInterceptor(axiosCourseInstance)
 export const axiosCourseFormInstance = axios.create({
     baseURL:course,
     headers:{
-        'content-Type':'application/json'
+        'content-Type':'multipart/form-data'
     }
 })
 addAuthInterceptor(axiosCourseFormInstance)

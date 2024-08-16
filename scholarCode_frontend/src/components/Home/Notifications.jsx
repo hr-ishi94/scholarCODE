@@ -112,7 +112,7 @@ const Notifications = () => {
                   </div>
                   {notification.link && (
                     <a
-                      href={`${base_url}/media/${notification.link}/`}
+                      href={`${base_url}media/${notification.link}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="notification-link"
