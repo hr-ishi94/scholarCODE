@@ -160,8 +160,11 @@ export const userFeedbacks= async ()=>{
 
 export const userFeedbackPost= async (formData)=>{
     try{
-        const response = await axiosCourseInstance.post('user_feedbacks',FormData)
+        console.log(formData,'kkkl')
+        const response = await axiosCourseInstance.post('user_feedbacks/',formData)
+        console.log(response,'lojjj')
         if (response.status === 200){
+            
             return response.data
         } 
     }catch(error){

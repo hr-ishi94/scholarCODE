@@ -45,6 +45,8 @@ import AdminDashboard from './components/Admin/AdminDashboard';
 import MentorDashboard from './components/Mentor/MentorDashboard';
 import MentorRetryLogin from './components/Mentor/MentorRetryLogin';
 import MentorRetry from './components/Mentor/MentorRetry';
+import UserFeedbacks from './components/Admin/UserFeedbacks';
+import MentorFeedbacks from './components/Mentor/MentorFeedbacks';
 
 
 
@@ -80,6 +82,7 @@ function App() {
             <Route path='/admin/category/:id/' element={<AdminCategory/>}></Route>
             <Route path='/admin/list-of-reviews/' element={<AdminReviewsList/>}></Route>
             <Route path='/admin/review-details/:id' element={<AdminReviewDetails/>}></Route>
+            <Route path='/admin/user-feedbacks' element={<UserFeedbacks/>}></Route>
 
           </Route>
 
@@ -94,6 +97,7 @@ function App() {
             <Route path='/mentor/courses/' element={<MentorCoursesList/>}></Route>
             <Route path='/mentor/course/:id/' element={<MentorCourseDetails/>}></Route>
             <Route path='/mentor/profile/' element={<MentorProfile/>}></Route>
+            <Route path='/mentor/feedbacks/' element={<MentorFeedbacks/>}></Route>
           
           </Route>
 

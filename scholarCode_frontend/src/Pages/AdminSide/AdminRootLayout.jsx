@@ -59,6 +59,7 @@ const AdminRootLayout = () => {
             <Link to={'/admin/courses/'} className="react-router-link text-dark"><h2 className='aside-content'>Courses</h2></Link>
             <Link to={'/admin/category/'} className="react-router-link text-dark"><h2 className='aside-content'>Categories</h2></Link>
             <Link to={'/admin/list-of-reviews/'} className="react-router-link text-dark"><h2 className='aside-content'>Reviews</h2></Link>
+            <Link to={'/admin/user-feedbacks/'} className="react-router-link text-dark"><h2 className='aside-content'>User Feedbacks</h2></Link>
         </div>
         </>}
 

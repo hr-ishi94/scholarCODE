@@ -43,14 +43,18 @@ const AdminDashboard = () => {
     }, [dispatch]);
 
     let trans = 0;
-    TransactionSelector.transactions.map((rate)=>{
-        trans += Number(rate.amount);    
-    });
+if (TransactionSelector.transactions) {
+  TransactionSelector.transactions.forEach(rate => {
+    trans += Number(rate.amount);    
+  });
+}
 
-    // Filter transactions based on email search query
-    const filteredTransactions = TransactionSelector.transactions.filter((txn) =>
-        paymentIds.some((payment) => payment.id === txn.payment && payment.email.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+
+const filteredTransactions = TransactionSelector.transactions
+? TransactionSelector.transactions.filter((txn) =>
+    paymentIds.some((payment) => payment.id === txn.payment && payment.email.toLowerCase().includes(searchQuery.toLowerCase()))
+)
+: [];
 
     // Pagination logic
     const indexOfLastTransaction = currentPage * transactionsPerPage;
@@ -61,7 +65,8 @@ const AdminDashboard = () => {
 
     const sortedTransactions = [...currentTransactions].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    const [wallet] = AdminWalletSelector.wallet;
+    const [wallet] = Array.isArray(AdminWalletSelector.wallet) ? AdminWalletSelector.wallet : [];
+
 
     const style = {
         position: "absolute",

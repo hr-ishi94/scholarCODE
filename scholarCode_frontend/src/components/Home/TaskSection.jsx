@@ -4,12 +4,13 @@ import TaskList from './TaskList';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchReviewMarks } from '../../Redux/Slices/mentorSide/ReviewMarkSlice';
 import { base_url, course, course_url } from '../../Axios/Urls/EndPoints';
+import FeedbackModal from './utils/FeedbackModal';
 
 const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendReview}) => {
 
   const ReviewMarkSelector = useSelector((state)=>state.ReviewMarks)
-  
-    
+  console.log('hrihs',EnrolledCourse)
+  const [feedback, setFeedback] = useState(false)
 
   function getFormattedDate() {
     const date = new Date();
@@ -50,16 +51,8 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
 
   const review_marks= EnrolledCourse && ReviewMarkSelector.marks.filter((review)=>review.course === EnrolledCourse.id)
 
-  // const [score,setScore] = useState(0) 
-  // useEffect(()=>{
-  //     review_marks && review_marks.map((review)=>{
-    
-  //       setScore((prevData)=>prevData+review.mark)
-  //     }
-  //   )
+  const handleFeedback = ()=>setFeedback(!feedback)
 
-  // },[score])
-  // console.log(score,'score')
     return (
     <>
     {
@@ -176,17 +169,28 @@ const TaskSection = ({EnrolledCourse,modulesList,tasks,current_module,AttendRevi
         >
           Download your certificate
         </Button>
-
+        <br />
+        
       </Col>:
       <>
       <br />
       {
        EnrolledCourse && EnrolledCourse.is_completed && !EnrolledCourse.certificate &&
-      <h6 className='text-primary'><i className="fa-solid fa-circle-exclamation"></i> Mentor will issue the certificate soon!</h6>
+      <h6 className='text-primary'><i className="fa-solid fa-circle-exclamation"></i> Mentor will issue the certificate soon </h6>
       }
       <Button disabled className='p-2 my-3 text-light' variant='' style={{backgroundColor:"#12A98E"}}>Download your certificate</Button> 
+
       </>
       
+    }
+    <br />
+    {EnrolledCourse && EnrolledCourse.is_completed && 
+    <>
+    <a className='react-router-link text-secondary ' style={{cursor:"pointer"}} onClick={handleFeedback} >Add your Feedback...</a>
+    {feedback &&
+      <FeedbackModal course = {EnrolledCourse&& EnrolledCourse.course} user ={EnrolledCourse && EnrolledCourse.user} handleFeedback={handleFeedback}/>
+   
+          }      </>
     }
     
     </>

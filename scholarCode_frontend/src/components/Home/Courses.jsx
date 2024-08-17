@@ -46,7 +46,7 @@ const Courses = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-
+  console.log(selectedCategory,'ll','loii')
   useEffect(() => {
     dispatch(fetchMentorCourse())
     dispatch(fetchCoursesList())
@@ -73,7 +73,7 @@ const Courses = () => {
     course.status === true && 
     CourseIdSet.has(course.id) &&
     (course.name.toLowerCase().includes(searchTerm.toLowerCase()) || course.description.toLowerCase().includes(searchTerm.toLowerCase())) &&
-    (selectedCategory === 'All' || course.category === selectedCategory)
+    (selectedCategory === 'All' || course.category == selectedCategory)
   )
 
   const renderRows = (courses) => {
@@ -121,7 +121,7 @@ const Courses = () => {
                 <option value="All">All Categories</option>
                 {/* Replace the below options with your actual categories */}
                 {CategorySelector.categories.map((cat)=>
-                <option value={cat.id}>{cat.name}</option>
+                <option value={cat.id} key={cat.id}>{cat.name}</option>
                 )}
               </Form.Select>
             </Col>

@@ -91,11 +91,11 @@ const LoginMentor = () => {
               <Form.Control type="password" placeholder="Password" size='lg' name='password' value={authData.password} onChange={handleChange}/>
           </Form.Group>
           <br />
-          <Button className='mentor-login-button' type='submit'>Login</Button>
+          <Button className='text-light px-5 py-2' style={{backgroundColor:"#12A98E"}} type='submit' variant=''>Login</Button>
                     
         </Form>
         <br />  
-        <a href="" style={{color:"#12A98E"}}>Forgot password?</a>  
+        {/* <a href="" style={{color:"#12A98E"}}>Forgot password?</a>   */}
       </>}
     </div>
   )

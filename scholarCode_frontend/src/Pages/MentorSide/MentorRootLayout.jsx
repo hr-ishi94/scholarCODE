@@ -128,6 +128,7 @@ const MentorRootLayout = () => {
         <Link to={'/mentor/reviews/'} className="react-router-link text-dark"><h2 className='aside-content'>Reviews List</h2></Link>
         <Link to={'/mentor/courses/'} className="react-router-link text-dark"><h2 className='aside-content'>Courses Assigned</h2></Link>
         <Link to={'/mentor/users/'} className="react-router-link text-dark"><h2 className='aside-content'>Users Assigned</h2></Link>
+        <Link to={'/mentor/feedbacks/'} className="react-router-link text-dark"><h2 className='aside-content'>Feedbacks</h2></Link>
     </div>
     </>
     }

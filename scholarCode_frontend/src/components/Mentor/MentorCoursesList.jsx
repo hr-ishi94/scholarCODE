@@ -29,7 +29,6 @@ const MentorCoursesList = () => {
     
     const id = mentorSelector.mentor.id
     const dispatch = useDispatch()
-    const mentorCourseSelector = useSelector((state)=>state.MentorCourses)
 
     const MentorCourseSet = new Set()
     if (Array.isArray(MentorCourseSelector.courses)) {
@@ -48,8 +47,8 @@ const MentorCoursesList = () => {
     // console.log(mentorCourseSelector,'df')
     const sortedCourses = [];
    
-    if (mentorCourseSelector.courses && mentorCourseSelector.courses.length > 0) {
-        mentorCourseSelector.courses.forEach(courseId => {
+    if (MentorCourseSelector.courses && MentorCourseSelector.courses.length > 0) {
+        MentorCourseSelector.courses.forEach(courseId => {
             const matchingCourse = courseSelector.courses.find(course => course.id === courseId.course && courseId.mentor === id);
             if (matchingCourse) {
                 sortedCourses.push(matchingCourse);
@@ -60,7 +59,7 @@ const MentorCoursesList = () => {
         console.log("No courses found in mentorCourseSelector.courses");
     }
             
-    if (mentorCourseSelector.status =='loading'){
+    if (MentorCourseSelector.status =='loading'){
         return <Loader/>
     }
 

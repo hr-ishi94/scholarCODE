@@ -20,9 +20,9 @@ function FeedbackCard({feedbacks}) {
     },[dispatch])
 
   return (
-    <div>
+    <div className='d-flex flex-row justify-content-between mx-5'>
     {feedbacks?.map((feedback) => (
-      <Card sx={{ maxWidth: 300 }} className="p-2 m-5">
+      <Card sx={{ maxWidth: 300 }} className="p-2 ">
         <CardActionArea>
           <CardMedia
             component="img"
@@ -40,6 +40,20 @@ function FeedbackCard({feedbacks}) {
                 .map((crs) => crs.name)
                 .join(", ") || feedback.course.course}  {/* Combined fix */}
             </Typography>
+            <span
+            className='start'
+            style=
+            {{
+              cursor: 'pointer',
+              color: 'gold',
+              fontSize: `35px`,
+            }}
+            
+          >
+            {Array.from({ length: feedback.rating }, (_, index) => (
+    <span key={index}>★</span>
+  ))}
+          </span>
             <p><em>- {UserSelector.users
                 .filter((usr) => usr.id === feedback.user)
                 .map((user) => user.first_name)
