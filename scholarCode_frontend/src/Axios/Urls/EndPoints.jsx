@@ -10,7 +10,7 @@ export const SOCKET = 'wss://scholarcode.online/ws'
 
 export const CHAT = ' https://scholarcode.online/chat/'
 
-export const Vurl = 'http://localhost:5173/'
+export const Vurl = 'https://scholar-code.vercel.app/'
 
 export const Notification_url = ' https://scholarcode.online/notifications/noti/'
 
