@@ -66,13 +66,11 @@ const MentorDashboard = () => {
                     <DashComp title={'Courses Assigned'} count={courses.length} />
                 </Col>
                 <Col sm={6}>
-                    <DashComp title={'Pending payments'} count={wallet?.amount} revenue />
+                    <DashComp title={'Wallet'} count={wallet?.balance} revenue />
                 </Col>
             </Row>
             <Row>
-                <Col sm={6}>
-                    <DashComp title={'Wallet'} count={wallet?.balance} revenue />
-                </Col>
+                
                 <Col sm={6}>
                     <DashComp title={'User Enrolls'} count={userEnrolls.length} />
                 </Col>

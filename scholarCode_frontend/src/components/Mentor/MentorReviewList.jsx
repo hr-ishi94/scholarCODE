@@ -57,6 +57,7 @@ const MentorReviewList = () => {
           }
       }
       
+      
       const CoursesObject = {};
 
       // Ensure both MentorCourseSelector.courses and CourseSelector.courses are arrays before iterating
@@ -94,14 +95,14 @@ const MentorReviewList = () => {
           <Col sm={9}>
           </Col>
           <Col sm={3}>
-            <Form.Control
+            {/* <Form.Control
             className='p-1'
               type="text"
               placeholder="Search User Reviews"
               value={searchQuery}
               onChange={(e) => {setSearchQuery(e.target.value);
                 setCurrentPage(1);}}
-            />
+            /> */}
           </Col>
         </Row>
             
@@ -118,7 +119,7 @@ const MentorReviewList = () => {
             </tr>
         </thead>
         <tbody >
-            {sortedReviews
+            {MentorCoursesList
             .sort((a,b)=>  a.next_review_date - b.next_review_date)
             .filter((course)=>!course.is_completed)
             .map((course,index)=>(
@@ -149,12 +150,12 @@ const MentorReviewList = () => {
             
         </tbody>
         </Table>
-        <Pagination
+        {/* <Pagination
           itemsPerPage={reviewsPerPage}
           totalItems={filteredReviews.length}
           paginate={paginate}
           currentPage={currentPage}
-        />
+        /> */}
         <br />
         <br />
         <br />
