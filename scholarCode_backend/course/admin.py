@@ -10,5 +10,5 @@ admin.site.register(Transaction)
 admin.site.register(Mentor_wallet)
 admin.site.register(AdminWallet)
 admin.site.register(MentorTransaction)
-
+admin.site.register(UserFeedback)
 

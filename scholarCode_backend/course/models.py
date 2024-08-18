@@ -90,6 +90,7 @@ class EnrolledCourse(models.Model):
     next_review_date =  models.DateField(default = default_review_date)
     review_time = models.TimeField(blank=True,null=True)
     vcall_link = models.CharField(max_length=300,null=True, blank=True)
+    feedback_status = models.BooleanField(default=False)
     payment = models.ForeignKey(RazorpayPayment, on_delete=models.CASCADE, null=True, blank= True)
     transaction = models.ForeignKey(Transaction,on_delete=models.CASCADE, null=True , blank= True)
     
@@ -147,3 +148,20 @@ class MentorTransaction(models.Model):
     
     def __str__(self):
         return f"Transaction {self.id} for {self.mentor_wallet.mentor}"
+    
+class UserFeedback(models.Model):
+    course = models.ForeignKey(MentorCourses,on_delete=models.CASCADE)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    feedback_text = models.TextField(blank=True, null= True)
+    rating = models.PositiveIntegerField(
+        validators=[MinValueValidator(1),MaxValueValidator(5)]
+    )
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"feedback by {self.user.username}- Rating :{self.rating}"
+    
+    class Meta:
+        verbose_name = 'User Feedback'
+        verbose_name_plural = 'User Feedbacks'
+        ordering = ['-submitted_at']

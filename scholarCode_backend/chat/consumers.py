@@ -5,9 +5,13 @@ from channels.db import database_sync_to_async
 from main.models import CustomUser
 from .models import ChatRooms, Messages
 
-# logger = logging.getLogger('chat')
+#aa logger = logging.getLogger('chat')
 
 class ChatConsumer(AsyncWebsocketConsumer):
+    # def some_method(self):
+    #     from main.models import CustomUser
+    #     from .models import ChatRooms, Messages
+
     async def connect(self):
         try:
             self.request_user = self.scope['user']

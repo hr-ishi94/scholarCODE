@@ -69,3 +69,11 @@ class MentorTransactionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class FeedbackSerializer(serializers.ModelSerializer):
+    course = serializers.PrimaryKeyRelatedField(queryset=MentorCourses.objects.all())
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    
+    class Meta:
+        model = UserFeedback
+        fields = '__all__'
+

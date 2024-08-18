@@ -17,6 +17,7 @@ urlpatterns = [
     path('admin_wallet/',views.AdminWalletView.as_view(),name='admin_wallet'),
     path('mentor_wallet/<int:mentor_id>/',views.mentorWallet,name='mentor_wallet'),
     path('mentor_txns/<int:wallet_id>/',views.MentorTransactionView.as_view(),name='mentor_txn'),
+    path('user_feedbacks/',views.UserFeedbackView.as_view(),name="user_feedback"),
    
    ]
 

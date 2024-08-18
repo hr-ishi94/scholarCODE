@@ -12,6 +12,7 @@ class JWTwebsocketMiddleware(BaseMiddleware):
         for qp in query_string.split("&"):
             if "=" in qp:
                 key, value = qp.split("=", 1)
+                
                 query_parameters[key] = value
         
         token = query_parameters.get('token', None)

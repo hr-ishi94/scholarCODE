@@ -61,14 +61,13 @@ def EnrolledCoursesUser(request,user_id):
             enroll_id = data.get('id')
             mentor = data.get('mentor')
             time = data.get('review_time')
+            print(time)
             review_date = data.get('next_review_date')
-
             try:
                 course = EnrolledCourse.objects.get(id=enroll_id, user=user_id)
             except EnrolledCourse.DoesNotExist:
                 return Response({'status': 'error', 'message': 'Enrollment not found'}, status=status.HTTP_404_NOT_FOUND)
-
-
+            
             if time is not None and review_date is not None:
                 try:
                     time_dt = datetime.datetime.strptime(time, "%H:%M:%S").time()  # Parse time in HH:MM:SS format
@@ -83,11 +82,12 @@ def EnrolledCoursesUser(request,user_id):
 
                 for review in existing_reviews:
                     existing_time = review.review_time
-                    print(existing_time, time_dt, 'klei')
-                    if existing_time == time_dt:
-                        return Response({'status': 'error', 'message': 'You already have a review at the same time.'}, status=status.HTTP_400_BAD_REQUEST)
-                    if abs((datetime.datetime.combine(datetime.datetime.today(), time_dt) - datetime.datetime.combine(datetime.datetime.today(), existing_time)).total_seconds()) < 1800:
-                        return Response({'status': 'error', 'message': 'Review time must be at least 30 minutes apart from any of your reviews.'}, status=status.HTTP_400_BAD_REQUEST)
+                    if existing_time is not None:
+                        print(existing_time, time_dt, 'klei')
+                        if existing_time == time_dt:
+                            return Response({'status': 'error', 'message': 'You already have a review at the same time.'}, status=status.HTTP_400_BAD_REQUEST)
+                        if abs((datetime.datetime.combine(datetime.datetime.today(), time_dt) - datetime.datetime.combine(datetime.datetime.today(), existing_time)).total_seconds()) < 1800:
+                            return Response({'status': 'error', 'message': 'Review time must be at least 30 minutes apart from any of your reviews.'}, status=status.HTTP_400_BAD_REQUEST)
             
             print(data)
             serializer = EnrollSerializer(course, data=data, partial=True)
@@ -307,3 +307,8 @@ class AdminWalletView(generics.ListAPIView):
     def get_queryset(self):
         superuser = CustomUser.objects.filter(is_superuser=True).first()
         return AdminWallet.objects.filter(admin = superuser)
+    
+
+class UserFeedbackView(generics.ListCreateAPIView):
+    queryset = UserFeedback.objects.all()
+    serializer_class = FeedbackSerializer

@@ -189,6 +189,7 @@ class AdminMentorApproval(generics.RetrieveUpdateDestroyAPIView):
                 email_message.send()
                 return Response({'message': 'Mentor rejected after 3 attempts'}, status=status.HTTP_200_OK)
             else:
+                mentor.is_active = True
                 mentor.save()
                 email_subject = 'Mentor Request Rejected'
                 message = render_to_string("mentor_retry.html", {

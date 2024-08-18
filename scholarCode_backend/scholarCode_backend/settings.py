@@ -31,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ikr^_f2$2fwrb_22l@87pvpf8@(ji(soisp=9a!=v@w1@xkclw'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
@@ -46,6 +46,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # dependencies
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
+    'channels',
 
     # custom_apps
     'main',
@@ -53,21 +61,14 @@ INSTALLED_APPS = [
     'chat',
     'notifications',
 
-    # dependencies
-    'rest_framework',
-    'rest_framework.authtoken',
-    'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
-    'corsheaders',
-    'channels'
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     # corsheader middleware
     "corsheaders.middleware.CorsMiddleware",
+    'django.contrib.sessions.middleware.SessionMiddleware',
     "django.middleware.common.CommonMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -95,6 +96,45 @@ TEMPLATES = [
 
 ASGI_APPLICATION = 'scholarCode_backend.asgi.application'
 
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'simple',
+#         },
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': os.path.join(BASE_DIR, 'debug.log'),
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file'],
+#             'level': 'DEBUG',
+#             'propagate': True,
+#         },
+#         'chat': {
+#             'handlers': ['console', 'file'],
+#             'level': 'DEBUG',
+#             'propagate': False,
+#         },
+#     },
+# }
 
 
 # settings.py
@@ -104,7 +144,7 @@ CHANNEL_LAYERS = {
         'CONFIG': {
             "hosts": [('127.0.0.1', 6379)],  # Update with your Redis server address and port
         },
-    },
+    }
 }
 
 
@@ -149,27 +189,27 @@ EMAIL_USE_TLS=True
 
 
 # Postgres
-# DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'scholarcodedatabase',
-#        'USER': 'postgres',
-#        'PASSWORD': 'hrishi',
-#        'HOST': 'localhost',
-#        'PORT': '5432',
-#    }
-# }
-
 DATABASES = {
-'default': {
-'ENGINE': 'django.db.backends.postgresql_psycopg2',
-'NAME': 'scholarcode',
-'USER': 'hrishi',
-'PASSWORD': 'hrishi',
-'HOST': 'localhost',
-'PORT': '',
+   'default': {
+       'ENGINE': 'django.db.backends.postgresql',
+       'NAME': 'scholarcodedatabase',
+       'USER': 'postgres',
+       'PASSWORD': 'hrishi',
+       'HOST': 'localhost',
+       'PORT': '5432',
+   }
 }
-}
+
+# DATABASES = {
+# 'default': {
+# 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+# 'NAME': 'scholarcode',
+# 'USER': 'postgres',
+# 'PASSWORD': 'postgres',
+# 'HOST': 'localhost',
+# 'PORT': '',
+# }
+# }
 
 
 CORS_ALLOWED_ORIGINS = [
